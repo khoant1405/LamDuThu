@@ -40,10 +40,11 @@ services:
   redissentinel1:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_HOST: redis1
       REDIS_MASTER_PASSWORD: 1405
     depends_on:
       - redis1
+      - redis2
+      - redis3
     ports:
       - '26179:26379' # Port mapping corrected
     networks:
@@ -52,10 +53,11 @@ services:
   redissentinel2:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_HOST: redis1
       REDIS_MASTER_PASSWORD: 1405
     depends_on:
       - redis1
+      - redis2
+      - redis3
     ports:
       - '26279:26379' # Port mapping corrected
     networks:
@@ -64,10 +66,11 @@ services:
   redissentinel3:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_HOST: redis1
       REDIS_MASTER_PASSWORD: 1405
     depends_on:
       - redis1
+      - redis2
+      - redis3
     ports:
       - '26379:26379'
     networks:
