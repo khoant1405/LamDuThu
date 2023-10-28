@@ -3,9 +3,9 @@ services:
     image: 'bitnami/redis:latest'
     environment:
       - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_PASSWORD=1405
     ports:
-      - '6179'
+      - '6179:6179'
     networks:
       - app-tier
 
@@ -14,10 +14,10 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=slave
       - REDIS_MASTER_HOST=redis-1
-      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
-      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_PASSWORD=1405
     ports:
-      - '6279'
+      - '6279:6279'
     depends_on:
       - redis-1
     networks:
@@ -28,10 +28,10 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=slave
       - REDIS_MASTER_HOST=redis-1
-      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
-      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_PASSWORD=1405
     ports:
-      - '6379'
+      - '6379:6379'
     depends_on:
       - redis-1
     networks:
@@ -40,33 +40,33 @@ services:
   redis-sentinel-1:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
+      - REDIS_MASTER_PASSWORD=1405
     depends_on:
       - redis-1
     ports:
-      - '26179'
+      - '26179:26179'
     networks:
       - app-tier
 
   redis-sentinel-2:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
+      - REDIS_MASTER_PASSWORD=1405
     depends_on:
       - redis-1
     ports:
-      - '26279' # Change the port for the second sentinel
+      - '26279:26279' # Change the port for the second sentinel
     networks:
       - app-tier
 
   redis-sentinel-3:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
+      - REDIS_MASTER_PASSWORD=1405
     depends_on:
       - redis-1
     ports:
-      - '26379' # Change the port for the third sentinel
+      - '26379:26379' # Change the port for the third sentinel
     networks:
       - app-tier
 
