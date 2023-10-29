@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace JSN.Core.Model
 {
     [Table("ArticleContent")]
-    [Index("ArticleId", Name = "UQ__ArticleC__9C6270E9220B8F40", IsUnique = true)]
+    [Index("ArticleId", Name = "UQ__ArticleC__9C6270E921CC6257", IsUnique = true)]
     public class ArticleContent
     {
         [Key]

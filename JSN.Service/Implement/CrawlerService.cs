@@ -75,6 +75,8 @@ namespace JSN.Service.Implement
                     };
                     listArticle.Add(newArticle);
                 }
+
+                await Task.Delay(10000);
             }
 
             if (listArticle.Any())

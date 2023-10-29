@@ -9,19 +9,17 @@ namespace JSN.Core.Model
         [Key]
         public int Id { get; set; }
 
-        [StringLength(500)]
         public string ArticleName { get; set; } = null!;
 
         public int Status { get; set; }
 
         [Column("RefURL")]
-        [StringLength(255)]
+        [StringLength(500)]
         public string RefUrl { get; set; } = null!;
 
-        [StringLength(255)]
+        [StringLength(500)]
         public string? ImageThumb { get; set; }
 
-        [StringLength(500)]
         public string? Description { get; set; }
 
         [Column(TypeName = "datetime")]
