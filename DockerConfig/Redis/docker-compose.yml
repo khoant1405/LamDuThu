@@ -4,8 +4,11 @@ services:
     environment:
       REDIS_REPLICATION_MODE: master
       REDIS_PASSWORD: 1405
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     ports:
-      - '6179:6379' # Port mapping corrected
+      - '6179:6179' # Port mapping corrected
     networks:
       - app-tier
 
@@ -16,8 +19,11 @@ services:
       REDIS_MASTER_HOST: redis1
       REDIS_MASTER_PASSWORD: 1405
       REDIS_PASSWORD: 1405
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     ports:
-      - '6279:6379' # Port mapping corrected
+      - '6279:6279' # Port mapping corrected
     depends_on:
       - redis1
     networks:
@@ -30,6 +36,9 @@ services:
       REDIS_MASTER_HOST: redis1
       REDIS_MASTER_PASSWORD: 1405
       REDIS_PASSWORD: 1405
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     ports:
       - '6379:6379'
     depends_on:
@@ -44,12 +53,13 @@ services:
       REDIS_MASTER_HOST: redis1
       REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
       REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     depends_on:
       - redis1
       - redis2
       - redis3
     ports:
-      - '26179:26379' # Port mapping corrected
+      - '26179:26179' # Port mapping corrected
     networks:
       - app-tier
 
@@ -60,12 +70,13 @@ services:
       REDIS_MASTER_HOST: redis1
       REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
       REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     depends_on:
       - redis1
       - redis2
       - redis3
     ports:
-      - '26279:26379' # Port mapping corrected
+      - '26279:26279' # Port mapping corrected
     networks:
       - app-tier
 
@@ -76,6 +87,7 @@ services:
       REDIS_MASTER_HOST: redis1
       REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
       REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
     depends_on:
       - redis1
       - redis2
