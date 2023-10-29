@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.RegularExpressions;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using JSN.Core.Entity;
@@ -7,6 +8,7 @@ using JSN.Service.Interface;
 using JSN.Shared.Enum;
 using JSN.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement
 {
@@ -41,61 +43,57 @@ namespace JSN.Service.Implement
                 var html = await httpClient.GetStringAsync(url);
                 var document = new HtmlDocument();
                 document.LoadHtml(html);
-                List<HtmlNode> articles = document.DocumentNode.QuerySelectorAll("div.zone--timeline > article")
+                List<HtmlNode> articles = document.DocumentNode.QuerySelectorAll("div.porta-article-item")
                     .ToList();
 
                 foreach (var item in articles)
                 {
-                    var article = item.QuerySelector("a");
+                    var articleName = FormatString(item.QuerySelector("div > h2 > a")
+                        .InnerText);
 
-                    if (article == null) continue;
+                    var imageThumb = FormatString(item.QuerySelector("div.message-body > div > div > img")
+                        .Attributes["k-data-src"].Value);
 
-                    var articleId = int.Parse(item.Attributes["data-id"].Value);
-                    if (listId.Contains(articleId) || listArticle.Exists(x => x.Id == articleId)) continue;
+                    var description = FormatString(item.QuerySelector("div.message-body > div")
+                        .InnerText, true);
 
-                    var articleName = article.Attributes["title"].Value;
-                    var href = article.Attributes["href"].Value;
-                    var imageThumb = article.QuerySelector("img")
-                        ?.Attributes["data-src"]
-                        .Value.Replace("150x100", "200x150");
-                    var description = item.QuerySelector("div > div.summary > p")
-                        ?.InnerText.Replace("\n", "");
-
-                    var htmlArticle = await httpClient.GetStringAsync(href);
-                    var documentArticle = new HtmlDocument();
-                    documentArticle.LoadHtml(htmlArticle);
-                    var content = documentArticle.DocumentNode.QuerySelector("div.cms-body")
-                        ?.OuterHtml;
-                    var time = documentArticle.DocumentNode.QuerySelector("meta.cms-date")
-                        ?.Attributes["content"].Value;
-                    var dateTime = time != null ? DateTime.Parse(time) : DateTime.MinValue;
+                    var content = "ĐÂY LÀ CONTENT: " + description;
 
                     var newArticle = new Article
                     {
-                        Id = articleId,
                         ArticleName = articleName,
                         Status = (int)ArticleStatus.Publish,
-                        CreatedOn = dateTime,
-                        CreatedBy = Constants.AdminId,
-                        RefUrl = href,
+                        RefUrl = "",
                         ImageThumb = imageThumb,
                         Description = description,
+                        CreatedOn = new DateTime(),
+                        CreatedBy = Constants.AdminId,
                         UserId = Constants.AdminId,
                         UserName = Constants.AdminName
                     };
-                    listArticle.Add(newArticle);
+                    await _articleRepository.AddAsync(newArticle);
 
-                    var newArticleContent = new ArticleContent { Content = content, ArticleId = articleId };
-                    lisArticleContent.Add(newArticleContent);
+                    var newArticleContent = new ArticleContent { Content = content, ArticleId = newArticle.Id };
+                    await _articleContentRepository.AddAsync(newArticleContent);
                 }
             }
+        }
 
-            if (listArticle.Count > 0)
+        private string FormatString(string text, bool isDescription = false)
+        {
+            if (text.IsNullOrEmpty()) return string.Empty;
+
+            var result = text.Replace("/n", "")
+                .Replace("/t", "");
+
+            if (isDescription)
             {
-                await _articleRepository.AddRangeAsync(listArticle);
-                await _articleContentRepository.AddRangeAsync(lisArticleContent);
-                await _unitOfWork.CommitAsync();
+                var pattern = @"<!--.*?-->";
+                result = FormatString(Regex.Replace(result, pattern, ""));
+                result = result.Replace("&#8203;", "");
             }
+
+            return result.Trim();
         }
     }
 }

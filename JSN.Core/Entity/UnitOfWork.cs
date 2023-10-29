@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace JSN.Core.Entity
+﻿namespace JSN.Core.Entity
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {

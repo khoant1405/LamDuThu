@@ -1,5 +1,4 @@
 using JSN.Service.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JSN.Api.Controllers
@@ -18,7 +17,7 @@ namespace JSN.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult> StartCrawler(int startPage, int endPage)
         {
             if (double.IsNaN(startPage) || double.IsNaN(endPage)) return BadRequest("Invalid Page");
