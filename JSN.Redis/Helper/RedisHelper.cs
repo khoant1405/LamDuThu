@@ -15,9 +15,13 @@ namespace JSN.Redis.Helper
                 {
                     EndPoints = { config.Servers },
                     Password = config.AuthPass,
-                    //ConnectTimeout = (int)config.ConnectTimeout,
                     DefaultDatabase = config.DbNumber
                 };
+
+                if (config.IsSentinel == true)
+                {
+                    // xử lý sentinel ở đây
+                }
 
                 var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
                 return connectionMultiplexer;

@@ -1,14 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using JSN.Core.Entity;
+﻿using JSN.Core.Entity;
 using JSN.Core.Model;
 using JSN.Core.ViewModel;
 using JSN.Service.Interface;
 using JSN.Shared.Model;
 using JSN.Shared.Setting;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace JSN.Service.Implement
 {
