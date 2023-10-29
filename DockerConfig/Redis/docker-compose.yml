@@ -41,6 +41,9 @@ services:
     image: 'bitnami/redis-sentinel:latest'
     environment:
       REDIS_MASTER_PASSWORD: 1405
+      REDIS_MASTER_HOST: redis1
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
     depends_on:
       - redis1
       - redis2
@@ -54,6 +57,9 @@ services:
     image: 'bitnami/redis-sentinel:latest'
     environment:
       REDIS_MASTER_PASSWORD: 1405
+      REDIS_MASTER_HOST: redis1
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
     depends_on:
       - redis1
       - redis2
@@ -67,6 +73,9 @@ services:
     image: 'bitnami/redis-sentinel:latest'
     environment:
       REDIS_MASTER_PASSWORD: 1405
+      REDIS_MASTER_HOST: redis1
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
     depends_on:
       - redis1
       - redis2
