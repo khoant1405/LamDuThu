@@ -25,7 +25,13 @@ namespace JSN.Api
             services.AddHttpContextAccessor();
             services.AddSwaggerGen(options =>
             {
-                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme { Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")", In = ParameterLocation.Header, Name = "Authorization", Type = SecuritySchemeType.ApiKey });
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
 
                 options.OperationFilter<SecurityRequirementsOperationFilter>();
             });

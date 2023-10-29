@@ -55,7 +55,11 @@ namespace JSN.Service.Implement
             _userRepository.Update(user!);
             await _unitOfWork.CommitAsync();
 
-            return new TokenModel { AccessToken = token, RefreshToken = refreshToken.Token };
+            return new TokenModel
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken.Token
+            };
         }
 
         public async Task<TokenModel> RefreshTokenAsync(TokenModel? tokenModel)
@@ -72,7 +76,11 @@ namespace JSN.Service.Implement
             _userRepository.Update(user!);
             await _unitOfWork.CommitAsync();
 
-            return new TokenModel { AccessToken = newAccessToken, RefreshToken = newRefreshToken.Token };
+            return new TokenModel
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken.Token
+            };
         }
 
         public string CheckLogin(UserView request)
@@ -102,7 +110,12 @@ namespace JSN.Service.Implement
 
         private static RefreshToken GenerateRefreshToken()
         {
-            var refreshToken = new RefreshToken { Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)), Expired = DateTime.Now.AddDays(7), Created = DateTime.Now };
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expired = DateTime.Now.AddDays(7),
+                Created = DateTime.Now
+            };
 
             return refreshToken;
         }
@@ -116,7 +129,11 @@ namespace JSN.Service.Implement
 
         private string CreateToken(User user)
         {
-            var claims = new List<Claim> { new(ClaimTypes.Name, user.UserName), new(ClaimTypes.Role, user.Role) };
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Role, user.Role)
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));
             var tokenValidityInMinutes = AppSettings.JwtSetting.TokenValidityInMinutes;
@@ -146,7 +163,13 @@ namespace JSN.Service.Implement
 
         private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
         {
-            var tokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token)), ValidateIssuer = false, ValidateAudience = false };
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token)),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);

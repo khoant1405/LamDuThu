@@ -7,6 +7,7 @@ using JSN.Core.Model;
 using JSN.Service.Interface;
 using JSN.Shared.Enum;
 using JSN.Shared.Utilities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement
 {
@@ -25,7 +26,13 @@ namespace JSN.Service.Implement
 
         public async Task StartCrawlerAsync(int startPage, int endPage)
         {
-            using var httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
+            using var httpClient = new HttpClient(new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            });
+
+            var listArticle = new List<Article>();
+            var listArticleContent = new List<ArticleContent>();
 
             for (var i = startPage; i < endPage + 1; i++)
             {
@@ -40,11 +47,13 @@ namespace JSN.Service.Implement
                 {
                     var articleName = FormatString(item.QuerySelector("div > h2 > a")
                         ?.InnerText);
+                    if (articleName.IsNullOrEmpty()) continue;
                     var imageThumb = FormatString(item.QuerySelector("div.message-body > div > div > img")
                         ?.Attributes["k-data-src"].Value);
                     var description = FormatString(item.QuerySelector("div.message-body > div")
                         ?.InnerText, true);
                     var content = "ĐÂY LÀ CONTENT: " + description;
+                    var time = DateTime.Now;
 
                     var newArticle = new Article
                     {
@@ -53,17 +62,25 @@ namespace JSN.Service.Implement
                         RefUrl = "",
                         ImageThumb = imageThumb,
                         Description = description,
-                        CreatedOn = DateTime.Now, // Provide an actual date
+                        CreatedOn = time,
                         CreatedBy = Constants.AdminId,
                         UserId = Constants.AdminId,
-                        UserName = Constants.AdminName
+                        UserName = Constants.AdminName,
+                        ArticleContent = new ArticleContent
+                        {
+                            Content = content,
+                            CreatedOn = time,
+                            CreatedBy = Constants.AdminId
+                        }
                     };
-
-                    await _articleRepository.AddAsync(newArticle);
-
-                    var newArticleContent = new ArticleContent { Content = content, ArticleId = newArticle.Id };
-                    await _articleContentRepository.AddAsync(newArticleContent);
+                    listArticle.Add(newArticle);
                 }
+            }
+
+            if (listArticle.Any())
+            {
+                await _articleRepository.AddRangeAsync(listArticle);
+                await _unitOfWork.CommitAsync();
             }
         }
 
