@@ -1,93 +1,92 @@
+networks:
+  app-tier:
+    driver: bridge
+
 services:
   redis1:
     image: 'bitnami/redis:latest'
     environment:
-      REDIS_REPLICATION_MODE: master
-      REDIS_PASSWORD: 1405
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
-    ports:
-      - '6179:6379' # Port mapping corrected
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=1405
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     networks:
       - app-tier
-
+    ports:
+      - '6179:6379'
   redis2:
     image: 'bitnami/redis:latest'
     environment:
-      REDIS_REPLICATION_MODE: slave
-      REDIS_MASTER_HOST: redis1
-      REDIS_MASTER_PASSWORD: 1405
-      REDIS_PASSWORD: 1405
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis1
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_PASSWORD=1405
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     ports:
-      - '6279:6379' # Port mapping corrected
+      - '6279:6379'
     depends_on:
       - redis1
     networks:
       - app-tier
-
   redis3:
     image: 'bitnami/redis:latest'
     environment:
-      REDIS_REPLICATION_MODE: slave
-      REDIS_MASTER_HOST: redis1
-      REDIS_MASTER_PASSWORD: 1405
-      REDIS_PASSWORD: 1405
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis1
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_PASSWORD=1405
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     ports:
       - '6379:6379'
     depends_on:
       - redis1
     networks:
       - app-tier
-
   redissentinel1:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_PASSWORD: 1405
-      REDIS_MASTER_HOST: redis1
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_MASTER_HOST=redis1
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     depends_on:
       - redis1
       - redis2
       - redis3
     ports:
-      - '26179:26379' # Port mapping corrected
+      - '26179:26379'
     networks:
       - app-tier
-
   redissentinel2:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_PASSWORD: 1405
-      REDIS_MASTER_HOST: redis1
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_MASTER_HOST=redis1
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     depends_on:
       - redis1
       - redis2
       - redis3
     ports:
-      - '26279:26379' # Port mapping corrected
+      - '26279:26379'
     networks:
       - app-tier
-
   redissentinel3:
     image: 'bitnami/redis-sentinel:latest'
     environment:
-      REDIS_MASTER_PASSWORD: 1405
-      REDIS_MASTER_HOST: redis1
-      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
-      REDIS_SENTINEL_FAILOVER_TIMEOUT: 10000
-      REDIS_SENTINEL_RESOLVE_HOSTNAMES: yes
+      - REDIS_MASTER_PASSWORD=1405
+      - REDIS_MASTER_HOST=redis1
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=10000
+      - REDIS_SENTINEL_RESOLVE_HOSTNAMES=yes
     depends_on:
       - redis1
       - redis2
@@ -96,7 +95,3 @@ services:
       - '26379:26379'
     networks:
       - app-tier
-
-networks:
-  app-tier:
-    driver: bridge
