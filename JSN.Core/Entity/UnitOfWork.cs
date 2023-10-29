@@ -5,7 +5,7 @@ namespace JSN.Core.Entity
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly DbFactory _dbFactory;
-        private DbContext _dbContext;
+        private CoreDbContext _dbContext;
         private bool _disposed;
 
         public UnitOfWork(DbFactory dbFactory)
@@ -13,7 +13,7 @@ namespace JSN.Core.Entity
             _dbFactory = dbFactory;
         }
 
-        public DbContext DbContext
+        public CoreDbContext DbContext
         {
             get
             {
