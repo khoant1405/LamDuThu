@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace JSN.Core.Entity
+﻿namespace JSN.Core.Entity
 {
     public class DbFactory : IDisposable
     {
         private readonly AsyncLocal<bool> _asyncLocalFlag = new();
         private readonly Func<CoreDbContext> _instanceFunc;
-        private DbContext? _dbContext;
+        private CoreDbContext? _dbContext;
         private bool _disposed;
 
         public DbFactory(Func<CoreDbContext> dbContextFactory)
@@ -14,7 +12,7 @@ namespace JSN.Core.Entity
             _instanceFunc = dbContextFactory;
         }
 
-        public DbContext DbContext
+        public CoreDbContext DbContext
         {
             get
             {
