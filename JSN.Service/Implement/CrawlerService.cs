@@ -1,4 +1,5 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
+﻿using System.Net;
+using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using JSN.Core.Entity;
 using JSN.Core.Model;
@@ -6,7 +7,6 @@ using JSN.Service.Interface;
 using JSN.Shared.Enum;
 using JSN.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 
 namespace JSN.Service.Implement
 {

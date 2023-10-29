@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json.Serialization;
 using JSN.Api.Extensions;
 using JSN.Shared.Setting;
 using JSN.Shared.Utilities;
@@ -5,8 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace JSN.Api
 {

@@ -58,7 +58,7 @@ namespace JSN.Shared.Setting
                 SentinelMasterName = ConfigurationBuilder["Redis:SentinelMasterName"],
                 DbNumber = int.Parse(ConfigurationBuilder["Redis:DbNumber"]),
                 AuthPass = ConfigurationBuilder["Redis:AuthPass"],
-                IsSentinel = bool.Parse(ConfigurationBuilder["Redis:IsSentinel"]),
+                IsSentinel = bool.Parse(ConfigurationBuilder["Redis:IsSentinel"])
                 //ClientName = ConfigurationBuilder["Redis:ClientName"],
                 //MaxPoolSize = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
                 //MaxPoolTimeout = int.Parse(ConfigurationBuilder["Redis:MaxPoolTimeout"]),
