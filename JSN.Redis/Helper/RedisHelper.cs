@@ -39,6 +39,31 @@ namespace JSN.Redis.Helper
     }
 }
 
+//// Tạo một bộ đếm để đếm số lượng request cùng lúc
+//int concurrentRequests = 0;
+
+//// Sử dụng bộ đếm để kiểm tra số lượng request cùng lúc
+//public void GetDatabase(string databaseName)
+//{
+//    // Nếu số lượng request cùng lúc quá nhiều, thì từ chối request
+//    if (concurrentRequests >= MaxConcurrentRequests)
+//    {
+//        throw new TimeoutException("Too many concurrent requests");
+//    }
+
+//    // Tăng số lượng request cùng lúc
+//    concurrentRequests++;
+
+//    // Thực hiện request
+//    Database database = connectionMultiplexer.GetDatabase(databaseName);
+
+//    // Giảm số lượng request cùng lúc
+//    concurrentRequests--;
+
+//    // Trả về kết quả
+//    return database;
+//}
+
 #region explain
 
 //1. `abortConnect ={ bool}`:
