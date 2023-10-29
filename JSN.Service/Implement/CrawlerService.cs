@@ -7,8 +7,6 @@ using JSN.Core.Model;
 using JSN.Service.Interface;
 using JSN.Shared.Enum;
 using JSN.Shared.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement
 {
@@ -27,15 +25,7 @@ namespace JSN.Service.Implement
 
         public async Task StartCrawlerAsync(int startPage, int endPage)
         {
-            var httpClientHandler = new HttpClientHandler();
-            httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            var httpClient = new HttpClient(httpClientHandler);
-            var listArticle = new List<Article>();
-            var lisArticleContent = new List<ArticleContent>();
-            var listId = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish)
-                .AsNoTracking()
-                .Select(x => x.Id)
-                .ToList();
+            using var httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
 
             for (var i = startPage; i < endPage + 1; i++)
             {
@@ -49,14 +39,11 @@ namespace JSN.Service.Implement
                 foreach (var item in articles)
                 {
                     var articleName = FormatString(item.QuerySelector("div > h2 > a")
-                        .InnerText);
-
+                        ?.InnerText);
                     var imageThumb = FormatString(item.QuerySelector("div.message-body > div > div > img")
-                        .Attributes["k-data-src"].Value);
-
+                        ?.Attributes["k-data-src"].Value);
                     var description = FormatString(item.QuerySelector("div.message-body > div")
-                        .InnerText, true);
-
+                        ?.InnerText, true);
                     var content = "ĐÂY LÀ CONTENT: " + description;
 
                     var newArticle = new Article
@@ -66,11 +53,12 @@ namespace JSN.Service.Implement
                         RefUrl = "",
                         ImageThumb = imageThumb,
                         Description = description,
-                        CreatedOn = new DateTime(),
+                        CreatedOn = DateTime.Now, // Provide an actual date
                         CreatedBy = Constants.AdminId,
                         UserId = Constants.AdminId,
                         UserName = Constants.AdminName
                     };
+
                     await _articleRepository.AddAsync(newArticle);
 
                     var newArticleContent = new ArticleContent { Content = content, ArticleId = newArticle.Id };
@@ -79,12 +67,12 @@ namespace JSN.Service.Implement
             }
         }
 
-        private string FormatString(string text, bool isDescription = false)
+        private string FormatString(string? text, bool isDescription = false)
         {
-            if (text.IsNullOrEmpty()) return string.Empty;
+            if (string.IsNullOrEmpty(text)) return string.Empty;
 
-            var result = text.Replace("/n", "")
-                .Replace("/t", "");
+            var result = text.Replace("\n", "")
+                .Replace("\t", "");
 
             if (isDescription)
             {
