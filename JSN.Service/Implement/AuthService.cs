@@ -38,7 +38,7 @@ public class AuthService : IAuthService
             Role = "Member"
         };
 
-        _userRepository.Add(newUser);
+        await _userRepository.AddAsync(newUser);
         await _unitOfWork.CommitAsync();
 
         return newUser;
