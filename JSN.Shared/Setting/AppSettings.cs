@@ -18,9 +18,9 @@ public static class AppSettings
 
     public static int ArticlePageSize { get; set; } = 20;
     public static JwtSetting JwtSetting { get; set; }
-    public static List<SqlSetting> SqlSettings { get; set; }
-    public static SqlSetting DefaultSqlSetting { get; set; }
-    public static RedisSetting RedisSetting { get; set; }
+    public static List<SqlSetting?> SqlSettings { get; set; }
+    public static SqlSetting? DefaultSqlSetting { get; set; }
+    public static RedisSetting? RedisSetting { get; set; }
 
     public static void LoadConfig()
     {
@@ -33,7 +33,7 @@ public static class AppSettings
             RefreshTokenValidityInDays = Convert.ToInt32(ConfigurationBuilder["JWT:RefreshTokenValidityInDays"])
         };
 
-        SqlSettings = new List<SqlSetting>();
+        SqlSettings = new List<SqlSetting?>();
         var index = 0;
         var sqlName = ConfigurationBuilder.GetSection($"SQL:{index}:Name")
             .Value;
@@ -50,7 +50,7 @@ public static class AppSettings
                 .Value;
         }
 
-        DefaultSqlSetting = SqlSettings?.FirstOrDefault();
+        DefaultSqlSetting = SqlSettings.FirstOrDefault();
 
         RedisSetting = new RedisSetting
         {

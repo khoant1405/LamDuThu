@@ -8,11 +8,9 @@ namespace JSN.Api.Controllers;
 public class CrawlerController : ControllerBase
 {
     private readonly ICrawlerService _crawlerService;
-    private readonly ILogger<CrawlerController> _logger;
 
-    public CrawlerController(ICrawlerService crawlerService, ILogger<CrawlerController> logger)
+    public CrawlerController(ICrawlerService crawlerService)
     {
-        _logger = logger;
         _crawlerService = crawlerService;
     }
 

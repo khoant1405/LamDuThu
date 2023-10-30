@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
         // Configure DbContext with Scoped lifetime
         services.AddDbContext<CoreDbContext>(options =>
         {
-            options.UseSqlServer(AppSettings.DefaultSqlSetting.ConnectString);
+            options.UseSqlServer(AppSettings.DefaultSqlSetting?.ConnectString);
             //options.UseLazyLoadingProxies();
         });
 
@@ -52,9 +52,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRedis(this IServiceCollection services)
     {
         services.AddSingleton<IConnectionMultiplexer>(provider =>
-        {
-            return RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting);
-        });
+            RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting) ?? throw new InvalidOperationException());
 
         services.AddTransient<IArticleCacheService, ArticleCacheService>();
         services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
