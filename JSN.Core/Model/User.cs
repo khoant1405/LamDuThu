@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace JSN.Core.Model;
 
 [Table("User")]
-[Index("UserName", Name = "UQ__User__C9F28456B738596B", IsUnique = true)]
+[Index("UserName", Name = "UQ__User__C9F2845605BBAAF4", IsUnique = true)]
 public class User
 {
     [Key] public int Id { get; set; }
@@ -14,7 +14,7 @@ public class User
 
     public bool IsActive { get; set; }
 
-    public int Role { get; set; }
+    public int? Role { get; set; }
 
     public byte[] PasswordHash { get; set; } = null!;
 

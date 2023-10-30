@@ -53,7 +53,7 @@ public class CrawlerService : ICrawlerService
                     ?.Attributes["k-data-src"].Value);
                 var description = FormatString(item.QuerySelector("div.message-body > div")
                     ?.InnerText, true);
-                var content = "ĐÂY LÀ CONTENT: " + description;
+                var content = "CONTENT: " + description;
                 var time = DateTime.Now;
 
                 var newArticle = new Article
@@ -99,6 +99,11 @@ public class CrawlerService : ICrawlerService
             var pattern = @"<!--.*?-->";
             result = FormatString(Regex.Replace(result, pattern, ""));
             result = result.Replace("&#8203;", "");
+            result = result.Replace("&lt;", "");
+            result = result.Replace("&gt;", "");
+            result = result.Replace("&amp;", "");
+            result = result.Replace("&quot;", "");
+            result = result.Replace("&apos;", "");
         }
 
         return result.Trim();
