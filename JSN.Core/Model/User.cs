@@ -2,46 +2,37 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace JSN.Core.Model
+namespace JSN.Core.Model;
+
+[Table("User")]
+[Index("UserName", Name = "UQ__User__C9F28456B738596B", IsUnique = true)]
+public class User
 {
-    [Table("User")]
-    [Index("UserName", Name = "UQ__User__C9F28456B738596B", IsUnique = true)]
-    public class User
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key] public int Id { get; set; }
 
-        [StringLength(50)]
-        public string UserName { get; set; } = null!;
+    [StringLength(50)] public string UserName { get; set; } = null!;
 
-        public bool IsActive { get; set; }
+    public bool IsActive { get; set; }
 
-        [StringLength(50)]
-        public string Role { get; set; } = null!;
+    [StringLength(50)] public string Role { get; set; } = null!;
 
-        public byte[] PasswordHash { get; set; } = null!;
+    public byte[] PasswordHash { get; set; } = null!;
 
-        public byte[] PasswordSalt { get; set; } = null!;
+    public byte[] PasswordSalt { get; set; } = null!;
 
-        public string? RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime? TokenCreated { get; set; }
+    [Column(TypeName = "datetime")] public DateTime? TokenCreated { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime? TokenExpired { get; set; }
+    [Column(TypeName = "datetime")] public DateTime? TokenExpired { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime? CreatedOn { get; set; }
+    [Column(TypeName = "datetime")] public DateTime? CreatedOn { get; set; }
 
-        public int? CreatedBy { get; set; }
+    public int? CreatedBy { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime? ModifiedOn { get; set; }
+    [Column(TypeName = "datetime")] public DateTime? ModifiedOn { get; set; }
 
-        public int? ModifiedBy { get; set; }
+    public int? ModifiedBy { get; set; }
 
-        [InverseProperty("User")]
-        public virtual ICollection<Article> Articles { get; } = new List<Article>();
-    }
+    [InverseProperty("User")] public virtual ICollection<Article> Articles { get; } = new List<Article>();
 }

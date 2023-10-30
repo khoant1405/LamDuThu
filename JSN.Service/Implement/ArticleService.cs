@@ -8,49 +8,49 @@ using JSN.Shared.Enum;
 using JSN.Shared.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace JSN.Service.Implement
+namespace JSN.Service.Implement;
+
+public class ArticleService : IArticleService
 {
-    public class ArticleService : IArticleService
+    private readonly IArticlePaginationCacheService _articlePaginationCacheService;
+    private readonly IRepository<Article> _articleRepository;
+    private readonly IMapper _mapper;
+
+    public ArticleService(IRepository<Article> articleRepository, IMapper mapper,
+        IArticlePaginationCacheService articlePaginationCacheService)
     {
-        private readonly IArticlePaginationCacheService _articlePaginationCacheService;
-        private readonly IRepository<Article> _articleRepository;
-        private readonly IMapper _mapper;
+        _articleRepository = articleRepository;
+        _mapper = mapper;
+        _articlePaginationCacheService = articlePaginationCacheService;
+    }
 
-        public ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService)
+    public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
+    {
+        try
         {
-            _articleRepository = articleRepository;
-            _mapper = mapper;
-            _articlePaginationCacheService = articlePaginationCacheService;
+            var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
+            if (cacheData != null) return cacheData;
+
+            var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish)
+                .OrderByDescending(x => x.Id)
+                .AsNoTracking();
+
+            var count = await query.CountAsync();
+
+            var items = await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => _mapper.Map<ArticleView>(x))
+                .ToListAsync();
+
+            var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
+            await _articlePaginationCacheService.AddPageAsync(data);
+
+            return data;
         }
-
-        public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
+        catch (Exception ex)
         {
-            try
-            {
-                var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
-                if (cacheData != null) return cacheData;
-
-                var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish)
-                    .OrderByDescending(x => x.Id)
-                    .AsNoTracking();
-
-                var count = await query.CountAsync();
-
-                var items = await query.Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(x => _mapper.Map<ArticleView>(x))
-                    .ToListAsync();
-
-                var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
-                await _articlePaginationCacheService.AddPageAsync(data);
-
-                return data;
-            }
-            catch (Exception ex)
-            {
-                // Handle the exception (e.g., log it)
-                return new PaginatedList<ArticleView>(null, 0, page, pageSize);
-            }
+            // Handle the exception (e.g., log it)
+            return new PaginatedList<ArticleView>(null, 0, page, pageSize);
         }
     }
 }

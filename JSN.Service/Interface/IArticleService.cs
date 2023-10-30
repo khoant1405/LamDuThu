@@ -1,10 +1,9 @@
 ﻿using JSN.Core.ViewModel;
 using JSN.Shared.Model;
 
-namespace JSN.Service.Interface
+namespace JSN.Service.Interface;
+
+public interface IArticleService
 {
-    public interface IArticleService
-    {
-        Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize);
-    }
+    Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize);
 }

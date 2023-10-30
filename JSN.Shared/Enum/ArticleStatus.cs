@@ -1,9 +1,8 @@
-﻿namespace JSN.Shared.Enum
+﻿namespace JSN.Shared.Enum;
+
+public enum ArticleStatus
 {
-    public enum ArticleStatus
-    {
-        Publish = 1,
-        Editing = 2,
-        Delete = 3
-    }
+    Publish = 1,
+    Editing = 2,
+    Delete = 3
 }

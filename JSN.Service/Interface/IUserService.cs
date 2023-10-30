@@ -1,9 +1,8 @@
 ﻿using JSN.Core.Model;
 
-namespace JSN.Service.Interface
+namespace JSN.Service.Interface;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        User? GetUserByUserName(string? userName);
-    }
+    User? GetUserByUserName(string? userName);
 }

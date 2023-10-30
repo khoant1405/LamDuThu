@@ -2,18 +2,17 @@
 using JSN.Core.Model;
 using JSN.Core.Repository.Interface;
 
-namespace JSN.Core.Repository
-{
-    public class ArticleRepository : Repository<Article>, IArticleRepository
-    {
-        public ArticleRepository(DbFactory dbFactory) : base(dbFactory)
-        {
-        }
+namespace JSN.Core.Repository;
 
-        public Article CreateNewArticle(Article article)
-        {
-            Add(article);
-            return article;
-        }
+public class ArticleRepository : Repository<Article>, IArticleRepository
+{
+    public ArticleRepository(DbFactory dbFactory) : base(dbFactory)
+    {
+    }
+
+    public Article CreateNewArticle(Article article)
+    {
+        Add(article);
+        return article;
     }
 }

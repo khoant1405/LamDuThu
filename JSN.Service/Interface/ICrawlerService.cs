@@ -1,7 +1,6 @@
-﻿namespace JSN.Service.Interface
+﻿namespace JSN.Service.Interface;
+
+public interface ICrawlerService
 {
-    public interface ICrawlerService
-    {
-        Task StartCrawlerAsync(int startPage, int endPage);
-    }
+    Task StartCrawlerAsync(int startPage, int endPage);
 }

@@ -1,40 +1,39 @@
 ﻿using JSN.Shared.Setting;
 using StackExchange.Redis;
 
-namespace JSN.Redis.Helper
+namespace JSN.Redis.Helper;
+
+public class RedisHelper
 {
-    public class RedisHelper
+    public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
     {
-        public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
+        try
         {
-            try
+            if (config == null) return null;
+
+            var servers = config.Servers.Split(",");
+            var endPointCollection = new EndPointCollection();
+            foreach (var server in servers) endPointCollection.Add(server);
+
+            var configurationOptions = new ConfigurationOptions
             {
-                if (config == null) return null;
+                EndPoints = endPointCollection,
+                Password = config.AuthPass,
+                DefaultDatabase = config.DbNumber,
+                AbortOnConnectFail = false
+            };
 
-                var servers = config.Servers.Split(",");
-                var endPointCollection = new EndPointCollection();
-                foreach (var server in servers) endPointCollection.Add(server);
-
-                var configurationOptions = new ConfigurationOptions
-                {
-                    EndPoints = endPointCollection,
-                    Password = config.AuthPass,
-                    DefaultDatabase = config.DbNumber,
-                    AbortOnConnectFail = false
-                };
-
-                if (config.IsSentinel == true)
-                {
-                    // xử lý sentinel ở đây
-                }
-
-                var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
-                return connectionMultiplexer;
-            }
-            catch (Exception ex)
+            if (config.IsSentinel == true)
             {
-                throw ex;
+                // xử lý sentinel ở đây
             }
+
+            var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
+            return connectionMultiplexer;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
 }

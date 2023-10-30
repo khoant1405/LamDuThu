@@ -10,52 +10,55 @@ using JSN.Shared.Setting;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
-namespace JSN.Api.Extensions
+namespace JSN.Api.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        public static IServiceCollection AddDatabase(this IServiceCollection services)
+        // Configure DbContext with Scoped lifetime
+        services.AddDbContext<CoreDbContext>(options =>
         {
-            // Configure DbContext with Scoped lifetime
-            services.AddDbContext<CoreDbContext>(options =>
-            {
-                options.UseSqlServer(AppSettings.DefaultSqlSetting.ConnectString);
-                //options.UseLazyLoadingProxies();
-            });
+            options.UseSqlServer(AppSettings.DefaultSqlSetting.ConnectString);
+            //options.UseLazyLoadingProxies();
+        });
 
-            services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
-            services.AddScoped<DbFactory>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(
+            (Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
+        services.AddScoped<DbFactory>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            return services;
-        }
+        return services;
+    }
 
-        public static IServiceCollection AddRepositories(this IServiceCollection services)
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IArticleRepository, ArticleRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICrawlerService, CrawlerService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IArticleService, ArticleService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddRedis(this IServiceCollection services)
+    {
+        services.AddSingleton<IConnectionMultiplexer>(provider =>
         {
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IArticleRepository, ArticleRepository>();
+            return RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting);
+        });
 
-            return services;
-        }
+        services.AddTransient<IArticleCacheService, ArticleCacheService>();
+        services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
 
-        public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            services.AddScoped<ICrawlerService, CrawlerService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IArticleService, ArticleService>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddRedis(this IServiceCollection services)
-        {
-            services.AddSingleton<IConnectionMultiplexer>(provider => { return RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting); });
-
-            services.AddTransient<IArticleCacheService, ArticleCacheService>();
-            services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
-
-            return services;
-        }
+        return services;
     }
 }

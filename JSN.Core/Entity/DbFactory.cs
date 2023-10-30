@@ -1,50 +1,50 @@
-﻿namespace JSN.Core.Entity
+﻿namespace JSN.Core.Entity;
+
+public class DbFactory : IDisposable
 {
-    public class DbFactory : IDisposable
+    private readonly AsyncLocal<bool> _asyncLocalFlag = new();
+    private readonly Func<CoreDbContext> _instanceFunc;
+    private CoreDbContext? _dbContext;
+    private bool _disposed;
+
+    public DbFactory(Func<CoreDbContext> dbContextFactory)
     {
-        private readonly AsyncLocal<bool> _asyncLocalFlag = new();
-        private readonly Func<CoreDbContext> _instanceFunc;
-        private CoreDbContext? _dbContext;
-        private bool _disposed;
+        _instanceFunc = dbContextFactory;
+    }
 
-        public DbFactory(Func<CoreDbContext> dbContextFactory)
+    public CoreDbContext DbContext
+    {
+        get
         {
-            _instanceFunc = dbContextFactory;
-        }
+            if (_disposed) throw new ObjectDisposedException("DbFactory");
 
-        public CoreDbContext DbContext
-        {
-            get
+            if (_dbContext == null)
             {
-                if (_disposed) throw new ObjectDisposedException("DbFactory");
+                if (_asyncLocalFlag.Value)
+                    throw new InvalidOperationException("Nested DbContext creation is not allowed.");
 
-                if (_dbContext == null)
+                _asyncLocalFlag.Value = true;
+
+                try
                 {
-                    if (_asyncLocalFlag.Value) throw new InvalidOperationException("Nested DbContext creation is not allowed.");
-
-                    _asyncLocalFlag.Value = true;
-
-                    try
-                    {
-                        _dbContext = _instanceFunc.Invoke();
-                    }
-                    finally
-                    {
-                        _asyncLocalFlag.Value = false;
-                    }
+                    _dbContext = _instanceFunc.Invoke();
                 }
-
-                return _dbContext;
+                finally
+                {
+                    _asyncLocalFlag.Value = false;
+                }
             }
+
+            return _dbContext;
         }
+    }
 
-        public void Dispose()
+    public void Dispose()
+    {
+        if (!_disposed && _dbContext != null)
         {
-            if (!_disposed && _dbContext != null)
-            {
-                _disposed = true;
-                _dbContext.Dispose();
-            }
+            _disposed = true;
+            _dbContext.Dispose();
         }
     }
 }

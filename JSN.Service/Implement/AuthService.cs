@@ -10,172 +10,174 @@ using JSN.Shared.Model;
 using JSN.Shared.Setting;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JSN.Service.Implement
+namespace JSN.Service.Implement;
+
+public class AuthService : IAuthService
 {
-    public class AuthService : IAuthService
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository<User> _userRepository;
+    private readonly IUserService _userService;
+
+    public AuthService(IUnitOfWork unitOfWork, IUserService userService, IRepository<User> userRepository)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<User> _userRepository;
-        private readonly IUserService _userService;
+        _userService = userService;
+        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+    }
 
-        public AuthService(IUnitOfWork unitOfWork, IUserService userService, IRepository<User> userRepository)
+    public async Task<User> RegisterAsync(UserView request)
+    {
+        CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
+
+        User newUser = new()
         {
-            _userService = userService;
-            _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
-        }
+            UserName = request.UserName,
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt,
+            IsActive = true,
+            Role = "Member"
+        };
 
-        public async Task<User> RegisterAsync(UserView request)
+        _userRepository.Add(newUser);
+        await _unitOfWork.CommitAsync();
+
+        return newUser;
+    }
+
+    public async Task<TokenModel> LoginAsync(UserView request)
+    {
+        var user = _userService.GetUserByUserName(request.UserName);
+
+        var token = CreateToken(user!);
+        var refreshToken = GenerateRefreshToken();
+        SetRefreshToken(user!, refreshToken);
+
+        _userRepository.Update(user!);
+        await _unitOfWork.CommitAsync();
+
+        return new TokenModel
         {
-            CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
+            AccessToken = token,
+            RefreshToken = refreshToken.Token
+        };
+    }
 
-            User newUser = new()
-            {
-                UserName = request.UserName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                IsActive = true,
-                Role = "Member"
-            };
+    public async Task<TokenModel> RefreshTokenAsync(TokenModel? tokenModel)
+    {
+        var accessToken = tokenModel!.AccessToken;
+        var principal = GetPrincipalFromExpiredToken(accessToken);
+        var userName = principal!.Identity?.Name;
+        var user = _userService.GetUserByUserName(userName);
 
-            _userRepository.Add(newUser);
-            await _unitOfWork.CommitAsync();
+        var newAccessToken = CreateToken(user!);
+        var newRefreshToken = GenerateRefreshToken();
+        SetRefreshToken(user!, newRefreshToken);
 
-            return newUser;
-        }
+        _userRepository.Update(user!);
+        await _unitOfWork.CommitAsync();
 
-        public async Task<TokenModel> LoginAsync(UserView request)
+        return new TokenModel
         {
-            var user = _userService.GetUserByUserName(request.UserName);
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken.Token
+        };
+    }
 
-            var token = CreateToken(user!);
-            var refreshToken = GenerateRefreshToken();
-            SetRefreshToken(user!, refreshToken);
+    public string CheckLogin(UserView request)
+    {
+        var user = _userService.GetUserByUserName(request.UserName);
+        if (user == null) return "User not found.";
 
-            _userRepository.Update(user!);
-            await _unitOfWork.CommitAsync();
+        return !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) ? "Wrong password." : "";
+    }
 
-            return new TokenModel
-            {
-                AccessToken = token,
-                RefreshToken = refreshToken.Token
-            };
-        }
+    public string CheckRefreshToken(TokenModel? tokenModel)
+    {
+        if (tokenModel is null) return "Invalid client request";
 
-        public async Task<TokenModel> RefreshTokenAsync(TokenModel? tokenModel)
+        var accessToken = tokenModel.AccessToken;
+        var refreshToken = tokenModel.RefreshToken;
+
+        var principal = GetPrincipalFromExpiredToken(accessToken);
+        if (principal == null) return "Invalid access token";
+
+        var userName = principal.Identity?.Name;
+        var user = _userService.GetUserByUserName(userName);
+        if (user == null) return "Invalid access token";
+        if (user.RefreshToken != refreshToken) return "Invalid refresh token";
+        return user.TokenExpired <= DateTime.Now ? "Token expired" : "";
+    }
+
+    private static RefreshToken GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshToken
         {
-            var accessToken = tokenModel!.AccessToken;
-            var principal = GetPrincipalFromExpiredToken(accessToken);
-            var userName = principal!.Identity?.Name;
-            var user = _userService.GetUserByUserName(userName);
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Expired = DateTime.Now.AddDays(7),
+            Created = DateTime.Now
+        };
 
-            var newAccessToken = CreateToken(user!);
-            var newRefreshToken = GenerateRefreshToken();
-            SetRefreshToken(user!, newRefreshToken);
+        return refreshToken;
+    }
 
-            _userRepository.Update(user!);
-            await _unitOfWork.CommitAsync();
+    private static void SetRefreshToken(User user, RefreshToken newRefreshToken)
+    {
+        user.RefreshToken = newRefreshToken.Token;
+        user.TokenCreated = newRefreshToken.Created;
+        user.TokenExpired = newRefreshToken.Expired;
+    }
 
-            return new TokenModel
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken.Token
-            };
-        }
-
-        public string CheckLogin(UserView request)
+    private string CreateToken(User user)
+    {
+        var claims = new List<Claim>
         {
-            var user = _userService.GetUserByUserName(request.UserName);
-            if (user == null) return "User not found.";
+            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Role, user.Role)
+        };
 
-            return !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) ? "Wrong password." : "";
-        }
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));
+        var tokenValidityInMinutes = AppSettings.JwtSetting.TokenValidityInMinutes;
 
-        public string CheckRefreshToken(TokenModel? tokenModel)
+        var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddMinutes(tokenValidityInMinutes),
+            signingCredentials: credential);
+
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return jwt;
+    }
+
+    private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    {
+        using var hmac = new HMACSHA512();
+        passwordSalt = hmac.Key;
+        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+    }
+
+    private static bool VerifyPasswordHash(string password, IEnumerable<byte> passwordHash, byte[] passwordSalt)
+    {
+        using var hmac = new HMACSHA512(passwordSalt);
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return computedHash.SequenceEqual(passwordHash);
+    }
+
+    private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
         {
-            if (tokenModel is null) return "Invalid client request";
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
 
-            var accessToken = tokenModel.AccessToken;
-            var refreshToken = tokenModel.RefreshToken;
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature,
+                StringComparison.InvariantCultureIgnoreCase)) return null;
 
-            var principal = GetPrincipalFromExpiredToken(accessToken);
-            if (principal == null) return "Invalid access token";
-
-            var userName = principal.Identity?.Name;
-            var user = _userService.GetUserByUserName(userName);
-            if (user == null) return "Invalid access token";
-            if (user.RefreshToken != refreshToken) return "Invalid refresh token";
-            return user.TokenExpired <= DateTime.Now ? "Token expired" : "";
-        }
-
-        private static RefreshToken GenerateRefreshToken()
-        {
-            var refreshToken = new RefreshToken
-            {
-                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                Expired = DateTime.Now.AddDays(7),
-                Created = DateTime.Now
-            };
-
-            return refreshToken;
-        }
-
-        private static void SetRefreshToken(User user, RefreshToken newRefreshToken)
-        {
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpired = newRefreshToken.Expired;
-        }
-
-        private string CreateToken(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Role, user.Role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));
-            var tokenValidityInMinutes = AppSettings.JwtSetting.TokenValidityInMinutes;
-
-            var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddMinutes(tokenValidityInMinutes), signingCredentials: credential);
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-        }
-
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using var hmac = new HMACSHA512();
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
-
-        private static bool VerifyPasswordHash(string password, IEnumerable<byte> passwordHash, byte[] passwordSalt)
-        {
-            using var hmac = new HMACSHA512(passwordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(passwordHash);
-        }
-
-        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token)),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase)) return null;
-
-            return principal;
-        }
+        return principal;
     }
 }

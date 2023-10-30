@@ -1,8 +1,7 @@
-﻿namespace JSN.Shared.Setting
+﻿namespace JSN.Shared.Setting;
+
+public class SqlSetting
 {
-    public class SqlSetting
-    {
-        public string Name { get; set; }
-        public string ConnectString { get; set; }
-    }
+    public string Name { get; set; }
+    public string ConnectString { get; set; }
 }

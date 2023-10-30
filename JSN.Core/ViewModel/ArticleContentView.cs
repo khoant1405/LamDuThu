@@ -1,9 +1,8 @@
-﻿namespace JSN.Core.ViewModel
+﻿namespace JSN.Core.ViewModel;
+
+public class ArticleContentView
 {
-    public class ArticleContentView
-    {
-        public int Id { get; set; }
-        public int ArticleId { get; set; }
-        public string? Content { get; set; }
-    }
+    public int Id { get; set; }
+    public int ArticleId { get; set; }
+    public string? Content { get; set; }
 }
