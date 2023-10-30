@@ -3,7 +3,7 @@
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly DbFactory _dbFactory;
-    private CoreDbContext? _dbContext;
+    private CoreDbContext _dbContext;
     private bool _disposed;
 
     public UnitOfWork(DbFactory dbFactory)
@@ -17,15 +17,19 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         {
             if (_disposed) throw new ObjectDisposedException("UnitOfWork");
 
-            return _dbContext ??= _dbFactory.DbContext;
+            if (_dbContext == null) _dbContext = _dbFactory.DbContext;
+
+            return _dbContext;
         }
     }
 
     public void Dispose()
     {
-        if (_disposed || _dbContext == null) return;
-        _disposed = true;
-        _dbContext.Dispose();
+        if (!_disposed && _dbContext != null)
+        {
+            _disposed = true;
+            _dbContext.Dispose();
+        }
     }
 
     public async Task<int> CommitAsync()

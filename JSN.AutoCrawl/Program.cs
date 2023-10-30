@@ -3,7 +3,12 @@ using JSN.AutoCrawl.Extensions;
 using JSN.Shared.Setting;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((_, services) =>
+    .ConfigureAppConfiguration((hostingContext, config) =>
+    {
+        // Add your configuration sources here
+        // Example: config.AddJsonFile("appsettings.json");
+    })
+    .ConfigureServices((hostContext, services) =>
     {
         services.AddRedis();
         services.AddDatabase();

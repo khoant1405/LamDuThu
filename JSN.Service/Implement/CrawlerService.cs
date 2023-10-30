@@ -13,13 +13,16 @@ namespace JSN.Service.Implement;
 
 public class CrawlerService : ICrawlerService
 {
+    private readonly IRepository<ArticleContent> _articleContentRepository;
     private readonly IRepository<Article> _articleRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> articleRepository)
+    public CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> articleRepository,
+        IRepository<ArticleContent> articleContentRepository)
     {
         _unitOfWork = unitOfWork;
         _articleRepository = articleRepository;
+        _articleContentRepository = articleContentRepository;
     }
 
     public async Task StartCrawlerAsync(int startPage, int endPage)
@@ -30,6 +33,7 @@ public class CrawlerService : ICrawlerService
         });
 
         var listArticle = new List<Article>();
+        var listArticleContent = new List<ArticleContent>();
 
         for (var i = startPage; i < endPage + 1; i++)
         {

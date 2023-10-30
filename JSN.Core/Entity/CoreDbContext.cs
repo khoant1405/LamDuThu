@@ -1,10 +1,9 @@
 ﻿using JSN.Core.Model;
-using JSN.Shared.Setting;
 using Microsoft.EntityFrameworkCore;
 
 namespace JSN.Core.Entity;
 
-public class CoreDbContext : DbContext
+public partial class CoreDbContext : DbContext
 {
     public CoreDbContext()
     {
@@ -22,9 +21,9 @@ public class CoreDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(AppSettings.DefaultSqlSetting?.ConnectString);
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer(
+            "Server=localhost,1434;User ID=sa;Password=1405;TrustServerCertificate=True;Initial Catalog=CoreData;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,8 +50,5 @@ public class CoreDbContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
-    protected static void OnModelCreatingPartial(ModelBuilder modelBuilder)
-    {
-        throw new NotImplementedException();
-    }
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

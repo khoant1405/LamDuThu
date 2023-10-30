@@ -48,7 +48,7 @@ public class ArticleService : IArticleService
 
             return data;
         }
-        catch
+        catch (Exception ex)
         {
             // Handle the exception (e.g., log it)
             return new PaginatedList<ArticleView>(null, 0, page, pageSize);

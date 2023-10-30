@@ -5,29 +5,36 @@ namespace JSN.Redis.Helper;
 
 public class RedisHelper
 {
-    public static ConnectionMultiplexer? GetConnectionMultiplexer(RedisSetting? config)
+    public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
     {
-        if (config == null) return null;
-
-        var servers = config.Servers.Split(",");
-        var endPointCollection = new EndPointCollection();
-        foreach (var server in servers) endPointCollection.Add(server);
-
-        var configurationOptions = new ConfigurationOptions
+        try
         {
-            EndPoints = endPointCollection,
-            Password = config.AuthPass,
-            DefaultDatabase = config.DbNumber,
-            AbortOnConnectFail = false
-        };
+            if (config == null) return null;
 
-        if (config.IsSentinel == true)
-        {
-            // xử lý sentinel ở đây
+            var servers = config.Servers.Split(",");
+            var endPointCollection = new EndPointCollection();
+            foreach (var server in servers) endPointCollection.Add(server);
+
+            var configurationOptions = new ConfigurationOptions
+            {
+                EndPoints = endPointCollection,
+                Password = config.AuthPass,
+                DefaultDatabase = config.DbNumber,
+                AbortOnConnectFail = false
+            };
+
+            if (config.IsSentinel == true)
+            {
+                // xử lý sentinel ở đây
+            }
+
+            var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
+            return connectionMultiplexer;
         }
-
-        var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
-        return connectionMultiplexer;
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 }
 

@@ -5,11 +5,11 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    protected readonly IConnectionMultiplexer ConnectionMultiplexer;
+    protected readonly IConnectionMultiplexer _connectionMultiplexer;
 
     public Redis(IConnectionMultiplexer connectionMultiplexer)
     {
-        ConnectionMultiplexer = connectionMultiplexer;
+        _connectionMultiplexer = connectionMultiplexer;
     }
 
     public void AddOrUpdate(T entity, IDatabase database)
@@ -38,15 +38,15 @@ public class Redis<T> where T : class
         await database.StringSetAsync(key, serializedEntity);
     }
 
-    public T? Get(string key, IDatabase database)
+    public T Get(string key, IDatabase database)
     {
-        string? serializedEntity = database.StringGet(key);
+        string serializedEntity = database.StringGet(key);
         return DeserializeEntity(serializedEntity);
     }
 
-    public async Task<T?> GetAsync(string key, IDatabase database)
+    public async Task<T> GetAsync(string key, IDatabase database)
     {
-        string? serializedEntity = await database.StringGetAsync(key);
+        string serializedEntity = await database.StringGetAsync(key);
         return DeserializeEntity(serializedEntity);
     }
 
@@ -123,7 +123,7 @@ public class Redis<T> where T : class
         return JsonConvert.SerializeObject(entity);
     }
 
-    private static T? DeserializeEntity(string? serializedEntity)
+    private static T DeserializeEntity(string serializedEntity)
     {
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
     }

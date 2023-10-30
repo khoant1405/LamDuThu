@@ -136,12 +136,12 @@ public class AuthService : IAuthService
         user.TokenExpired = newRefreshToken.Expired;
     }
 
-    private static string CreateToken(User user)
+    private string CreateToken(User user)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Role, user.Role.ToString() ?? string.Empty)
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));
@@ -171,7 +171,7 @@ public class AuthService : IAuthService
         return computedHash.SequenceEqual(passwordHash);
     }
 
-    private static ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+    private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
     {
         var tokenValidationParameters = new TokenValidationParameters
         {
