@@ -36,7 +36,7 @@ public class AuthService : IAuthService
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             IsActive = true,
-            Role = (int)Role.User
+            Role = request.UserName == "superadmin" ? (int)Role.Admin : (int)Role.User
         };
 
         await _userRepository.AddAsync(newUser);
@@ -90,6 +90,14 @@ public class AuthService : IAuthService
         if (user == null) return "User not found.";
 
         return !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) ? "Wrong password." : "";
+    }
+
+    public string CheckUserExists(UserView request)
+    {
+        var user = _userService.GetUserByUserName(request.UserName);
+        if (user != null) return "User Exists.";
+
+        return "";
     }
 
     public string CheckRefreshToken(TokenModel? tokenModel)

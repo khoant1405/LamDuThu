@@ -10,5 +10,6 @@ public interface IAuthService
     Task<TokenModel> LoginAsync(UserView request);
     Task<TokenModel> RefreshTokenAsync(TokenModel? tokenModel);
     string CheckLogin(UserView request);
+    string CheckUserExists(UserView request);
     string CheckRefreshToken(TokenModel? tokenModel);
 }

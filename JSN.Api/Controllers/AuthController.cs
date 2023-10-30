@@ -23,6 +23,10 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register(UserView request)
     {
+        var error = _authService.CheckUserExists(request);
+
+        if (!error.IsNullOrEmpty()) return BadRequest(error);
+
         var newUser = await _authService.RegisterAsync(request);
 
         return Ok(newUser);

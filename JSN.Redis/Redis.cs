@@ -118,12 +118,12 @@ public class Redis<T> where T : class
         return $"Database:{typeName}:{id}";
     }
 
-    private string SerializeEntity(T entity)
+    private static string SerializeEntity(T entity)
     {
         return JsonConvert.SerializeObject(entity);
     }
 
-    private T DeserializeEntity(string serializedEntity)
+    private static T DeserializeEntity(string serializedEntity)
     {
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
     }
