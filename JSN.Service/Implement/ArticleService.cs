@@ -43,7 +43,8 @@ public class ArticleService : IArticleService
                 .ToListAsync();
 
             var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
-            await _articlePaginationCacheService.AddPageAsync(data);
+
+            if (count > 0) await _articlePaginationCacheService.AddPageAsync(data);
 
             return data;
         }
