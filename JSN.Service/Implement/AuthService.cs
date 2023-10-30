@@ -6,6 +6,7 @@ using JSN.Core.Entity;
 using JSN.Core.Model;
 using JSN.Core.ViewModel;
 using JSN.Service.Interface;
+using JSN.Shared.Enum;
 using JSN.Shared.Model;
 using JSN.Shared.Setting;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +36,7 @@ public class AuthService : IAuthService
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             IsActive = true,
-            Role = "Member"
+            Role = (int)Role.User
         };
 
         await _userRepository.AddAsync(newUser);
@@ -132,7 +133,7 @@ public class AuthService : IAuthService
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Role, user.Role)
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));

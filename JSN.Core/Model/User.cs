@@ -14,7 +14,7 @@ public class User
 
     public bool IsActive { get; set; }
 
-    [StringLength(50)] public string Role { get; set; } = null!;
+    public int Role { get; set; }
 
     public byte[] PasswordHash { get; set; } = null!;
 
