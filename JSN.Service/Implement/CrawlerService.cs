@@ -46,12 +46,12 @@ public class CrawlerService : ICrawlerService
 
             foreach (var item in articles)
             {
-                var articleName = FormatString(item.QuerySelector("div > h2 > a")
+                var articleName = CleanHtmlEntities(item.QuerySelector("div > h2 > a")
                     ?.InnerText);
                 if (articleName.IsNullOrEmpty()) continue;
-                var imageThumb = FormatString(item.QuerySelector("div.message-body > div > div > img")
+                var imageThumb = CleanHtmlEntities(item.QuerySelector("div.message-body > div > div > img")
                     ?.Attributes["k-data-src"].Value);
-                var description = FormatString(item.QuerySelector("div.message-body > div")
+                var description = CleanHtmlEntities(item.QuerySelector("div.message-body > div")
                     ?.InnerText, true);
                 var content = "CONTENT: " + description;
                 var time = DateTime.Now;
@@ -87,25 +87,28 @@ public class CrawlerService : ICrawlerService
         }
     }
 
-    private string FormatString(string? text, bool isDescription = false)
+    private static string CleanHtmlEntities(string? inputText, bool isDescription = false)
     {
-        if (string.IsNullOrEmpty(text)) return string.Empty;
+        if (string.IsNullOrEmpty(inputText)) return string.Empty;
 
-        var result = text.Replace("\n", "")
-            .Replace("\t", "");
+        // Remove specific HTML entities
+        var cleanedText = inputText
+            .Replace("\n", "")
+            .Replace("\t", "")
+            .Replace("&#8203;", "")
+            .Replace("&lt;", "")
+            .Replace("&gt;", "")
+            .Replace("&amp;", "")
+            .Replace("&quot;", "")
+            .Replace("&apos;", "");
 
-        if (isDescription)
-        {
-            var pattern = @"<!--.*?-->";
-            result = FormatString(Regex.Replace(result, pattern, ""));
-            result = result.Replace("&#8203;", "");
-            result = result.Replace("&lt;", "");
-            result = result.Replace("&gt;", "");
-            result = result.Replace("&amp;", "");
-            result = result.Replace("&quot;", "");
-            result = result.Replace("&apos;", "");
-        }
+        if (!isDescription) return cleanedText.Trim();
 
-        return result.Trim();
+        // Remove HTML comments
+        const string commentPattern = @"<!--.*?-->";
+        cleanedText = Regex.Replace(cleanedText, commentPattern, "");
+
+        // Trim and return the cleaned text
+        return cleanedText.Trim();
     }
 }
