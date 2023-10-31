@@ -20,7 +20,7 @@ public class RedisConnection : IDisposable
 
     private readonly SemaphoreSlim _reconnectSemaphore = new(1, 1);
     private readonly TimeSpan _restartConnectionTimeout = TimeSpan.FromSeconds(15);
-    private ConnectionMultiplexer _connection;
+    private ConnectionMultiplexer? _connection;
     private IDatabase _database;
     private DateTimeOffset _firstErrorTime = DateTimeOffset.MinValue;
     private long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
@@ -39,6 +39,7 @@ public class RedisConnection : IDisposable
         }
         catch
         {
+            // ignored
         }
     }
 
