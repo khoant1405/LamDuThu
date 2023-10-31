@@ -5,11 +5,11 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    protected readonly IConnectionMultiplexer _connectionMultiplexer;
+    protected readonly IConnectionMultiplexer ConnectionMultiplexer;
 
     public Redis(IConnectionMultiplexer connectionMultiplexer)
     {
-        _connectionMultiplexer = connectionMultiplexer;
+        ConnectionMultiplexer = connectionMultiplexer;
     }
 
     public void AddOrUpdate(T entity, IDatabase database)

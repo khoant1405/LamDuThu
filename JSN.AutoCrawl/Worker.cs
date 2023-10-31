@@ -15,7 +15,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await DoSomeThingAt12amAsync(stoppingToken);
+        await DoSomeThingAt12AmAsync(stoppingToken);
     }
 
     private async Task DoSomethingAfterMinutesAsync(CancellationToken stoppingToken, int minutes)
@@ -35,7 +35,7 @@ public class Worker : BackgroundService
         }
     }
 
-    private async Task DoSomeThingAt12amAsync(CancellationToken stoppingToken)
+    private async Task DoSomeThingAt12AmAsync(CancellationToken stoppingToken)
     {
         var nextRunTime = CalculateNextRunTime();
 
