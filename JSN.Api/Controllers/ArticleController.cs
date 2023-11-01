@@ -11,11 +11,9 @@ namespace JSN.Api.Controllers;
 public class ArticleController : ControllerBase
 {
     private readonly IArticleService _articleService;
-    private readonly ILogger<ArticleController> _logger;
 
-    public ArticleController(IArticleService articleService, ILogger<ArticleController> logger)
+    public ArticleController(IArticleService articleService)
     {
-        _logger = logger;
         _articleService = articleService;
     }
 

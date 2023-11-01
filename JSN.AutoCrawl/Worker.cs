@@ -1,16 +1,12 @@
-using JSN.Service.Interface;
-
 namespace JSN.AutoCrawl;
 
 public class Worker : BackgroundService
 {
-    private readonly ICrawlerService _crawlerService;
     private readonly ILogger<Worker> _logger;
 
-    public Worker(ICrawlerService crawlerService, ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger)
     {
         _logger = logger;
-        _crawlerService = crawlerService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
