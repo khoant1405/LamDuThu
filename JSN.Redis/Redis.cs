@@ -11,9 +11,16 @@ public class Redis<T> where T : class
 
     public Redis(IConnectionMultiplexer connectionMultiplexer)
     {
-        ConnectionMultiplexer = AppSettings.RedisSetting.IsUseRedisLazy == true
-            ? new RedisLazy().Connection
-            : connectionMultiplexer;
+        if (AppSettings.RedisSetting.IsUseRedisLazy == true)
+        {
+            var redisLazy = new RedisLazy();
+            var connection = redisLazy.Connection;
+            ConnectionMultiplexer = connection;
+        }
+        else
+        {
+            ConnectionMultiplexer = connectionMultiplexer;
+        }
     }
 
     public void AddOrUpdate(T entity, IDatabase database)

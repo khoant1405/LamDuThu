@@ -5,25 +5,31 @@ namespace JSN.Redis.Helper;
 
 public class RedisHelper
 {
-    public static ConnectionMultiplexer GetConnectionMultiplexer()
+    public static ConnectionMultiplexer? GetConnectionMultiplexer()
     {
         var config = AppSettings.RedisSetting;
-        if (config.IsSentinel == true)
+
+        if (config.IsUseRedisLazy == true)
         {
-            var sentinelOptions = new ConfigurationOptions
-            {
-                TieBreaker = "",
-                CommandMap = CommandMap.Sentinel,
-                AbortOnConnectFail = false
-            };
-            var configRedis = GetConfigRedis();
-            foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
-            configRedis.EndPoints.Clear();
-            var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
-            return sentinelConnection.GetSentinelMasterConnection(configRedis);
+            return null;
         }
 
-        return ConnectionMultiplexer.Connect(GetConfigRedis());
+        if (config.IsSentinel != true)
+        {
+            return ConnectionMultiplexer.Connect(GetConfigRedis());
+        }
+
+        var sentinelOptions = new ConfigurationOptions
+        {
+            TieBreaker = "",
+            CommandMap = CommandMap.Sentinel,
+            AbortOnConnectFail = false
+        };
+        var configRedis = GetConfigRedis();
+        foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
+        configRedis.EndPoints.Clear();
+        var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
+        return sentinelConnection.GetSentinelMasterConnection(configRedis);
     }
 
     public static ConfigurationOptions GetConfigRedis()
