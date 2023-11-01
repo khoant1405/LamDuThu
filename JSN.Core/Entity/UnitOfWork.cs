@@ -15,9 +15,15 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     {
         get
         {
-            if (_disposed) throw new ObjectDisposedException("UnitOfWork");
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("UnitOfWork");
+            }
 
-            if (_dbContext == null) _dbContext = _dbFactory.DbContext;
+            if (_dbContext == null)
+            {
+                _dbContext = _dbFactory.DbContext;
+            }
 
             return _dbContext;
         }

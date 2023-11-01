@@ -16,12 +16,17 @@ public class DbFactory : IDisposable
     {
         get
         {
-            if (_disposed) throw new ObjectDisposedException("DbFactory");
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("DbFactory");
+            }
 
             if (_dbContext == null)
             {
                 if (_asyncLocalFlag.Value)
+                {
                     throw new InvalidOperationException("Nested DbContext creation is not allowed.");
+                }
 
                 _asyncLocalFlag.Value = true;
 

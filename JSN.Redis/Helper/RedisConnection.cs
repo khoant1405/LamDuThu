@@ -67,7 +67,10 @@ public class RedisConnection : IDisposable
                                        ex is ObjectDisposedException)
             {
                 reconnectRetry++;
-                if (reconnectRetry > RetryMaxAttempts) throw;
+                if (reconnectRetry > RetryMaxAttempts)
+                {
+                    throw;
+                }
 
                 try
                 {
@@ -102,13 +105,18 @@ public class RedisConnection : IDisposable
         var elapsedSinceLastReconnect = DateTimeOffset.UtcNow - previousReconnectTime;
 
         // We want to limit how often we perform this top-level reconnect, so we check how long it's been since our last attempt.
-        if (elapsedSinceLastReconnect < _reconnectMinInterval) return;
+        if (elapsedSinceLastReconnect < _reconnectMinInterval)
+        {
+            return;
+        }
 
         var lockTaken = await _reconnectSemaphore.WaitAsync(_restartConnectionTimeout);
         if (!lockTaken)
             // If we fail to enter the semaphore, then it is possible that another thread has already done so.
             // ForceReconnectAsync() can be retried while connectivity problems persist.
+        {
             return;
+        }
 
         try
         {
@@ -127,7 +135,9 @@ public class RedisConnection : IDisposable
 
             if (elapsedSinceLastReconnect <
                 _reconnectMinInterval)
+            {
                 return; // Some other thread made it through the check and the lock, so nothing to do.
+            }
 
             var elapsedSinceFirstError = utcNow - _firstErrorTime;
             var elapsedSinceMostRecentError = utcNow - _previousErrorTime;
@@ -141,12 +151,16 @@ public class RedisConnection : IDisposable
             // Update the previousErrorTime timestamp to be now (e.g. this reconnect request).
             _previousErrorTime = utcNow;
 
-            if (!shouldReconnect && !initializing) return;
+            if (!shouldReconnect && !initializing)
+            {
+                return;
+            }
 
             _firstErrorTime = DateTimeOffset.MinValue;
             _previousErrorTime = DateTimeOffset.MinValue;
 
             if (_connection != null)
+            {
                 try
                 {
                     await _connection.CloseAsync();
@@ -155,6 +169,7 @@ public class RedisConnection : IDisposable
                 {
                     // Ignore any errors from the old connection
                 }
+            }
 
             Interlocked.Exchange(ref _connection, null);
             var newConnection = await ConnectionMultiplexer.ConnectAsync(_connectionString);

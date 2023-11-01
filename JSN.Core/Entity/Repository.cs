@@ -52,7 +52,11 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
 
     public IQueryable<T> Where(Expression<Func<T, bool>> filter = null)
     {
-        if (filter == null) return DbSet;
+        if (filter == null)
+        {
+            return DbSet;
+        }
+
         return DbSet.Where(filter);
     }
 

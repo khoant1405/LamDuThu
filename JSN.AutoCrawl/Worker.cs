@@ -25,7 +25,10 @@ public class Worker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             var delay = nextRunTime - DateTimeOffset.Now;
-            if (delay > TimeSpan.Zero) await Task.Delay(delay, stoppingToken);
+            if (delay > TimeSpan.Zero)
+            {
+                await Task.Delay(delay, stoppingToken);
+            }
 
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
@@ -56,7 +59,10 @@ public class Worker : BackgroundService
     {
         var now = DateTimeOffset.Now;
         var nextRunTime = now.Date.AddHours(24);
-        if (now >= nextRunTime) nextRunTime = nextRunTime.AddDays(1);
+        if (now >= nextRunTime)
+        {
+            nextRunTime = nextRunTime.AddDays(1);
+        }
 
         return nextRunTime;
     }

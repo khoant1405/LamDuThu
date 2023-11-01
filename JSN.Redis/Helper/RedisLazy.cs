@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace JSN.Redis.Helper;
 
-public class RedisHelper
+public class RedisLazy
 {
     public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
     {

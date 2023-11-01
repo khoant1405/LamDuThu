@@ -19,7 +19,7 @@ public static class AppSettings
     public static int ArticlePageSize { get; set; } = 20;
     public static JwtSetting JwtSetting { get; set; }
     public static List<SqlSetting> SqlSettings { get; set; }
-    public static SqlSetting DefaultSqlSetting { get; set; }
+    public static SqlSetting? DefaultSqlSetting { get; set; }
     public static RedisSetting RedisSetting { get; set; }
 
     public static void LoadConfig()
@@ -58,17 +58,11 @@ public static class AppSettings
             SentinelMasterName = ConfigurationBuilder["Redis:SentinelMasterName"],
             DbNumber = int.Parse(ConfigurationBuilder["Redis:DbNumber"]),
             AuthPass = ConfigurationBuilder["Redis:AuthPass"],
-            IsSentinel = bool.Parse(ConfigurationBuilder["Redis:IsSentinel"])
-            //ClientName = ConfigurationBuilder["Redis:ClientName"],
-            //MaxPoolSize = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
-            //MaxPoolTimeout = int.Parse(ConfigurationBuilder["Redis:MaxPoolTimeout"]),
-            //ConnectTimeout = int.Parse(ConfigurationBuilder["Redis:ConnectTimeout"]),
-            //RetryTimeout = int.Parse(ConfigurationBuilder["Redis:RetryTimeout"]),
-            //WaitBeforeForcingMasterFailover = int.Parse(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
-            //SentinelWorkerConnectTimeoutMs = int.Parse(ConfigurationBuilder["Redis:SentinelWorkerConnectTimeoutMs"]),
-            //SentinelWorkerReceiveTimeoutMs = int.Parse(ConfigurationBuilder["Redis:SentinelWorkerReceiveTimeoutMs"]),
-            //SentinelWorkerSendTimeoutMs = int.Parse(ConfigurationBuilder["Redis:SentinelWorkerSendTimeoutMs"]),
-            //ServersRead = ConfigurationBuilder["Redis:ServersRead"]
+            IsSentinel = bool.Parse(ConfigurationBuilder["Redis:IsSentinel"]),
+            WaitBeforeForcingMasterFailover = int.Parse(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
+            MaxPoolSize = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
+            ClientName = ConfigurationBuilder["Redis:ClientName"],
+            IsUseRedisLazy = bool.Parse(ConfigurationBuilder["Redis:IsUseRedisLazy"])
         };
 
         var articlePageSize = Convert.ToInt32(ConfigurationBuilder["ArticlePageSize"]);
