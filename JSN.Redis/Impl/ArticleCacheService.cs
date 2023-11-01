@@ -8,7 +8,7 @@ public class ArticleCacheService : Redis<ArticleView>, IArticleCacheService
 {
     private readonly IDatabase _redisDatabase;
 
-    public ArticleCacheService(IConnectionMultiplexer connectionMultiplexer) : base(connectionMultiplexer)
+    public ArticleCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
         _redisDatabase = connectionMultiplexer.GetDatabase();
     }

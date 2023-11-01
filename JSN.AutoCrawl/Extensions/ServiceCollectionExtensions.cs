@@ -48,8 +48,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRedis(this IServiceCollection services)
     {
-        services.AddSingleton<IConnectionMultiplexer>(provider =>
-            RedisHelper.GetConnectionMultiplexer());
+        services.AddSingleton<IConnectionMultiplexer>(_ =>
+            RedisHelper.GetConnectionMultiplexer()!);
         services.AddTransient<IArticleCacheService, ArticleCacheService>();
         services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
 

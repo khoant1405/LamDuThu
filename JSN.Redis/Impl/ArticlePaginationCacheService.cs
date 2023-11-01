@@ -11,24 +11,30 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
 {
     private readonly IDatabase _redisDatabase;
 
-    public ArticlePaginationCacheService(IConnectionMultiplexer connectionMultiplexer) : base(connectionMultiplexer)
+    public ArticlePaginationCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
         if (AppSettings.RedisSetting.IsUseRedisLazy == true)
         {
-            var redisLazy = new RedisLazy();
-            var connection = redisLazy.Connection;
-            _redisDatabase = connection.GetDatabase();
+            return;
         }
-        else
-        {
-            _redisDatabase = connectionMultiplexer.GetDatabase();
-        }
+
+        _redisDatabase = connectionMultiplexer.GetDatabase();
     }
 
     public void AddPage(PaginatedList<ArticleView> entity)
     {
-        var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
-        AddOrUpdate(key, entity, _redisDatabase);
+        if (AppSettings.RedisSetting.IsUseRedisLazy == true)
+        {
+            using var connection = new RedisLazy().Connection;
+            var database = connection.GetDatabase();
+            var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
+            AddOrUpdate(key, entity, database);
+        }
+        else
+        {
+            var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
+            AddOrUpdate(key, entity, _redisDatabase);
+        }
     }
 
     public async Task AddPageAsync(PaginatedList<ArticleView> entity)
@@ -62,7 +68,7 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
     //    DeleteAllPage();
     //}
 
-    public PaginatedList<ArticleView>? GetPage(int page)
+    public PaginatedList<ArticleView> GetPage(int page)
     {
         var key = $"PaginatedList:ArticleView:{page}";
         return Get(key, _redisDatabase);

@@ -5,13 +5,6 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    protected readonly IConnectionMultiplexer ConnectionMultiplexer;
-
-    public Redis(IConnectionMultiplexer connectionMultiplexer)
-    {
-        ConnectionMultiplexer = connectionMultiplexer;
-    }
-
     public void AddOrUpdate(T entity, IDatabase database)
     {
         var key = GetKeyByEntity(entity);
