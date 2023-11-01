@@ -13,7 +13,7 @@ public static class ConvertHelper
         Guid ret;
         try
         {
-            ret = new Guid(val.ToString());
+            ret = new Guid(val.ToString() ?? string.Empty);
         }
         catch
         {
@@ -33,34 +33,34 @@ public static class ConvertHelper
         return val.IsNull ? Guid.Empty : val.Value;
     }
 
-    public static long ToInt64(object obj, long defaultValue = 0)
+    public static long ToInt64(object? obj, long defaultValue = 0)
     {
         return long.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
     }
 
-    public static int ToInt32(object obj, int defaultValue = 0)
+    public static int ToInt32(object? obj, int defaultValue = 0)
     {
         return int.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
     }
 
-    public static ushort ToUshort(object obj, ushort defaultValue = 0)
+    public static ushort ToUshort(object? obj, ushort defaultValue = 0)
     {
         return ushort.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
     }
 
-    public static byte ToByte(object obj, byte defaultValue = 0)
+    public static byte ToByte(object? obj, byte defaultValue = 0)
     {
         return byte.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
     }
 
-    public static string ToString(object obj, string defaultValue = "")
+    public static string? ToString(object? obj, string? defaultValue = "")
     {
         if (obj == null)
         {
             return defaultValue;
         }
 
-        string retVal;
+        string? retVal;
         try
         {
             retVal = Convert.ToString(obj);
@@ -73,7 +73,7 @@ public static class ConvertHelper
         return retVal;
     }
 
-    public static DateTime ToDateTime(object obj, DateTime defaultValue)
+    public static DateTime ToDateTime(object? obj, DateTime defaultValue)
     {
         var retVal = DateTime.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
         if (retVal >= (DateTime)SqlDateTime.MaxValue)
@@ -89,26 +89,26 @@ public static class ConvertHelper
         return ToDateTime(obj, DateTime.Now);
     }
 
-    public static bool ToBoolean(object obj, bool defaultValue = false)
+    public static bool ToBoolean(object? obj, bool defaultValue = false)
     {
         return bool.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
     }
 
-    public static float ToSingle(object obj, float defaultValue = 0)
+    public static float ToSingle(object? obj, float defaultValue = 0)
     {
         return float.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
             ? parsedVal
             : defaultValue;
     }
 
-    public static double ToDouble(object obj, double defaultValue = 0)
+    public static double ToDouble(object? obj, double defaultValue = 0)
     {
         return double.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
             ? parsedVal
             : defaultValue;
     }
 
-    public static decimal ToDecimal(object obj, decimal defaultValue = 0)
+    public static decimal ToDecimal(object? obj, decimal defaultValue = 0)
     {
         return decimal.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
             ? parsedVal
@@ -129,9 +129,9 @@ public static class ConvertHelper
     public static decimal CurrencyToDecimal(object val)
     {
         var strVal = ToString(val);
-        strVal = strVal.Replace("$", string.Empty);
-        strVal = strVal.Replace(",", string.Empty);
-        return ToDecimal(strVal.Trim());
+        strVal = strVal?.Replace("$", string.Empty);
+        strVal = strVal?.Replace(",", string.Empty);
+        return ToDecimal(strVal?.Trim());
     }
 
     /// <summary>
@@ -182,6 +182,7 @@ public static class ConvertHelper
         return JsonConvert.SerializeObject(obj);
     }
 
+    [Obsolete("Obsolete")]
     public static long GetInt64HashCode(string strText)
     {
         long hashCode = 0;
