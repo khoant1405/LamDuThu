@@ -164,7 +164,7 @@ public class AuthService : IAuthService
             new(ClaimTypes.Role, user.Role.ToString() ?? "")
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token!));
         var tokenValidityInMinutes = AppSettings.JwtSetting.TokenValidityInMinutes;
 
         var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -196,7 +196,7 @@ public class AuthService : IAuthService
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token!)),
             ValidateIssuer = false,
             ValidateAudience = false
         };

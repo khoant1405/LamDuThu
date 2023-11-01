@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JSN.Shared.Utilities;
+using Microsoft.Extensions.Configuration;
 
 namespace JSN.Shared.Setting;
 
@@ -26,48 +27,49 @@ public static class AppSettings
     {
         JwtSetting = new JwtSetting
         {
-            ValidAudience = ConfigurationBuilder["JWT:ValidAudience"],
-            ValidIssuer = ConfigurationBuilder["JWT:ValidIssuer"],
-            Token = ConfigurationBuilder["JWT:Token"],
-            TokenValidityInMinutes = Convert.ToInt32(ConfigurationBuilder["JWT:TokenValidityInMinutes"]),
-            RefreshTokenValidityInDays = Convert.ToInt32(ConfigurationBuilder["JWT:RefreshTokenValidityInDays"])
+            ValidAudience = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidAudience"]),
+            ValidIssuer = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidIssuer"]),
+            Token = ConvertHelper.ToString(ConfigurationBuilder["JWT:Token"]),
+            TokenValidityInMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["JWT:TokenValidityInMinutes"]),
+            RefreshTokenValidityInDays = ConvertHelper.ToInt32(ConfigurationBuilder["JWT:RefreshTokenValidityInDays"])
         };
 
         SqlSettings = new List<SqlSetting>();
         var index = 0;
-        var sqlName = ConfigurationBuilder.GetSection($"SQL:{index}:Name")
-            .Value;
+        var sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name")
+            .Value);
         while (!string.IsNullOrEmpty(sqlName))
         {
             SqlSettings.Add(new SqlSetting
             {
                 Name = sqlName,
-                ConnectString = ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString")
-                    .Value
+                ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString")
+                    .Value)
             });
             index++;
-            sqlName = ConfigurationBuilder.GetSection($"SQL:{index}:Name")
-                .Value;
+            sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name")
+                .Value);
         }
 
         DefaultSqlSetting = SqlSettings.FirstOrDefault();
 
         RedisSetting = new RedisSetting
         {
-            Servers = ConfigurationBuilder["Redis:Servers"],
-            SentinelMasterName = ConfigurationBuilder["Redis:SentinelMasterName"],
-            DbNumber = int.Parse(ConfigurationBuilder["Redis:DbNumber"]),
-            AuthPass = ConfigurationBuilder["Redis:AuthPass"],
-            IsSentinel = bool.Parse(ConfigurationBuilder["Redis:IsSentinel"]),
-            WaitBeforeForcingMasterFailover = int.Parse(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
-            MaxPoolSize = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
-            ClientName = ConfigurationBuilder["Redis:ClientName"],
-            IsUseRedisLazy = bool.Parse(ConfigurationBuilder["Redis:IsUseRedisLazy"]),
-            ConnectTimeout = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
-            ConnectRetry = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"])
+            Servers = ConvertHelper.ToString(ConfigurationBuilder["Redis:Servers"]),
+            SentinelMasterName = ConvertHelper.ToString(ConfigurationBuilder["Redis:SentinelMasterName"]),
+            DbNumber = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:DbNumber"]),
+            AuthPass = ConvertHelper.ToString(ConfigurationBuilder["Redis:AuthPass"]),
+            IsSentinel = ConvertHelper.ToBoolean(ConfigurationBuilder["Redis:IsSentinel"]),
+            WaitBeforeForcingMasterFailover =
+                ConvertHelper.ToInt32(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
+            MaxPoolSize = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"]),
+            ClientName = ConvertHelper.ToString(ConfigurationBuilder["Redis:ClientName"]),
+            IsUseRedisLazy = ConvertHelper.ToBoolean(ConfigurationBuilder["Redis:IsUseRedisLazy"]),
+            ConnectTimeout = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"]),
+            ConnectRetry = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"])
         };
 
-        var articlePageSize = Convert.ToInt32(ConfigurationBuilder["ArticlePageSize"]);
+        var articlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"]);
         ArticlePageSize = articlePageSize != 0 ? articlePageSize : ArticlePageSize;
     }
 }

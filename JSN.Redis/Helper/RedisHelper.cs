@@ -36,9 +36,12 @@ public class RedisHelper
     {
         var config = AppSettings.RedisSetting;
 
-        var servers = config.Servers.Split(",");
+        var servers = config.Servers?.Split(",");
         var endPointCollection = new EndPointCollection();
-        foreach (var server in servers) endPointCollection.Add(server);
+        if (servers != null)
+        {
+            foreach (var server in servers) endPointCollection.Add(server);
+        }
 
         var configurationOptions = new ConfigurationOptions
         {
