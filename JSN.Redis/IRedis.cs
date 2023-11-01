@@ -4,8 +4,8 @@ public interface IRedis<T> where T : class
 {
     void AddOrUpdate(T entity);
     Task AddOrUpdateAsync(T entity);
-    T GetById(int id);
-    Task<T> GetByIdAsync(int id);
+    T? GetById(int id);
+    Task<T?> GetByIdAsync(int id);
     void Delete(int id);
     Task DeleteAsync(int id);
 

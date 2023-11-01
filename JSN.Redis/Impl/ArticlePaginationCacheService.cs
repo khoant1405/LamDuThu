@@ -68,7 +68,7 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
     //    DeleteAllPage();
     //}
 
-    public PaginatedList<ArticleView> GetPage(int page)
+    public PaginatedList<ArticleView>? GetPage(int page)
     {
         var key = $"PaginatedList:ArticleView:{page}";
         return Get(key, _redisDatabase);

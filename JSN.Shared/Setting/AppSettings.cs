@@ -50,7 +50,7 @@ public static class AppSettings
                 .Value;
         }
 
-        DefaultSqlSetting = SqlSettings?.FirstOrDefault();
+        DefaultSqlSetting = SqlSettings.FirstOrDefault();
 
         RedisSetting = new RedisSetting
         {

@@ -6,7 +6,7 @@ namespace JSN.Core.Entity;
 public class Repository<T> : IRepository<T>, IDisposable where T : class
 {
     private readonly DbFactory _dbFactory;
-    private DbSet<T> _dbSet;
+    private DbSet<T>? _dbSet;
 
     public Repository(DbFactory dbFactory)
     {
@@ -17,7 +17,7 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
 
     public void Dispose()
     {
-        _dbFactory?.Dispose();
+        _dbFactory.Dispose();
     }
 
     public void Add(T entity)
@@ -50,7 +50,7 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
         DbSet.RemoveRange(entities);
     }
 
-    public IQueryable<T> Where(Expression<Func<T, bool>> filter = null)
+    public IQueryable<T> Where(Expression<Func<T, bool>>? filter = null)
     {
         if (filter == null)
         {

@@ -23,13 +23,13 @@ public class ArticleCacheService : Redis<ArticleView>, IArticleCacheService
         await AddOrUpdateAsync(entity, _redisDatabase);
     }
 
-    public ArticleView GetById(int id)
+    public ArticleView? GetById(int id)
     {
         var key = GetKeyById(id);
         return Get(key, _redisDatabase);
     }
 
-    public async Task<ArticleView> GetByIdAsync(int id)
+    public async Task<ArticleView?> GetByIdAsync(int id)
     {
         var key = GetKeyById(id);
         return await GetAsync(key, _redisDatabase);

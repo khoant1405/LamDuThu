@@ -3,7 +3,7 @@
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly DbFactory _dbFactory;
-    private CoreDbContext _dbContext;
+    private CoreDbContext? _dbContext;
     private bool _disposed;
 
     public UnitOfWork(DbFactory dbFactory)
