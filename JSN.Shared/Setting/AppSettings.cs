@@ -62,7 +62,9 @@ public static class AppSettings
             WaitBeforeForcingMasterFailover = int.Parse(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
             MaxPoolSize = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
             ClientName = ConfigurationBuilder["Redis:ClientName"],
-            IsUseRedisLazy = bool.Parse(ConfigurationBuilder["Redis:IsUseRedisLazy"])
+            IsUseRedisLazy = bool.Parse(ConfigurationBuilder["Redis:IsUseRedisLazy"]),
+            ConnectTimeout = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"]),
+            ConnectRetry = int.Parse(ConfigurationBuilder["Redis:MaxPoolSize"])
         };
 
         var articlePageSize = Convert.ToInt32(ConfigurationBuilder["ArticlePageSize"]);

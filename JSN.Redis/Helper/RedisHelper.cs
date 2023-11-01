@@ -1,6 +1,5 @@
 ﻿using JSN.Shared.Setting;
 using StackExchange.Redis;
-using static StackExchange.Redis.Role;
 
 namespace JSN.Redis.Helper;
 
@@ -10,23 +9,7 @@ public class RedisHelper
     {
         try
         {
-            var servers = config.Servers.Split(",");
-            var endPointCollection = new EndPointCollection();
-            foreach (var server in servers) endPointCollection.Add(server);
-
-            var configurationOptions = new ConfigurationOptions
-            {
-                EndPoints = endPointCollection,
-                Password = config.AuthPass,
-                DefaultDatabase = config.DbNumber,
-                AbortOnConnectFail = false
-            };
-
-            if (config.IsSentinel == true)
-            {
-                // xử lý sentinel ở đây
-            }
-
+            var configurationOptions = GetConfigRedis();
             var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
             return connectionMultiplexer;
         }
@@ -36,7 +19,7 @@ public class RedisHelper
         }
     }
 
-    public static ConfigurationOptions GetConfigStackExchange()
+    public static ConfigurationOptions GetConfigRedis()
     {
         var config = AppSettings.RedisSetting;
 
@@ -47,7 +30,6 @@ public class RedisHelper
         var configurationOptions = new ConfigurationOptions
         {
             EndPoints = endPointCollection,
-            Password = config.AuthPass,
             DefaultDatabase = config.DbNumber,
             AbortOnConnectFail = false
         };
@@ -59,8 +41,20 @@ public class RedisHelper
             configurationOptions.CommandMap = CommandMap.Sentinel;
         }
 
-        if (ConnectTimeout > 0) configurationOptions.ConnectTimeout = ConnectTimeout;
-        if (ConnectRetry > 0) configurationOptions.ConnectRetry = ConnectRetry;
+        if (config.ConnectTimeout > 0)
+        {
+            configurationOptions.ConnectTimeout = config.ConnectTimeout;
+        }
+
+        if (config.ConnectRetry > 0)
+        {
+            configurationOptions.ConnectRetry = config.ConnectRetry;
+        }
+
+        if (!string.IsNullOrEmpty(config.AuthPass))
+        {
+            configurationOptions.Password = config.AuthPass;
+        }
 
         return configurationOptions;
     }

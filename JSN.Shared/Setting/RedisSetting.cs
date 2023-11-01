@@ -22,5 +22,5 @@ public class RedisSetting
 
     public int ConnectTimeout { get; set; }
 
-    public int RetryTimeout { get; set; }
+    public int ConnectRetry { get; set; }
 }

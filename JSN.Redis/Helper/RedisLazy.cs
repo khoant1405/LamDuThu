@@ -6,7 +6,7 @@ namespace JSN.Redis.Helper;
 public class RedisLazy
 {
     private Lazy<ConnectionMultiplexer> _connection;
-    public ConnectionMultiplexer Connection { get { return lazyConnection.Value; } }
+
     public RedisLazy()
     {
         _connection = new Lazy<ConnectionMultiplexer>(
@@ -32,6 +32,8 @@ public class RedisLazy
                 return ConnectionMultiplexer.Connect(configuration.GetConfigStackExchange());
             });
     }
+
+    public ConnectionMultiplexer Connection => lazyConnection.Value;
 }
 
 #region explain
