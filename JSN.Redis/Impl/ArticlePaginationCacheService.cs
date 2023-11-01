@@ -1,5 +1,4 @@
 ﻿using JSN.Core.ViewModel;
-using JSN.Redis.Helper;
 using JSN.Redis.Interface;
 using JSN.Shared.Model;
 using JSN.Shared.Setting;
@@ -23,18 +22,8 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
 
     public void AddPage(PaginatedList<ArticleView> entity)
     {
-        if (AppSettings.RedisSetting.IsUseRedisLazy == true)
-        {
-            using var connection = new RedisLazy().Connection;
-            var database = connection.GetDatabase();
-            var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
-            AddOrUpdate(key, entity, database);
-        }
-        else
-        {
-            var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
-            AddOrUpdate(key, entity, _redisDatabase);
-        }
+        var key = $"PaginatedList:ArticleView:{entity.PageIndex}";
+        AddOrUpdate(key, entity, _redisDatabase);
     }
 
     public async Task AddPageAsync(PaginatedList<ArticleView> entity)
