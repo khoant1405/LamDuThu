@@ -1,6 +1,4 @@
-﻿using JSN.Redis.Helper;
-using JSN.Shared.Setting;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace JSN.Redis;
@@ -11,16 +9,7 @@ public class Redis<T> where T : class
 
     public Redis(IConnectionMultiplexer connectionMultiplexer)
     {
-        if (AppSettings.RedisSetting.IsUseRedisLazy == true)
-        {
-            var redisLazy = new RedisLazy();
-            var connection = redisLazy.Connection;
-            ConnectionMultiplexer = connection;
-        }
-        else
-        {
-            ConnectionMultiplexer = connectionMultiplexer;
-        }
+        ConnectionMultiplexer = connectionMultiplexer;
     }
 
     public void AddOrUpdate(T entity, IDatabase database)
