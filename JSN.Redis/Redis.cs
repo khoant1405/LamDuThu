@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using JSN.Redis.Helper;
+using JSN.Shared.Setting;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace JSN.Redis;
@@ -9,7 +11,9 @@ public class Redis<T> where T : class
 
     public Redis(IConnectionMultiplexer connectionMultiplexer)
     {
-        ConnectionMultiplexer = connectionMultiplexer;
+        ConnectionMultiplexer = AppSettings.RedisSetting.IsUseRedisLazy == true
+            ? new RedisLazy().Connection
+            : connectionMultiplexer;
     }
 
     public void AddOrUpdate(T entity, IDatabase database)
@@ -123,7 +127,7 @@ public class Redis<T> where T : class
         return JsonConvert.SerializeObject(entity);
     }
 
-    private static T DeserializeEntity(string serializedEntity)
+    private static T? DeserializeEntity(string serializedEntity)
     {
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
     }

@@ -5,18 +5,25 @@ namespace JSN.Redis.Helper;
 
 public class RedisHelper
 {
-    public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
+    public static ConnectionMultiplexer GetConnectionMultiplexer()
     {
-        try
+        var config = AppSettings.RedisSetting;
+        if (config.IsSentinel == true)
         {
-            var configurationOptions = GetConfigRedis();
-            var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
-            return connectionMultiplexer;
+            var sentinelOptions = new ConfigurationOptions
+            {
+                TieBreaker = "",
+                CommandMap = CommandMap.Sentinel,
+                AbortOnConnectFail = false
+            };
+            var configRedis = GetConfigRedis();
+            foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
+            configRedis.EndPoints.Clear();
+            var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
+            return sentinelConnection.GetSentinelMasterConnection(configRedis);
         }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
+
+        return ConnectionMultiplexer.Connect(GetConfigRedis());
     }
 
     public static ConfigurationOptions GetConfigRedis()
@@ -30,15 +37,15 @@ public class RedisHelper
         var configurationOptions = new ConfigurationOptions
         {
             EndPoints = endPointCollection,
-            DefaultDatabase = config.DbNumber,
-            AbortOnConnectFail = false
+            DefaultDatabase = config.DbNumber
         };
 
         if (config.IsSentinel == true)
         {
             configurationOptions.ServiceName = config.SentinelMasterName;
-            configurationOptions.TieBreaker = "";
-            configurationOptions.CommandMap = CommandMap.Sentinel;
+            //configurationOptions.TieBreaker = "";
+            //configurationOptions.CommandMap = CommandMap.Sentinel;
+            //configurationOptions.AbortOnConnectFail = false;
         }
 
         if (config.ConnectTimeout > 0)

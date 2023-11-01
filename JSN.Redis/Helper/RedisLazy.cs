@@ -1,39 +1,13 @@
-﻿using JSN.Shared.Setting;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 
 namespace JSN.Redis.Helper;
 
 public class RedisLazy
 {
-    private Lazy<ConnectionMultiplexer> _connection;
+    private readonly Lazy<ConnectionMultiplexer> _connection = new(
+        RedisHelper.GetConnectionMultiplexer);
 
-    public RedisLazy()
-    {
-        _connection = new Lazy<ConnectionMultiplexer>(
-            () =>
-            {
-                if (AppSettings.RedisSetting.IsSentinel == true)
-                {
-                    var sentinelOptions = new ConfigurationOptions
-                    {
-                        TieBreaker = "",
-                        CommandMap = CommandMap.Sentinel,
-                        AbortOnConnectFail = false
-                    };
-                    var config = configuration.GetConfigStackExchange();
-                    foreach (var item in config.EndPoints) sentinelOptions.EndPoints.Add(item);
-                    config.EndPoints.Clear();
-                    // redisServiceOptions.ClientName = "Dong hic";
-
-                    var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
-                    return sentinelConnection.GetSentinelMasterConnection(config);
-                }
-
-                return ConnectionMultiplexer.Connect(configuration.GetConfigStackExchange());
-            });
-    }
-
-    public ConnectionMultiplexer Connection => lazyConnection.Value;
+    public ConnectionMultiplexer Connection => _connection.Value;
 }
 
 #region explain

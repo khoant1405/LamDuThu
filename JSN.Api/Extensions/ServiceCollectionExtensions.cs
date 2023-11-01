@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
         if (AppSettings.RedisSetting.IsUseRedisLazy == false)
         {
             services.AddSingleton<IConnectionMultiplexer>(provider =>
-                RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting));
+                RedisHelper.GetConnectionMultiplexer());
         }
 
         services.AddTransient<IArticleCacheService, ArticleCacheService>();

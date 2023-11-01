@@ -48,10 +48,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRedis(this IServiceCollection services)
     {
-        services.AddSingleton<IConnectionMultiplexer>(provider =>
+        if (AppSettings.RedisSetting.IsUseRedisLazy == false)
         {
-            return RedisHelper.GetConnectionMultiplexer(AppSettings.RedisSetting);
-        });
+            services.AddSingleton<IConnectionMultiplexer>(provider =>
+                RedisHelper.GetConnectionMultiplexer());
+        }
 
         services.AddTransient<IArticleCacheService, ArticleCacheService>();
         services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
