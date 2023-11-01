@@ -25,7 +25,7 @@ public class Redis<T> where T : class
 
     public void AddOrUpdate(T entity, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
@@ -33,7 +33,7 @@ public class Redis<T> where T : class
 
     public async Task AddOrUpdateAsync(T entity, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
@@ -41,47 +41,47 @@ public class Redis<T> where T : class
 
     public void AddOrUpdate(string key, T entity, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
     }
 
     public async Task AddOrUpdateAsync(string key, T entity, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
     }
 
     public T? Get(string key, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         string? serializedEntity = database.StringGet(key);
         return DeserializeEntity(serializedEntity);
     }
 
     public async Task<T?> GetAsync(string key, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         string? serializedEntity = await database.StringGetAsync(key);
         return DeserializeEntity(serializedEntity);
     }
 
     public void Delete(string key, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         database.KeyDelete(key);
     }
 
     public async Task DeleteAsync(string key, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         await database.KeyDeleteAsync(key);
     }
 
     public void AddRange(IEnumerable<T> entities, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var tasks = entities.Select(entity =>
         {
             var key = GetKeyByEntity(entity);
@@ -95,7 +95,7 @@ public class Redis<T> where T : class
 
     public async Task AddRangeAsync(IEnumerable<T> entities, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var tasks = entities.Select(async entity =>
         {
             var key = GetKeyByEntity(entity);
@@ -108,7 +108,7 @@ public class Redis<T> where T : class
 
     public void DeleteRange(IEnumerable<string> keys, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         Task.WhenAll(tasks)
             .Wait();
@@ -116,7 +116,7 @@ public class Redis<T> where T : class
 
     public async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase db)
     {
-        var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        var database = GetDatabase(db);
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         await Task.WhenAll(tasks);
     }
@@ -149,5 +149,10 @@ public class Redis<T> where T : class
     private static T? DeserializeEntity(string? serializedEntity)
     {
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
+    }
+
+    private IDatabase GetDatabase(IDatabase db)
+    {
+        return AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
     }
 }
