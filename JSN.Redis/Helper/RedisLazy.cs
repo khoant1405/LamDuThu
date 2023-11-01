@@ -13,25 +13,26 @@ public class RedisLazy
         var config = AppSettings.RedisSetting;
         lock (Locker)
         {
-            _connection ??= new Lazy<ConnectionMultiplexer?>(() =>
-            {
-                if (config.IsSentinel != true)
+            while (_connection?.Value == null)
+                _connection = new Lazy<ConnectionMultiplexer?>(() =>
                 {
-                    return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());
-                }
+                    if (config.IsSentinel != true)
+                    {
+                        return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());
+                    }
 
-                var sentinelOptions = new ConfigurationOptions
-                {
-                    TieBreaker = "",
-                    CommandMap = CommandMap.Sentinel,
-                    AbortOnConnectFail = false
-                };
-                var configRedis = RedisHelper.GetConfigRedis();
-                foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
-                configRedis.EndPoints.Clear();
-                var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
-                return sentinelConnection.GetSentinelMasterConnection(configRedis);
-            });
+                    var sentinelOptions = new ConfigurationOptions
+                    {
+                        TieBreaker = "",
+                        CommandMap = CommandMap.Sentinel,
+                        AbortOnConnectFail = false
+                    };
+                    var configRedis = RedisHelper.GetConfigRedis();
+                    foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
+                    configRedis.EndPoints.Clear();
+                    var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
+                    return sentinelConnection.GetSentinelMasterConnection(configRedis);
+                });
         }
     }
 

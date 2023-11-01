@@ -23,11 +23,6 @@ public class Redis<T> where T : class
         }
     }
 
-    ~Redis()
-    {
-        RedisLazyConnection.Dispose();
-    }
-
     public void AddOrUpdate(T entity, IDatabase db)
     {
         var database = AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
