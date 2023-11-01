@@ -19,4 +19,8 @@ public class RedisSetting
     public string ClientName { get; set; }
 
     public bool? IsUseRedisLazy { get; set; }
+
+    public int ConnectTimeout { get; set; }
+
+    public int RetryTimeout { get; set; }
 }

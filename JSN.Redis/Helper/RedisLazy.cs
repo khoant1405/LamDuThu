@@ -5,39 +5,32 @@ namespace JSN.Redis.Helper;
 
 public class RedisLazy
 {
-    public static ConnectionMultiplexer GetConnectionMultiplexer(RedisSetting config)
+    private Lazy<ConnectionMultiplexer> _connection;
+    public ConnectionMultiplexer Connection { get { return lazyConnection.Value; } }
+    public RedisLazy()
     {
-        try
-        {
-            if (config == null)
+        _connection = new Lazy<ConnectionMultiplexer>(
+            () =>
             {
-                return null;
-            }
+                if (AppSettings.RedisSetting.IsSentinel == true)
+                {
+                    var sentinelOptions = new ConfigurationOptions
+                    {
+                        TieBreaker = "",
+                        CommandMap = CommandMap.Sentinel,
+                        AbortOnConnectFail = false
+                    };
+                    var config = configuration.GetConfigStackExchange();
+                    foreach (var item in config.EndPoints) sentinelOptions.EndPoints.Add(item);
+                    config.EndPoints.Clear();
+                    // redisServiceOptions.ClientName = "Dong hic";
 
-            var servers = config.Servers.Split(",");
-            var endPointCollection = new EndPointCollection();
-            foreach (var server in servers) endPointCollection.Add(server);
+                    var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
+                    return sentinelConnection.GetSentinelMasterConnection(config);
+                }
 
-            var configurationOptions = new ConfigurationOptions
-            {
-                EndPoints = endPointCollection,
-                Password = config.AuthPass,
-                DefaultDatabase = config.DbNumber,
-                AbortOnConnectFail = false
-            };
-
-            if (config.IsSentinel == true)
-            {
-                // xử lý sentinel ở đây
-            }
-
-            var connectionMultiplexer = ConnectionMultiplexer.Connect(configurationOptions);
-            return connectionMultiplexer;
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
+                return ConnectionMultiplexer.Connect(configuration.GetConfigStackExchange());
+            });
     }
 }
 

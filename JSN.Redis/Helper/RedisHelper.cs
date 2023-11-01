@@ -1,5 +1,6 @@
 ﻿using JSN.Shared.Setting;
 using StackExchange.Redis;
+using static StackExchange.Redis.Role;
 
 namespace JSN.Redis.Helper;
 
@@ -9,11 +10,6 @@ public class RedisHelper
     {
         try
         {
-            if (config == null)
-            {
-                return null;
-            }
-
             var servers = config.Servers.Split(",");
             var endPointCollection = new EndPointCollection();
             foreach (var server in servers) endPointCollection.Add(server);
@@ -38,6 +34,35 @@ public class RedisHelper
         {
             throw ex;
         }
+    }
+
+    public static ConfigurationOptions GetConfigStackExchange()
+    {
+        var config = AppSettings.RedisSetting;
+
+        var servers = config.Servers.Split(",");
+        var endPointCollection = new EndPointCollection();
+        foreach (var server in servers) endPointCollection.Add(server);
+
+        var configurationOptions = new ConfigurationOptions
+        {
+            EndPoints = endPointCollection,
+            Password = config.AuthPass,
+            DefaultDatabase = config.DbNumber,
+            AbortOnConnectFail = false
+        };
+
+        if (config.IsSentinel == true)
+        {
+            configurationOptions.ServiceName = config.SentinelMasterName;
+            configurationOptions.TieBreaker = "";
+            configurationOptions.CommandMap = CommandMap.Sentinel;
+        }
+
+        if (ConnectTimeout > 0) configurationOptions.ConnectTimeout = ConnectTimeout;
+        if (ConnectRetry > 0) configurationOptions.ConnectRetry = ConnectRetry;
+
+        return configurationOptions;
     }
 }
 
