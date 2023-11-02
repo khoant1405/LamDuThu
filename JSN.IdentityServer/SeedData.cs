@@ -13,7 +13,7 @@ public class SeedData
 {
     public static void EnsureSeedData(string connectionString)
     {
-        //Tạo một đối tượng ServiceCollection, một bộ sưu tập dịch vụ trong ASP.NET Core.
+        //Tạo một đối tượng ServiceCollection
         var services = new ServiceCollection();
 
         //Đăng ký dịch vụ ghi log.
@@ -24,7 +24,7 @@ public class SeedData
             options => options.UseSqlServer(connectionString)
         );
 
-        //Đăng ký dịch vụ xác thực và quản lý vai trò sử dụng Identity Framework Core.
+        //Đăng ký dịch vụ xác thực và quản lý theo role sử dụng Identity Framework Core.
         services
             .AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<IdentityDbContext>()
@@ -54,10 +54,8 @@ public class SeedData
             }
         );
 
-        //Tạo một nhà cung cấp dịch vụ từ ServiceCollection đã đăng ký.
         var serviceProvider = services.BuildServiceProvider();
 
-        //Tạo một phạm vi dịch vụ để quản lý các dịch vụ được phục vụ
         using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
         //Migrates cơ sở dữ liệu cho PersistedGrantDbContext. Điều này đảm bảo rằng cơ sở dữ liệu của các phiên và mã thông báo được cập nhật đúng cách
