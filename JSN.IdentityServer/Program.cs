@@ -1,7 +1,7 @@
+using JSN.IdentityServer;
+using JSN.IdentityServer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Server;
-using Server.Data;
 
 var seed = args.Contains("/seed");
 if (seed)
@@ -47,9 +47,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapDefaultControllerRoute();
-});
+app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
 
 app.Run();

@@ -19,8 +19,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\JSN.Shared\JSN.Shared.csproj" />
-  </ItemGroup>
-
 </Project>
