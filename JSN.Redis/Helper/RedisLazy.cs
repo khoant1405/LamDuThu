@@ -7,7 +7,7 @@ public class RedisLazy
 {
     private static Lazy<ConnectionMultiplexer> _lazyConnection = new(CreateConnection);
 
-    public IDatabase GetDatabase()
+    public IDatabase GetLazyDatabase()
     {
         return _lazyConnection.Value.GetDatabase();
     }

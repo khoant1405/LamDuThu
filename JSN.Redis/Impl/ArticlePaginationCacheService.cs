@@ -1,7 +1,6 @@
 ﻿using JSN.Core.ViewModel;
 using JSN.Redis.Interface;
 using JSN.Shared.Model;
-using JSN.Shared.Setting;
 using StackExchange.Redis;
 
 namespace JSN.Redis.Impl;
@@ -12,12 +11,7 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
 
     public ArticlePaginationCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
-        if (AppSettings.RedisSetting.IsUseRedisLazy)
-        {
-            return;
-        }
-
-        _redisDatabase = connectionMultiplexer.GetDatabase();
+        _redisDatabase = GetDatabaseOptions(connectionMultiplexer);
     }
 
     public void AddPage(PaginatedList<ArticleView> entity)

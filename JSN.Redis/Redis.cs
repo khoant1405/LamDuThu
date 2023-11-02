@@ -7,65 +7,56 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    public void AddOrUpdate(T entity, IDatabase db)
+    public void AddOrUpdate(T entity, IDatabase database)
     {
-        var database = GetDatabase(db);
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
     }
 
-    public async Task AddOrUpdateAsync(T entity, IDatabase db)
+    public async Task AddOrUpdateAsync(T entity, IDatabase database)
     {
-        var database = GetDatabase(db);
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
     }
 
-    public void AddOrUpdate(string key, T entity, IDatabase db)
+    public void AddOrUpdate(string key, T entity, IDatabase database)
     {
-        var database = GetDatabase(db);
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
     }
 
-    public async Task AddOrUpdateAsync(string key, T entity, IDatabase db)
+    public async Task AddOrUpdateAsync(string key, T entity, IDatabase database)
     {
-        var database = GetDatabase(db);
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
     }
 
-    public T? Get(string key, IDatabase db)
+    public T? Get(string key, IDatabase database)
     {
-        var database = GetDatabase(db);
         string? serializedEntity = database.StringGet(key);
         return DeserializeEntity(serializedEntity);
     }
 
-    public async Task<T?> GetAsync(string key, IDatabase db)
+    public async Task<T?> GetAsync(string key, IDatabase database)
     {
-        var database = GetDatabase(db);
         string? serializedEntity = await database.StringGetAsync(key);
         return DeserializeEntity(serializedEntity);
     }
 
-    public void Delete(string key, IDatabase db)
+    public void Delete(string key, IDatabase database)
     {
-        var database = GetDatabase(db);
         database.KeyDelete(key);
     }
 
-    public async Task DeleteAsync(string key, IDatabase db)
+    public async Task DeleteAsync(string key, IDatabase database)
     {
-        var database = GetDatabase(db);
         await database.KeyDeleteAsync(key);
     }
 
-    public void AddRange(IEnumerable<T> entities, IDatabase db)
+    public void AddRange(IEnumerable<T> entities, IDatabase database)
     {
-        var database = GetDatabase(db);
         var tasks = entities.Select(entity =>
         {
             var key = GetKeyByEntity(entity);
@@ -77,9 +68,8 @@ public class Redis<T> where T : class
             .Wait();
     }
 
-    public async Task AddRangeAsync(IEnumerable<T> entities, IDatabase db)
+    public async Task AddRangeAsync(IEnumerable<T> entities, IDatabase database)
     {
-        var database = GetDatabase(db);
         var tasks = entities.Select(async entity =>
         {
             var key = GetKeyByEntity(entity);
@@ -90,17 +80,15 @@ public class Redis<T> where T : class
         await Task.WhenAll(tasks);
     }
 
-    public void DeleteRange(IEnumerable<string> keys, IDatabase db)
+    public void DeleteRange(IEnumerable<string> keys, IDatabase database)
     {
-        var database = GetDatabase(db);
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         Task.WhenAll(tasks)
             .Wait();
     }
 
-    public async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase db)
+    public async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase database)
     {
-        var database = GetDatabase(db);
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         await Task.WhenAll(tasks);
     }
@@ -135,8 +123,10 @@ public class Redis<T> where T : class
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
     }
 
-    private IDatabase GetDatabase(IDatabase db)
+    protected IDatabase GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
     {
-        return !AppSettings.RedisSetting.IsUseRedisLazy ? db : new RedisLazy().GetDatabase();
+        return !AppSettings.RedisSetting.IsUseRedisLazy
+            ? connectionMultiplexer.GetDatabase()
+            : new RedisLazy().GetLazyDatabase();
     }
 }
