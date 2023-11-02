@@ -83,40 +83,38 @@ public class SeedData
         //Lấy UserManager để quản lý người dùng từ phạm vi dịch vụ.
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-        //Tìm kiếm một người dùng với tên người dùng "angella" trong cơ sở dữ liệu.
-        var angella = userMgr.FindByNameAsync("angella").Result;
+        //Tìm kiếm một người dùng với tên người dùng "superadmin" trong cơ sở dữ liệu.
+        var superadmin = userMgr.FindByNameAsync("superadmin").Result;
 
-        //Tạo mới người dùng angella với claim
-        if (angella == null)
+        //Tạo mới người dùng superadmin với claim
+        if (superadmin != null)
         {
-            angella = new IdentityUser
-            {
-                UserName = "angella",
-                Email = "angella.freeman@email.com",
-                EmailConfirmed = true
-            };
-            var result = userMgr.CreateAsync(angella, "Pass123$").Result;
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.Errors.First().Description);
-            }
+            return;
+        }
 
-            result =
-                userMgr.AddClaimsAsync(
-                    angella,
-                    new Claim[]
-                    {
-                        new(JwtClaimTypes.Name, "Angella Freeman"),
-                        new(JwtClaimTypes.GivenName, "Angella"),
-                        new(JwtClaimTypes.FamilyName, "Freeman"),
-                        new(JwtClaimTypes.WebSite, "http://angellafreeman.com"),
-                        new("location", "somewhere")
-                    }
-                ).Result;
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.Errors.First().Description);
-            }
+        superadmin = new IdentityUser
+        {
+            UserName = "superAdmin",
+            Email = "vinamilk1634@gmail.com",
+            EmailConfirmed = false
+        };
+        var result = userMgr.CreateAsync(superadmin, "1405").Result;
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().Description);
+        }
+
+        result =
+            userMgr.AddClaimsAsync(
+                superadmin,
+                new Claim[]
+                {
+                    new(JwtClaimTypes.Name, "superAdmin")
+                }
+            ).Result;
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().Description);
         }
     }
 
