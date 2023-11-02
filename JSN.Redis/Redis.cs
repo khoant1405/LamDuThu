@@ -137,13 +137,6 @@ public class Redis<T> where T : class
 
     private IDatabase GetDatabase(IDatabase db)
     {
-        if (!AppSettings.RedisSetting.IsUseRedisLazy)
-        {
-            return db;
-        }
-
-        var redisLazy = new RedisLazy();
-        var connection = redisLazy.LazyConnection;
-        return connection.GetDatabase();
+        return !AppSettings.RedisSetting.IsUseRedisLazy ? db : new RedisLazy().GetDatabase();
     }
 }
