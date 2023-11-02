@@ -60,10 +60,6 @@ public static class AppSettings
             DbNumber = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:DbNumber"]),
             AuthPass = ConvertHelper.ToString(ConfigurationBuilder["Redis:AuthPass"]),
             IsSentinel = ConvertHelper.ToBoolean(ConfigurationBuilder["Redis:IsSentinel"]),
-            WaitBeforeForcingMasterFailover =
-                ConvertHelper.ToInt32(ConfigurationBuilder["Redis:WaitBeforeForcingMasterFailover"]),
-            MaxPoolSize = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"]),
-            ClientName = ConvertHelper.ToString(ConfigurationBuilder["Redis:ClientName"]),
             IsUseRedisLazy = ConvertHelper.ToBoolean(ConfigurationBuilder["Redis:IsUseRedisLazy"]),
             ConnectTimeout = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"]),
             ConnectRetry = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"])

@@ -9,7 +9,7 @@ public class RedisHelper
     {
         var config = AppSettings.RedisSetting;
 
-        if (config.IsUseRedisLazy == true)
+        if (config.IsUseRedisLazy)
         {
             return null;
         }
@@ -52,9 +52,6 @@ public class RedisHelper
         if (config.IsSentinel == true)
         {
             configurationOptions.ServiceName = config.SentinelMasterName;
-            //configurationOptions.TieBreaker = "";
-            //configurationOptions.CommandMap = CommandMap.Sentinel;
-            //configurationOptions.AbortOnConnectFail = false;
         }
 
         if (config.ConnectTimeout > 0)

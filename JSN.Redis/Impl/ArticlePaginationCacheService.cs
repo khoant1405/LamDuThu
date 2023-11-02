@@ -12,7 +12,7 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
 
     public ArticlePaginationCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
-        if (AppSettings.RedisSetting.IsUseRedisLazy == true)
+        if (AppSettings.RedisSetting.IsUseRedisLazy)
         {
             return;
         }

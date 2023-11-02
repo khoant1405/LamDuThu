@@ -7,22 +7,6 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    protected readonly ConnectionMultiplexer RedisLazyConnection;
-
-    public Redis()
-    {
-        if (AppSettings.RedisSetting.IsUseRedisLazy != true)
-        {
-            return;
-        }
-
-        var redisLazy = new RedisLazy();
-        if (redisLazy.Connection != null)
-        {
-            RedisLazyConnection = redisLazy.Connection;
-        }
-    }
-
     public void AddOrUpdate(T entity, IDatabase db)
     {
         var database = GetDatabase(db);
@@ -153,6 +137,13 @@ public class Redis<T> where T : class
 
     private IDatabase GetDatabase(IDatabase db)
     {
-        return AppSettings.RedisSetting.IsUseRedisLazy == true ? RedisLazyConnection.GetDatabase() : db;
+        if (!AppSettings.RedisSetting.IsUseRedisLazy)
+        {
+            return db;
+        }
+
+        var redisLazy = new RedisLazy();
+        var connection = redisLazy.LazyConnection;
+        return connection.GetDatabase();
     }
 }
