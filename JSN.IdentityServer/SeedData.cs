@@ -13,17 +13,24 @@ public class SeedData
 {
     public static void EnsureSeedData(string connectionString)
     {
+        //Tạo một đối tượng ServiceCollection, một bộ sưu tập dịch vụ trong ASP.NET Core.
         var services = new ServiceCollection();
+
+        //Đăng ký dịch vụ ghi log.
         services.AddLogging();
+
+        //Đăng ký DbContext của IdentityDbContext để làm việc với cơ sở dữ liệu IdentityServer4.
         services.AddDbContext<IdentityDbContext>(
             options => options.UseSqlServer(connectionString)
         );
 
+        //Đăng ký dịch vụ xác thực và quản lý vai trò sử dụng Identity Framework Core.
         services
             .AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
 
+        //Đăng ký DbContext cho thông tin vận hành của IdentityServer4.
         services.AddOperationalDbContext(
             options =>
             {
@@ -34,6 +41,8 @@ public class SeedData
                     );
             }
         );
+
+        //Đăng ký DbContext cho cấu hình của IdentityServer4.
         services.AddConfigurationDbContext(
             options =>
             {
@@ -45,26 +54,39 @@ public class SeedData
             }
         );
 
+        //Tạo một nhà cung cấp dịch vụ từ ServiceCollection đã đăng ký.
         var serviceProvider = services.BuildServiceProvider();
 
+        //Tạo một phạm vi dịch vụ để quản lý các dịch vụ được phục vụ
         using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+        //Migrates cơ sở dữ liệu cho PersistedGrantDbContext. Điều này đảm bảo rằng cơ sở dữ liệu của các phiên và mã thông báo được cập nhật đúng cách
         scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
 
+        //Lấy DbContext cho cấu hình của IdentityServer4.
         var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
         context.Database.Migrate();
 
+        //Gọi phương thức EnsureSeedData để đảm bảo dữ liệu cấu hình được tạo nếu nó chưa tồn tại.
         EnsureSeedData(context);
 
+        //Lấy DbContext cho quản lý người dùng và vai trò.
         var ctx = scope.ServiceProvider.GetService<IdentityDbContext>();
         ctx.Database.Migrate();
+
+        //Gọi phương thức EnsureUsers để đảm bảo người dùng được tạo nếu họ chưa tồn tại trong hệ thống.
         EnsureUsers(scope);
     }
 
     private static void EnsureUsers(IServiceScope scope)
     {
+        //Lấy UserManager để quản lý người dùng từ phạm vi dịch vụ.
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
+        //Tìm kiếm một người dùng với tên người dùng "angella" trong cơ sở dữ liệu.
         var angella = userMgr.FindByNameAsync("angella").Result;
+
+        //Tạo mới người dùng angella với claim
         if (angella == null)
         {
             angella = new IdentityUser
@@ -100,8 +122,10 @@ public class SeedData
 
     private static void EnsureSeedData(ConfigurationDbContext context)
     {
+        //Kiểm tra xem trong cơ sở dữ liệu đã có cài đặt về Clients (ứng dụng khách) hay chưa.
         if (!context.Clients.Any())
         {
+            //Nếu chưa có, thêm các cài đặt về Clients từ danh sách cài đặt Config.Clients vào cơ sở dữ liệu.
             foreach (var client in Config.Clients.ToList()) context.Clients.Add(client.ToEntity());
 
             context.SaveChanges();
