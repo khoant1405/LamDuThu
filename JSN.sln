@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.AutoCrawl", "JSN.AutoCr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.Redis", "JSN.Redis\JSN.Redis.csproj", "{19876794-FCE3-4C25-BC72-9DFFD524EC24}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.IdentityServer", "JSN.IdentityServer\JSN.IdentityServer.csproj", "{1E6826D1-C933-45C8-A996-8D6B7D76ADC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.IdentityServer", "JSN.IdentityServer\JSN.IdentityServer.csproj", "{1FEFAD00-1897-4347-9300-D4F9725E408A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,10 +52,10 @@ Global
 		{19876794-FCE3-4C25-BC72-9DFFD524EC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19876794-FCE3-4C25-BC72-9DFFD524EC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19876794-FCE3-4C25-BC72-9DFFD524EC24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E6826D1-C933-45C8-A996-8D6B7D76ADC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E6826D1-C933-45C8-A996-8D6B7D76ADC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E6826D1-C933-45C8-A996-8D6B7D76ADC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E6826D1-C933-45C8-A996-8D6B7D76ADC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FEFAD00-1897-4347-9300-D4F9725E408A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FEFAD00-1897-4347-9300-D4F9725E408A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FEFAD00-1897-4347-9300-D4F9725E408A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FEFAD00-1897-4347-9300-D4F9725E408A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
