@@ -1,4 +1,4 @@
-namespace JSN.IdentityServer.Pages.Account.Login;
+namespace JSN.IdentityServer.Pages.Login;
 
 public class LoginOptions
 {

@@ -16,11 +16,11 @@ namespace JSN.IdentityServer.Pages.ExternalLogin;
 [SecurityHeaders]
 public class Callback : PageModel
 {
-    private readonly IEventService _events;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IIdentityServerInteractionService _interaction;
     private readonly ILogger<Callback> _logger;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IEventService _events;
 
     public Callback(
         IIdentityServerInteractionService interaction,
@@ -35,7 +35,7 @@ public class Callback : PageModel
         _logger = logger;
         _events = events;
     }
-
+        
     public async Task<IActionResult> OnGet()
     {
         // read external identity from the temporary cookie
@@ -92,8 +92,7 @@ public class Callback : PageModel
 
         // check if external login is in the context of an OIDC request
         var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-        await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, user.UserName, true,
-            context?.Client.ClientId));
+        await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, user.UserName, true, context?.Client.ClientId));
 
         if (context != null)
         {
@@ -108,15 +107,14 @@ public class Callback : PageModel
         return Redirect(returnUrl);
     }
 
-    private async Task<ApplicationUser> AutoProvisionUserAsync(string provider, string providerUserId,
-        IEnumerable<Claim> claims)
+    private async Task<ApplicationUser> AutoProvisionUserAsync(string provider, string providerUserId, IEnumerable<Claim> claims)
     {
         var sub = Guid.NewGuid().ToString();
-
+            
         var user = new ApplicationUser
         {
             Id = sub,
-            UserName = sub // don't need a username, since the user will be using an external provider to login
+            UserName = sub, // don't need a username, since the user will be using an external provider to login
         };
 
         // email
@@ -126,7 +124,7 @@ public class Callback : PageModel
         {
             user.Email = email;
         }
-
+            
         // create a list of claims that we want to transfer into our store
         var filtered = new List<Claim>();
 
@@ -158,33 +156,23 @@ public class Callback : PageModel
         }
 
         var identityResult = await _userManager.CreateAsync(user);
-        if (!identityResult.Succeeded)
-        {
-            throw new Exception(identityResult.Errors.First().Description);
-        }
+        if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 
         if (filtered.Any())
         {
             identityResult = await _userManager.AddClaimsAsync(user, filtered);
-            if (!identityResult.Succeeded)
-            {
-                throw new Exception(identityResult.Errors.First().Description);
-            }
+            if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
         }
 
         identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
-        if (!identityResult.Succeeded)
-        {
-            throw new Exception(identityResult.Errors.First().Description);
-        }
+        if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 
         return user;
     }
 
     // if the external login is OIDC-based, there are certain things we need to preserve to make logout work
     // this will be different for WS-Fed, SAML2p or other protocols
-    private void CaptureExternalLoginContext(AuthenticateResult externalResult, List<Claim> localClaims,
-        AuthenticationProperties localSignInProps)
+    private void CaptureExternalLoginContext(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
     {
         // capture the idp used to login, so the session knows where the user came from
         localClaims.Add(new Claim(JwtClaimTypes.IdentityProvider, externalResult.Properties.Items["scheme"]));

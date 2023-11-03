@@ -1,4 +1,3 @@
-using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Services;
@@ -10,25 +9,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace JSN.IdentityServer.Pages.Account.Logout;
+namespace JSN.IdentityServer.Pages.Logout;
 
 [SecurityHeaders]
 [AllowAnonymous]
 public class Index : PageModel
 {
-    private readonly IEventService _events;
-    private readonly IIdentityServerInteractionService _interaction;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IIdentityServerInteractionService _interaction;
+    private readonly IEventService _events;
 
-    public Index(SignInManager<ApplicationUser> signInManager, IIdentityServerInteractionService interaction,
-        IEventService events)
+    [BindProperty] 
+    public string LogoutId { get; set; }
+
+    public Index(SignInManager<ApplicationUser> signInManager, IIdentityServerInteractionService interaction, IEventService events)
     {
         _signInManager = signInManager;
         _interaction = interaction;
         _events = events;
     }
-
-    [BindProperty] public string LogoutId { get; set; }
 
     public async Task<IActionResult> OnGet(string logoutId)
     {
@@ -50,7 +49,7 @@ public class Index : PageModel
                 showLogoutPrompt = false;
             }
         }
-
+            
         if (showLogoutPrompt == false)
         {
             // if the request for logout was properly authenticated from IdentityServer, then
@@ -69,7 +68,7 @@ public class Index : PageModel
             // this captures necessary info from the current logged in user
             // this can still return null if there is no context needed
             LogoutId ??= await _interaction.CreateLogoutContextAsync();
-
+                
             // delete local authentication cookie
             await _signInManager.SignOutAsync();
 
@@ -80,7 +79,7 @@ public class Index : PageModel
             var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
 
             // if it's a local login we can ignore this workflow
-            if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
+            if (idp != null && idp != Duende.IdentityServer.IdentityServerConstants.LocalIdentityProvider)
             {
                 // we need to see if the provider supports external logout
                 if (await HttpContext.GetSchemeSupportsSignOutAsync(idp))
@@ -88,7 +87,7 @@ public class Index : PageModel
                     // build a return URL so the upstream provider will redirect back
                     // to us after the user has logged out. this allows us to then
                     // complete our single sign-out processing.
-                    var url = Url.Page("/Account/Logout/Loggedout", new { logoutId = LogoutId });
+                    string url = Url.Page("/Account/Logout/Loggedout", new { logoutId = LogoutId });
 
                     // this triggers a redirect to the external provider for sign-out
                     return SignOut(new AuthenticationProperties { RedirectUri = url }, idp);

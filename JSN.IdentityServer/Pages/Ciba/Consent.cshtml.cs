@@ -1,4 +1,3 @@
-using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
@@ -14,8 +13,8 @@ namespace JSN.IdentityServer.Pages.Ciba;
 [SecurityHeadersAttribute]
 public class Consent : PageModel
 {
-    private readonly IEventService _events;
     private readonly IBackchannelAuthenticationInteractionService _interaction;
+    private readonly IEventService _events;
     private readonly ILogger<Consent> _logger;
 
     public Consent(
@@ -29,8 +28,9 @@ public class Consent : PageModel
     }
 
     public ViewModel View { get; set; }
-
-    [BindProperty] public InputModel Input { get; set; }
+        
+    [BindProperty]
+    public InputModel Input { get; set; }
 
     public async Task<IActionResult> OnGet(string id)
     {
@@ -66,8 +66,7 @@ public class Consent : PageModel
             result = new CompleteBackchannelLoginRequest(Input.Id);
 
             // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId,
-                request.ValidatedResources.RawScopeValues));
+            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
         }
         // user clicked 'yes' - validate the data
         else if (Input?.Button == "yes")
@@ -78,7 +77,7 @@ public class Consent : PageModel
                 var scopes = Input.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(x => x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess);
                 }
 
                 result = new CompleteBackchannelLoginRequest(Input.Id)
@@ -88,8 +87,7 @@ public class Consent : PageModel
                 };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId,
-                    request.ValidatedResources.RawScopeValues, result.ScopesValuesConsented, false));
+                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, result.ScopesValuesConsented, false));
             }
             else
             {
@@ -121,8 +119,10 @@ public class Consent : PageModel
         {
             return CreateConsentViewModel(model, id, request);
         }
-
-        _logger.LogError("No backchannel login request matching id: {id}", id);
+        else
+        {
+            _logger.LogError("No backchannel login request matching id: {id}", id);
+        }
         return null;
     }
 
@@ -139,13 +139,11 @@ public class Consent : PageModel
         };
 
         vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => CreateScopeViewModel(x,
-                model?.ScopesConsented == null || model.ScopesConsented?.Contains(x.Name) == true))
+            .Select(x => CreateScopeViewModel(x, model?.ScopesConsented == null || model.ScopesConsented?.Contains(x.Name) == true))
             .ToArray();
 
         var resourceIndicators = request.RequestedResourceIndicators ?? Enumerable.Empty<string>();
-        var apiResources =
-            request.ValidatedResources.Resources.ApiResources.Where(x => resourceIndicators.Contains(x.Name));
+        var apiResources = request.ValidatedResources.Resources.ApiResources.Where(x => resourceIndicators.Contains(x.Name));
 
         var apiScopes = new List<ScopeViewModel>();
         foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
@@ -153,25 +151,20 @@ public class Consent : PageModel
             var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
             if (apiScope != null)
             {
-                var scopeVm = CreateScopeViewModel(parsedScope, apiScope,
-                    model == null || model.ScopesConsented?.Contains(parsedScope.RawValue) == true);
+                var scopeVm = CreateScopeViewModel(parsedScope, apiScope, model == null || model.ScopesConsented?.Contains(parsedScope.RawValue) == true);
                 scopeVm.Resources = apiResources.Where(x => x.Scopes.Contains(parsedScope.ParsedName))
                     .Select(x => new ResourceViewModel
                     {
                         Name = x.Name,
-                        DisplayName = x.DisplayName ?? x.Name
+                        DisplayName = x.DisplayName ?? x.Name,
                     }).ToArray();
                 apiScopes.Add(scopeVm);
             }
         }
-
         if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(model == null ||
-                                                model.ScopesConsented?.Contains(IdentityServerConstants.StandardScopes
-                                                    .OfflineAccess) == true));
+            apiScopes.Add(GetOfflineAccessScope(model == null || model.ScopesConsented?.Contains(Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess) == true));
         }
-
         vm.ApiScopes = apiScopes;
 
         return vm;
@@ -194,7 +187,7 @@ public class Consent : PageModel
     public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
     {
         var displayName = apiScope.DisplayName ?? apiScope.Name;
-        if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
+        if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
         {
             displayName += ":" + parsedScopeValue.ParsedParameter;
         }
@@ -215,7 +208,7 @@ public class Consent : PageModel
     {
         return new ScopeViewModel
         {
-            Value = IdentityServerConstants.StandardScopes.OfflineAccess,
+            Value = Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess,
             DisplayName = ConsentOptions.OfflineAccessDisplayName,
             Description = ConsentOptions.OfflineAccessDescription,
             Emphasize = true,

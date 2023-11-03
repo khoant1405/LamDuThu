@@ -1,8 +1,9 @@
+
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
 
-namespace JSN.IdentityServer.Pages.Account.Logout;
+namespace JSN.IdentityServer.Pages.Logout;
 
 public class LoggedOutViewModel
 {

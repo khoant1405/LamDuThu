@@ -1,4 +1,5 @@
-@model JSN.IdentityServer.Pages.Device.ScopeViewModel
+@using JSN.IdentityServer.Pages.Device
+@model ScopeViewModel
 
 <li class="list-group-item">
     <label>
@@ -8,12 +9,12 @@
                id="scopes_@Model.Value"
                value="@Model.Value"
                checked="@Model.Checked"
-               disabled="@Model.Required"/>
+               disabled="@Model.Required" />
         @if (Model.Required)
         {
             <input type="hidden"
                    name="Input.ScopesConsented"
-                   value="@Model.Value"/>
+                   value="@Model.Value" />
         }
         <strong>@Model.DisplayName</strong>
         @if (Model.Emphasize)
@@ -23,9 +24,7 @@
     </label>
     @if (Model.Required)
     {
-        <span>
-            <em>(required)</em>
-        </span>
+        <span><em>(required)</em></span>
     }
     @if (Model.Description != null)
     {

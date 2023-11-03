@@ -1,6 +1,6 @@
-﻿using JSN.IdentityServer.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using JSN.IdentityServer.Models;
 
 namespace JSN.IdentityServer.Data;
 

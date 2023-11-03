@@ -13,10 +13,10 @@ namespace JSN.IdentityServer.Pages.Grants;
 [Authorize]
 public class Index : PageModel
 {
-    private readonly IClientStore _clients;
-    private readonly IEventService _events;
     private readonly IIdentityServerInteractionService _interaction;
+    private readonly IClientStore _clients;
     private readonly IResourceStore _resources;
+    private readonly IEventService _events;
 
     public Index(IIdentityServerInteractionService interaction,
         IClientStore clients,
@@ -30,9 +30,7 @@ public class Index : PageModel
     }
 
     public ViewModel View { get; set; }
-
-    [BindProperty] [Required] public string ClientId { get; set; }
-
+        
     public async Task OnGet()
     {
         var grants = await _interaction.GetAllUserGrantsAsync();
@@ -45,7 +43,7 @@ public class Index : PageModel
             {
                 var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
 
-                var item = new GrantViewModel
+                var item = new GrantViewModel()
                 {
                     ClientId = client.ClientId,
                     ClientName = client.ClientName ?? client.ClientId,
@@ -67,6 +65,10 @@ public class Index : PageModel
             Grants = list
         };
     }
+
+    [BindProperty]
+    [Required]
+    public string ClientId { get; set; }
 
     public async Task<IActionResult> OnPost()
     {
