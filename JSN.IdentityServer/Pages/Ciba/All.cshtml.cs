@@ -14,19 +14,18 @@ namespace JSN.IdentityServer.Pages.Ciba;
 [Authorize]
 public class AllModel : PageModel
 {
-    public IEnumerable<BackchannelUserLoginRequest> Logins { get; set; }
-
-    [BindProperty, Required]
-    public string Id { get; set; }
-    [BindProperty, Required]
-    public string Button { get; set; }
-
     private readonly IBackchannelAuthenticationInteractionService _backchannelAuthenticationInteraction;
 
     public AllModel(IBackchannelAuthenticationInteractionService backchannelAuthenticationInteractionService)
     {
         _backchannelAuthenticationInteraction = backchannelAuthenticationInteractionService;
     }
+
+    public IEnumerable<BackchannelUserLoginRequest> Logins { get; set; }
+
+    [BindProperty] [Required] public string Id { get; set; }
+
+    [BindProperty] [Required] public string Button { get; set; }
 
     public async Task OnGet()
     {
