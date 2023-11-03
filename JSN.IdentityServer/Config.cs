@@ -8,21 +8,21 @@ public static class Config
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile(),
+            new IdentityResources.Profile()
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("scope1"),
-            new ApiScope("scope2"),
+            new("scope1"),
+            new("scope2")
         };
 
     public static IEnumerable<Client> Clients =>
         new Client[]
         {
             // m2m client credentials flow client
-            new Client
+            new()
             {
                 ClientId = "m2m.client",
                 ClientName = "Client Credentials Client",
@@ -34,7 +34,7 @@ public static class Config
             },
 
             // interactive client using code flow + pkce
-            new Client
+            new()
             {
                 ClientId = "interactive",
                 ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
@@ -47,6 +47,6 @@ public static class Config
 
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "scope2" }
-            },
+            }
         };
 }

@@ -1,5 +1,4 @@
-
-namespace JSN.IdentityServer.Pages.Logout;
+namespace JSN.IdentityServer.Pages.Account.Logout;
 
 public class LogoutOptions
 {
