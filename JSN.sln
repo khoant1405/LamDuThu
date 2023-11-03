@@ -20,7 +20,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.AutoCrawl", "JSN.AutoCr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.Redis", "JSN.Redis\JSN.Redis.csproj", "{19876794-FCE3-4C25-BC72-9DFFD524EC24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSN.IdentityServer", "JSN.IdentityServer\JSN.IdentityServer.csproj", "{93978A7D-9D14-4D56-BE4C-A9B0F6530FB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.IdentityServer", "JSN.IdentityServer\JSN.IdentityServer.csproj", "{93978A7D-9D14-4D56-BE4C-A9B0F6530FB3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.ServerIdentity", "JSN.ServerIdentity\JSN.ServerIdentity.csproj", "{BBA471EA-52D7-43A3-83C2-378F15766CC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,10 @@ Global
 		{93978A7D-9D14-4D56-BE4C-A9B0F6530FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93978A7D-9D14-4D56-BE4C-A9B0F6530FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93978A7D-9D14-4D56-BE4C-A9B0F6530FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA471EA-52D7-43A3-83C2-378F15766CC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA471EA-52D7-43A3-83C2-378F15766CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA471EA-52D7-43A3-83C2-378F15766CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA471EA-52D7-43A3-83C2-378F15766CC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
