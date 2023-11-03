@@ -6,6 +6,7 @@ using IdentityServer4.EntityFramework.Storage;
 using JSN.IdentityServer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Server;
 
 namespace JSN.IdentityServer;
 
