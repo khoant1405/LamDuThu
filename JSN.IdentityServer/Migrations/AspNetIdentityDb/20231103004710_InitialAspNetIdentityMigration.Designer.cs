@@ -4,16 +4,18 @@ using JSN.IdentityServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JSN.IdentityServer.Migrations.JsnIdentityDb
+namespace JSN.IdentityServer.Migrations.AspNetIdentityDb
 {
-    [DbContext(typeof(JsnIdentityDbContext))]
-    partial class JsnIdentityDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AspNetIdentityDbContext))]
+    [Migration("20231103004710_InitialAspNetIdentityMigration")]
+    partial class InitialAspNetIdentityMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

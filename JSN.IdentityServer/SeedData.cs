@@ -39,7 +39,7 @@ public class SeedData
         }
 
         // 7. Lấy IdentityDbContext để làm việc với dữ liệu danh tính người dùng.
-        var ctx = scope.ServiceProvider.GetService<JsnIdentityDbContext>();
+        var ctx = scope.ServiceProvider.GetService<AspNetIdentityDbContext>();
         if (ctx != null)
         {
             // 8. Migrate cơ sở dữ liệu của IdentityDbContext.
@@ -57,14 +57,14 @@ public class SeedData
         services.AddLogging();
 
         // 11. Thêm IdentityDbContext để làm việc với dữ liệu danh tính người dùng.
-        services.AddDbContext<JsnIdentityDbContext>(
+        services.AddDbContext<AspNetIdentityDbContext>(
             options => options.UseSqlServer(connectionString)
         );
 
         // 12. Cấu hình và đăng ký các dịch vụ liên quan đến Identity, bao gồm quản lý người dùng và vai trò.
         services
             .AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<JsnIdentityDbContext>()
+            .AddEntityFrameworkStores<AspNetIdentityDbContext>()
             .AddDefaultTokenProviders();
 
         // 13. Thêm DbContext hoạt động cho IdentityServer (đối với các token, mã và sự đồng thuận).
@@ -160,32 +160,32 @@ public class SeedData
     {
         // 28. Đảm bảo rằng các người dùng cụ thể đã được tạo để thực hiện xác thực.
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        var superAdmin = await userMgr.FindByNameAsync("superAdmin");
+        var khoant1405 = await userMgr.FindByNameAsync("khoant1405");
 
-        if (superAdmin != null)
+        if (khoant1405 != null)
         {
             return;
         }
 
-        superAdmin = new IdentityUser
+        khoant1405 = new IdentityUser
         {
-            UserName = "superAdmin",
+            UserName = "khoant1405",
             Email = "vinamilk1634@gmail.com",
             EmailConfirmed = false
         };
 
-        // 29. Tạo người dùng superAdmin.
-        var result = await userMgr.CreateAsync(superAdmin, "1405");
+        // 29. Tạo người dùng khoant1405.
+        var result = await userMgr.CreateAsync(khoant1405, "1405");
 
         if (!result.Succeeded)
         {
             throw new Exception(result.Errors.First().Description);
         }
 
-        // 30. Thêm các quyền cho người dùng superAdmin.
-        result = await userMgr.AddClaimsAsync(superAdmin, new Claim[]
+        // 30. Thêm các quyền cho người dùng khoant1405.
+        result = await userMgr.AddClaimsAsync(khoant1405, new Claim[]
         {
-            new(JwtClaimTypes.Name, "superAdmin")
+            new(JwtClaimTypes.Name, "khoant1405")
         });
 
         if (!result.Succeeded)

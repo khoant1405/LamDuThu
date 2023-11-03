@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JSN.IdentityServer.Data;
 
-public class JsnIdentityDbContext : IdentityDbContext
+public class AspNetIdentityDbContext : IdentityDbContext
 {
-    public JsnIdentityDbContext(DbContextOptions<JsnIdentityDbContext> options)
+    public AspNetIdentityDbContext(DbContextOptions<AspNetIdentityDbContext> options)
         : base(options)
     {
     }

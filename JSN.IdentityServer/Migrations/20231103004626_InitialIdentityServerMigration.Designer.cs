@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JSN.IdentityServer.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20231103003337_InitialIdentityServerMigration")]
+    [Migration("20231103004626_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
