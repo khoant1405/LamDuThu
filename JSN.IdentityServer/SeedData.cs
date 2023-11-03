@@ -64,16 +64,16 @@ public class SeedData
     {
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-        var angella = userMgr.FindByNameAsync("angella").Result;
-        if (angella == null)
+        var khoant = userMgr.FindByNameAsync("khoant").Result;
+        if (khoant == null)
         {
-            angella = new IdentityUser
+            khoant = new IdentityUser
             {
-                UserName = "angella",
-                Email = "angella.freeman@email.com",
-                EmailConfirmed = true
+                UserName = "khoant",
+                Email = "vinamilk1634@gmail.com",
+                EmailConfirmed = false
             };
-            var result = userMgr.CreateAsync(angella, "Pass123$").Result;
+            var result = userMgr.CreateAsync(khoant, "Khoa@1405").Result;
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
@@ -81,13 +81,10 @@ public class SeedData
 
             result =
                 userMgr.AddClaimsAsync(
-                    angella,
+                    khoant,
                     new Claim[]
                     {
-                        new(JwtClaimTypes.Name, "Angella Freeman"),
-                        new(JwtClaimTypes.GivenName, "Angella"),
-                        new(JwtClaimTypes.FamilyName, "Freeman"),
-                        new(JwtClaimTypes.WebSite, "http://angellafreeman.com"),
+                        new(JwtClaimTypes.Name, "Khoa"),
                         new("location", "somewhere")
                     }
                 ).Result;
