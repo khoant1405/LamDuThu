@@ -39,7 +39,7 @@ public class SeedData
         }
 
         // 7. Lấy IdentityDbContext để làm việc với dữ liệu danh tính người dùng.
-        var ctx = scope.ServiceProvider.GetService<IdentityDbContext>();
+        var ctx = scope.ServiceProvider.GetService<JsnIdentityDbContext>();
         if (ctx != null)
         {
             // 8. Migrate cơ sở dữ liệu của IdentityDbContext.
@@ -57,14 +57,14 @@ public class SeedData
         services.AddLogging();
 
         // 11. Thêm IdentityDbContext để làm việc với dữ liệu danh tính người dùng.
-        services.AddDbContext<IdentityDbContext>(
+        services.AddDbContext<JsnIdentityDbContext>(
             options => options.UseSqlServer(connectionString)
         );
 
         // 12. Cấu hình và đăng ký các dịch vụ liên quan đến Identity, bao gồm quản lý người dùng và vai trò.
         services
             .AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<IdentityDbContext>()
+            .AddEntityFrameworkStores<JsnIdentityDbContext>()
             .AddDefaultTokenProviders();
 
         // 13. Thêm DbContext hoạt động cho IdentityServer (đối với các token, mã và sự đồng thuận).

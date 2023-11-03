@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JSN.IdentityServer.Migrations.IdentityDb
+namespace JSN.IdentityServer.Migrations.JsnIdentityDb
 {
-    [DbContext(typeof(IdentityDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(JsnIdentityDbContext))]
+    partial class JsnIdentityDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

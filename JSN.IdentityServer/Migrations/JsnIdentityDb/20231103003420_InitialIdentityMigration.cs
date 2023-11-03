@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace JSN.IdentityServer.Migrations.IdentityDb;
+namespace JSN.IdentityServer.Migrations.JsnIdentityDb;
 
 public partial class InitialIdentityMigration : Migration
 {

@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JSN.IdentityServer.Migrations.IdentityDb
+namespace JSN.IdentityServer.Migrations.JsnIdentityDb
 {
-    [DbContext(typeof(IdentityDbContext))]
-    [Migration("20231103000640_InitialIdentityMigration")]
+    [DbContext(typeof(JsnIdentityDbContext))]
+    [Migration("20231103003420_InitialIdentityMigration")]
     partial class InitialIdentityMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

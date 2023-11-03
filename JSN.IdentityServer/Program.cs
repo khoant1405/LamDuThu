@@ -24,12 +24,12 @@ if (seed)
 }
 
 // Cấu hình và đăng ký dịch vụ DbContext cho Identity Framework.
-builder.Services.AddDbContext<IdentityDbContext>(options =>
+builder.Services.AddDbContext<JsnIdentityDbContext>(options =>
     options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)));
 
 // Cấu hình và đăng ký dịch vụ quản lý danh tính cho Identity Framework và liên kết nó với DbContext đã cấu hình trước đó.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<IdentityDbContext>();
+    .AddEntityFrameworkStores<JsnIdentityDbContext>();
 
 // Cấu hình và đăng ký dịch vụ Identity Server trong ứng dụng.
 builder.Services.AddIdentityServer()
