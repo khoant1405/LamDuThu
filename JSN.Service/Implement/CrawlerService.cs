@@ -29,6 +29,7 @@ public class CrawlerService : ICrawlerService
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
         });
 
+        var random = new Random();
         var listArticle = new List<Article>();
 
         for (var i = startPage; i < endPage + 1; i++)
@@ -54,12 +55,15 @@ public class CrawlerService : ICrawlerService
                 var description = CleanHtmlEntities(item.QuerySelector("div.message-body > div")
                     ?.InnerText, true);
                 var content = "CONTENT: " + description;
-                var time = DateTime.Now;
+
+                var daysToAdd = random.Next(1, 101);
+                var currentDate = DateTime.Now;
+                var time = currentDate.AddDays(-daysToAdd);
 
                 var newArticle = new Article
                 {
                     ArticleName = articleName,
-                    Status = (int)ArticleStatus.Publish,
+                    Status = (int)ArticleStatus.Editing,
                     RefUrl = "",
                     ImageThumb = imageThumb,
                     Description = description,
@@ -82,6 +86,7 @@ public class CrawlerService : ICrawlerService
 
         if (listArticle.Any())
         {
+            listArticle = listArticle.OrderBy(x => x.CreatedOn).ToList();
             await _articleRepository.AddRangeAsync(listArticle);
             await _unitOfWork.CommitAsync();
         }

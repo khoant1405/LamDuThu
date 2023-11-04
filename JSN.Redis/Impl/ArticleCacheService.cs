@@ -10,7 +10,7 @@ public class ArticleCacheService : Redis<ArticleView>, IArticleCacheService
 
     public ArticleCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
-        _redisDatabase = connectionMultiplexer.GetDatabase();
+        _redisDatabase = GetDatabaseOptions(connectionMultiplexer);
     }
 
     public void AddOrUpdate(ArticleView entity)
