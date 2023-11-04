@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<ICrawlerService, CrawlerService>();
+        services.AddScoped<IArticleService, ArticleService>();
 
         return services;
     }

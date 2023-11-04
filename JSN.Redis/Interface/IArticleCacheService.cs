@@ -1,7 +1,7 @@
-﻿using JSN.Core.ViewModel;
+﻿using JSN.Core.Model;
 
 namespace JSN.Redis.Interface;
 
-public interface IArticleCacheService : IRedis<ArticleView>
+public interface IArticleCacheService : IRedis<Article>
 {
 }

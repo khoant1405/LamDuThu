@@ -1,10 +1,10 @@
-﻿using JSN.Core.ViewModel;
+﻿using JSN.Core.Model;
 using JSN.Redis.Interface;
 using StackExchange.Redis;
 
 namespace JSN.Redis.Impl;
 
-public class ArticleCacheService : Redis<ArticleView>, IArticleCacheService
+public class ArticleCacheService : Redis<Article>, IArticleCacheService
 {
     private readonly IDatabase _redisDatabase;
 
@@ -13,23 +13,23 @@ public class ArticleCacheService : Redis<ArticleView>, IArticleCacheService
         _redisDatabase = GetDatabaseOptions(connectionMultiplexer);
     }
 
-    public void AddOrUpdate(ArticleView entity)
+    public void AddOrUpdate(Article entity)
     {
         AddOrUpdate(entity, _redisDatabase);
     }
 
-    public async Task AddOrUpdateAsync(ArticleView entity)
+    public async Task AddOrUpdateAsync(Article entity)
     {
         await AddOrUpdateAsync(entity, _redisDatabase);
     }
 
-    public ArticleView? GetById(int id)
+    public Article? GetById(int id)
     {
         var key = GetKeyById(id);
         return Get(key, _redisDatabase);
     }
 
-    public async Task<ArticleView?> GetByIdAsync(int id)
+    public async Task<Article?> GetByIdAsync(int id)
     {
         var key = GetKeyById(id);
         return await GetAsync(key, _redisDatabase);
