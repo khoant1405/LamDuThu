@@ -17,6 +17,8 @@ public static class AppSettings
         }
     }
 
+    public static int PublishAfterMinutes { get; set; } = 1;
+    public static int NumberPublish { get; set; } = 1;
     public static int ArticlePageSize { get; set; } = 20;
     public static JwtSetting JwtSetting { get; set; }
     public static List<SqlSetting> SqlSettings { get; set; }
@@ -65,7 +67,10 @@ public static class AppSettings
             ConnectRetry = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"])
         };
 
-        var articlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"]);
-        ArticlePageSize = articlePageSize != 0 ? articlePageSize : ArticlePageSize;
+        ArticlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"], 20);
+
+        PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
+
+        NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
     }
 }
