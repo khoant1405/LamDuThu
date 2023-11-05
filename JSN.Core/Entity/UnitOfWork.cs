@@ -4,38 +4,20 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly DbFactory _dbFactory;
     private CoreDbContext? _dbContext;
-    private bool _disposed;
 
     public UnitOfWork(DbFactory dbFactory)
     {
-        _dbFactory = dbFactory;
+        _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
     }
 
     public CoreDbContext DbContext
     {
-        get
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException("UnitOfWork");
-            }
-
-            if (_dbContext == null)
-            {
-                _dbContext = _dbFactory.DbContext;
-            }
-
-            return _dbContext;
-        }
+        get { return _dbContext ??= _dbFactory.DbContext; }
     }
 
     public void Dispose()
     {
-        if (!_disposed && _dbContext != null)
-        {
-            _disposed = true;
-            _dbContext.Dispose();
-        }
+        _dbFactory.Dispose();
     }
 
     public async Task<int> CommitAsync()

@@ -20,7 +20,6 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<CoreDbContext>(options =>
         {
             options.UseSqlServer(AppSettings.DefaultSqlSetting?.ConnectString);
-            //options.UseLazyLoadingProxies();
         });
 
         services.AddScoped(

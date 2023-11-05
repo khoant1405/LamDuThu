@@ -10,7 +10,7 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
 
     public Repository(DbFactory dbFactory)
     {
-        _dbFactory = dbFactory;
+        _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
     }
 
     protected DbSet<T> DbSet => _dbSet ??= _dbFactory.DbContext.Set<T>();
@@ -52,12 +52,7 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
 
     public IQueryable<T> Where(Expression<Func<T, bool>>? filter = null)
     {
-        if (filter == null)
-        {
-            return DbSet;
-        }
-
-        return DbSet.Where(filter);
+        return filter == null ? DbSet : DbSet.Where(filter);
     }
 
     public void Update(T entity)

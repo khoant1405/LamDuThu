@@ -2,14 +2,13 @@
 
 public class DbFactory : IDisposable
 {
-    private readonly AsyncLocal<bool> _asyncLocalFlag = new();
-    private readonly Func<CoreDbContext> _instanceFunc;
+    private readonly Func<CoreDbContext> _dbContextFactory;
     private CoreDbContext? _dbContext;
     private bool _disposed;
 
     public DbFactory(Func<CoreDbContext> dbContextFactory)
     {
-        _instanceFunc = dbContextFactory;
+        _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     }
 
     public CoreDbContext DbContext
@@ -21,35 +20,18 @@ public class DbFactory : IDisposable
                 throw new ObjectDisposedException("DbFactory");
             }
 
-            if (_dbContext == null)
-            {
-                if (_asyncLocalFlag.Value)
-                {
-                    throw new InvalidOperationException("Nested DbContext creation is not allowed.");
-                }
-
-                _asyncLocalFlag.Value = true;
-
-                try
-                {
-                    _dbContext = _instanceFunc.Invoke();
-                }
-                finally
-                {
-                    _asyncLocalFlag.Value = false;
-                }
-            }
-
-            return _dbContext;
+            return _dbContext ??= _dbContextFactory.Invoke();
         }
     }
 
     public void Dispose()
     {
-        if (!_disposed && _dbContext != null)
+        if (_disposed)
         {
-            _disposed = true;
-            _dbContext.Dispose();
+            return;
         }
+
+        _disposed = true;
+        _dbContext?.Dispose();
     }
 }
