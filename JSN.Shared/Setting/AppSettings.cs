@@ -17,6 +17,7 @@ public static class AppSettings
         }
     }
 
+    // Define default values for settings
     public static int PublishAfterMinutes { get; set; } = 1;
     public static int NumberPublish { get; set; } = 1;
     public static int ArticlePageSize { get; set; } = 20;
@@ -28,7 +29,19 @@ public static class AppSettings
 
     public static void LoadConfig()
     {
-        JwtSetting = new JwtSetting
+        JwtSetting = LoadJwtSetting();
+        SqlSettings = LoadSqlSettings();
+        DefaultSqlSetting = SqlSettings.FirstOrDefault();
+        RedisSetting = LoadRedisSetting();
+        ArticlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"], 20);
+        PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
+        NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
+        KafkaSetting = LoadKafkaSetting();
+    }
+
+    private static JwtSetting LoadJwtSetting()
+    {
+        return new JwtSetting
         {
             ValidAudience = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidAudience"]),
             ValidIssuer = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidIssuer"]),
@@ -36,27 +49,38 @@ public static class AppSettings
             TokenValidityInMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["JWT:TokenValidityInMinutes"]),
             RefreshTokenValidityInDays = ConvertHelper.ToInt32(ConfigurationBuilder["JWT:RefreshTokenValidityInDays"])
         };
+    }
 
-        SqlSettings = new List<SqlSetting>();
+    private static List<SqlSetting> LoadSqlSettings()
+    {
+        var sqlSettings = new List<SqlSetting>();
         var index = 0;
-        var sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name")
-            .Value);
-        while (!string.IsNullOrEmpty(sqlName))
+
+        while (true)
         {
-            SqlSettings.Add(new SqlSetting
+            var sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name").Value);
+
+            if (string.IsNullOrEmpty(sqlName))
+            {
+                break;
+            }
+
+            sqlSettings.Add(new SqlSetting
             {
                 Name = sqlName,
-                ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString")
-                    .Value)
+                ConnectString =
+                    ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
             });
+
             index++;
-            sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name")
-                .Value);
         }
 
-        DefaultSqlSetting = SqlSettings.FirstOrDefault();
+        return sqlSettings;
+    }
 
-        RedisSetting = new RedisSetting
+    private static RedisSetting LoadRedisSetting()
+    {
+        return new RedisSetting
         {
             Servers = ConvertHelper.ToString(ConfigurationBuilder["Redis:Servers"]),
             SentinelMasterName = ConvertHelper.ToString(ConfigurationBuilder["Redis:SentinelMasterName"]),
@@ -67,14 +91,11 @@ public static class AppSettings
             ConnectTimeout = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"]),
             ConnectRetry = ConvertHelper.ToInt32(ConfigurationBuilder["Redis:MaxPoolSize"])
         };
+    }
 
-        ArticlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"], 20);
-
-        PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
-
-        NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
-
-        KafkaSetting = new KafkaSetting
+    private static KafkaSetting LoadKafkaSetting()
+    {
+        var kafkaSetting = new KafkaSetting
         {
             KafkaIp = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaIp"]),
             GroupId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:GroupId"]),
@@ -84,26 +105,32 @@ public static class AppSettings
                 ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:ConsumerIsClosedWhenConsumeException"]),
             PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"])
         };
+
         var producerSettings = new List<ProducerSetting>();
-        index = 0;
-        var producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name")
-            .Value);
-        while (!string.IsNullOrEmpty(producerName))
+        var index = 0;
+
+        while (true)
         {
+            var producerName =
+                ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name").Value);
+
+            if (string.IsNullOrEmpty(producerName))
+            {
+                break;
+            }
+
             producerSettings.Add(new ProducerSetting
             {
                 Name = producerName,
                 QueueName = ConvertHelper.ToString(ConfigurationBuilder
-                    .GetSection($"Kafka:AllProducers:{index}:QueueName")
-                    .Value),
-                Size = ConvertHelper.ToInt32(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Size")
-                    .Value)
+                    .GetSection($"Kafka:AllProducers:{index}:QueueName").Value),
+                Size = ConvertHelper.ToInt32(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Size").Value)
             });
+
             index++;
-            producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name")
-                .Value);
         }
 
-        KafkaSetting.AllProducers = producerSettings;
+        kafkaSetting.AllProducers = producerSettings;
+        return kafkaSetting;
     }
 }
