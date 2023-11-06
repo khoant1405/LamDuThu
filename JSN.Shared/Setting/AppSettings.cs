@@ -24,6 +24,7 @@ public static class AppSettings
     public static List<SqlSetting> SqlSettings { get; set; }
     public static SqlSetting? DefaultSqlSetting { get; set; }
     public static RedisSetting RedisSetting { get; set; }
+    public static KafkaSetting KafkaSetting { get; set; }
 
     public static void LoadConfig()
     {
@@ -72,5 +73,37 @@ public static class AppSettings
         PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
 
         NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
+
+        KafkaSetting = new KafkaSetting
+        {
+            KafkaIp = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaIp"]),
+            GroupId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:GroupId"]),
+            ClientId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:ClientId"]),
+            CommitPeriod = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:CommitPeriod"]),
+            ConsumerIsClosedWhenConsumeException =
+                ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:ConsumerIsClosedWhenConsumeException"]),
+            PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"])
+        };
+        var producerSettings = new List<ProducerSetting>();
+        index = 0;
+        var producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name")
+            .Value);
+        while (!string.IsNullOrEmpty(producerName))
+        {
+            producerSettings.Add(new ProducerSetting
+            {
+                Name = producerName,
+                QueueName = ConvertHelper.ToString(ConfigurationBuilder
+                    .GetSection($"Kafka:AllProducers:{index}:QueueName")
+                    .Value),
+                Size = ConvertHelper.ToInt32(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Size")
+                    .Value)
+            });
+            index++;
+            producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name")
+                .Value);
+        }
+
+        KafkaSetting.AllProducers = producerSettings;
     }
 }
