@@ -10,7 +10,7 @@ using JSN.Shared.Setting;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
-namespace JSN.AutoCrawl.Extensions;
+namespace JSN.AutoPublishArticle.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -40,7 +40,6 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<ICrawlerService, CrawlerService>();
         services.AddScoped<IArticleService, ArticleService>();
 
         return services;

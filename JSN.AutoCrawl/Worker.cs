@@ -1,6 +1,6 @@
 using JSN.Shared.Setting;
 
-namespace JSN.AutoCrawl;
+namespace JSN.AutoPublishArticle;
 
 public class Worker : BackgroundService
 {

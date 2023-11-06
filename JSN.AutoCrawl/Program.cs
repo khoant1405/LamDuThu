@@ -1,5 +1,5 @@
-using JSN.AutoCrawl;
-using JSN.AutoCrawl.Extensions;
+using JSN.AutoPublishArticle;
+using JSN.AutoPublishArticle.Extensions;
 using JSN.Shared.Setting;
 
 var host = Host.CreateDefaultBuilder(args)
