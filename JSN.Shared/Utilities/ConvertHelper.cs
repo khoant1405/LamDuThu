@@ -8,203 +8,145 @@ namespace JSN.Shared.Utilities;
 
 public static class ConvertHelper
 {
-    public static Guid ToGuid(object val, Guid defValue)
+    public static Guid ToGuid(object? value, Guid defaultValue = default)
     {
-        Guid ret;
-        try
-        {
-            ret = new Guid(val.ToString() ?? string.Empty);
-        }
-        catch
-        {
-            ret = defValue;
-        }
-
-        return ret;
+        return Guid.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static Guid ToGuid(object val)
+    public static long ToInt64(object? value, long defaultValue = 0)
     {
-        return ToGuid(val, Guid.Empty);
+        return long.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static Guid ToGuid(SqlGuid val)
+    public static int ToInt32(object? value, int defaultValue = 0)
     {
-        return val.IsNull ? Guid.Empty : val.Value;
+        return int.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static long ToInt64(object? obj, long defaultValue = 0)
+    public static ushort ToUshort(object? value, ushort defaultValue = 0)
     {
-        return long.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
+        return ushort.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static int ToInt32(object? obj, int defaultValue = 0)
+    public static byte ToByte(object? value, byte defaultValue = 0)
     {
-        return int.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
+        return byte.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static ushort ToUshort(object? obj, ushort defaultValue = 0)
+    public static string? ToString(object? value, string? defaultValue = "")
     {
-        return ushort.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
-    }
-
-    public static byte ToByte(object? obj, byte defaultValue = 0)
-    {
-        return byte.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
-    }
-
-    public static string? ToString(object? obj, string? defaultValue = "")
-    {
-        if (obj == null)
+        if (value == null)
         {
             return defaultValue;
         }
 
-        string? retVal;
         try
         {
-            retVal = Convert.ToString(obj);
+            return Convert.ToString(value);
         }
         catch
         {
-            retVal = defaultValue;
+            return defaultValue;
         }
-
-        return retVal;
     }
 
-    public static DateTime ToDateTime(object? obj, DateTime defaultValue)
+    public static DateTime ToDateTime(object? value, DateTime defaultValue)
     {
-        var retVal = DateTime.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
-        if (retVal >= (DateTime)SqlDateTime.MaxValue)
+        var result = DateTime.TryParse(value?.ToString(), out var parsedValue) ? parsedValue : defaultValue;
+
+        if (result >= (DateTime)SqlDateTime.MaxValue)
         {
             return (DateTime)SqlDateTime.MaxValue;
         }
 
-        return retVal <= (DateTime)SqlDateTime.MinValue ? ((DateTime)SqlDateTime.MinValue).AddYears(5) : retVal;
+        if (result <= (DateTime)SqlDateTime.MinValue)
+        {
+            return ((DateTime)SqlDateTime.MinValue).AddYears(5);
+        }
+
+        return result;
     }
 
-    public static DateTime ToDateTime(object obj)
+    public static bool ToBoolean(object? value, bool defaultValue = false)
     {
-        return ToDateTime(obj, DateTime.Now);
+        return bool.TryParse(value?.ToString(), out var result) ? result : defaultValue;
     }
 
-    public static bool ToBoolean(object? obj, bool defaultValue = false)
+    public static float ToSingle(object? value, float defaultValue = 0)
     {
-        return bool.TryParse(obj?.ToString(), out var parsedVal) ? parsedVal : defaultValue;
-    }
-
-    public static float ToSingle(object? obj, float defaultValue = 0)
-    {
-        return float.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
-            ? parsedVal
+        return float.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
+            ? result
             : defaultValue;
     }
 
-    public static double ToDouble(object? obj, double defaultValue = 0)
+    public static double ToDouble(object? value, double defaultValue = 0)
     {
-        return double.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
-            ? parsedVal
+        return double.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
+            ? result
             : defaultValue;
     }
 
-    public static decimal ToDecimal(object? obj, decimal defaultValue = 0)
+    public static decimal ToDecimal(object? value, decimal defaultValue = 0)
     {
-        return decimal.TryParse(obj?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedVal)
-            ? parsedVal
+        return decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
+            ? result
             : defaultValue;
     }
 
-    public static decimal ToDecimal(SqlDecimal val)
+    public static decimal CurrencyToDecimal(object value)
     {
-        return val.IsNull ? decimal.Zero : val.Value;
+        var strValue = ToString(value);
+        strValue = strValue?.Replace("$", string.Empty);
+        strValue = strValue?.Replace(",", string.Empty);
+        return ToDecimal(strValue?.Trim());
     }
 
-    public static long ToJavaScriptMilliseconds(DateTime dt)
+    public static string ToCurrency(object value)
     {
-        var datetimeMinTimeTicks = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
-        return (dt.ToUniversalTime().Ticks - datetimeMinTimeTicks) / 10000;
+        return $"{value:C}";
     }
 
-    public static decimal CurrencyToDecimal(object val)
+    public static string ToNumeric(object value)
     {
-        var strVal = ToString(val);
-        strVal = strVal?.Replace("$", string.Empty);
-        strVal = strVal?.Replace(",", string.Empty);
-        return ToDecimal(strVal?.Trim());
-    }
-
-    /// <summary>
-    ///     Format to $0.00
-    /// </summary>
-    /// <param name="val">Value to format</param>
-    /// <returns></returns>
-    public static string ToCurrency(object val)
-    {
-        return $"{val:C}";
-    }
-
-    /// <summary>
-    ///     Format to 0.00
-    /// </summary>
-    /// <param name="val">Value to format</param>
-    /// <returns></returns>
-    public static string ToNumeric(object val)
-    {
-        var result = string.Format(new CultureInfo("en-US"), "{0:#,##0}", val);
+        var result = string.Format(new CultureInfo("en-US"), "{0:#,##0}", value);
         return string.IsNullOrEmpty(result) ? "0" : result;
     }
 
-    public static DateTime ConvertBackFixPrecision(DateTime val)
+    public static DateTime ConvertBackFixPrecision(DateTime value)
     {
         const string format = "yyyy-MM-dd HH:mm:ss:fff";
-        var stringDate = val.ToString(format);
+        var stringDate = value.ToString(format);
         return DateTime.ParseExact(stringDate, format, CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    ///     Convert object to JSON
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="isIgnoreNull"></param>
-    /// <returns></returns>
-    public static string ToJson(object obj, bool isIgnoreNull = false)
+    public static string ToJson(object obj, bool ignoreNull = false)
     {
-        if (isIgnoreNull)
-        {
-            return JsonConvert.SerializeObject(obj,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-        }
+        var settings = ignoreNull
+            ? new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+            : null;
 
-        return JsonConvert.SerializeObject(obj);
+        return JsonConvert.SerializeObject(obj, settings);
     }
 
     [Obsolete("Obsolete")]
-    public static long GetInt64HashCode(string strText)
+    public static long GetInt64HashCode(string text)
     {
         long hashCode = 0;
-        if (string.IsNullOrEmpty(strText))
+
+        if (string.IsNullOrEmpty(text))
         {
             return hashCode;
         }
 
-        //Unicode Encode Covering all characterset
-        var byteContents = Encoding.Unicode.GetBytes(strText);
-        SHA256 hash =
-            new SHA256CryptoServiceProvider();
+        var byteContents = Encoding.Unicode.GetBytes(text);
+
+        using SHA256 hash = new SHA256CryptoServiceProvider();
         var hashText = hash.ComputeHash(byteContents);
-        //32Byte hashText separate
-        //hashCodeStart = 0~7  8Byte
-        //hashCodeMedium = 8~23  8Byte
-        //hashCodeEnd = 24~31  8Byte
-        //and Fold
         var hashCodeStart = BitConverter.ToInt64(hashText, 0);
         var hashCodeMedium = BitConverter.ToInt64(hashText, 8);
         var hashCodeEnd = BitConverter.ToInt64(hashText, 24);
         hashCode = hashCodeStart ^ hashCodeMedium ^ hashCodeEnd;
+
         return hashCode;
     }
 }
