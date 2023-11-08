@@ -11,6 +11,18 @@ namespace JSN.Shared.Logging;
 [Serializable]
 public class JsnException : Exception
 {
+    public JsnException(string msg) : base(msg)
+    {
+    }
+
+    public JsnException(string msg, Exception e) : base(msg, e)
+    {
+    }
+
+    protected JsnException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
+
     #region Overload WriteException
 
     public static void WriteException(LogObject? logObject, Exception? ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
@@ -64,22 +76,6 @@ public class JsnException : Exception
                 Log.Logger.Error(ConvertHelper.ToJson(logObject, true));
             }
         }
-    }
-
-    #endregion
-
-    #region Constructor
-
-    public JsnException(string msg) : base(msg)
-    {
-    }
-
-    public JsnException(string msg, Exception e) : base(msg, e)
-    {
-    }
-
-    protected JsnException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
     }
 
     #endregion

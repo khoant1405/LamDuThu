@@ -2,6 +2,18 @@
 
 public class LogImpactObject : LogObject
 {
+    public LogImpactObject()
+    {
+    }
+
+    public LogImpactObject(string serviceType) : base(serviceType)
+    {
+    }
+
+    public LogImpactObject(string serviceType, string action) : base(serviceType, action)
+    {
+    }
+
     public string ImpactType { get; set; }
 
     public DateTime? ImpactStartedAt { get; set; }
@@ -17,20 +29,4 @@ public class LogImpactObject : LogObject
     public double? ImpactKafkaSyncTime { get; set; }
 
     public double? ImpactTotalDuration { get; set; }
-
-    #region Constructor
-
-    public LogImpactObject()
-    {
-    }
-
-    public LogImpactObject(string serviceType) : base(serviceType)
-    {
-    }
-
-    public LogImpactObject(string serviceType, string action) : base(serviceType, action)
-    {
-    }
-
-    #endregion
 }

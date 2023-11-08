@@ -5,8 +5,6 @@ namespace JSN.Shared.Logging;
 [Serializable]
 public class JsnLogException : JsnException
 {
-    #region Constructor
-
     public JsnLogException(string msg) : base(msg)
     {
     }
@@ -14,6 +12,4 @@ public class JsnLogException : JsnException
     protected JsnLogException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
-
-    #endregion
 }

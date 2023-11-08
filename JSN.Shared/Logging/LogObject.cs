@@ -4,8 +4,6 @@ namespace JSN.Shared.Logging;
 
 public class LogObject
 {
-    #region Constructor
-
     public LogObject()
     {
         StartTime = DateTime.Now;
@@ -20,8 +18,6 @@ public class LogObject
     {
         Action = action;
     }
-
-    #endregion
 
     #region Trace info
 
