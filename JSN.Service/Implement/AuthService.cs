@@ -169,8 +169,7 @@ public class AuthService : IAuthService
 
         var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddMinutes(tokenValidityInMinutes),
-            signingCredentials: credential);
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddMinutes(tokenValidityInMinutes), signingCredentials: credential);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
@@ -204,8 +203,7 @@ public class AuthService : IAuthService
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
         if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature,
-                StringComparison.InvariantCultureIgnoreCase))
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase))
         {
             return null;
         }

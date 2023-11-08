@@ -11,4 +11,6 @@ public class KafkaConfig
     public bool ConsumerIsClosedWhenConsumeException { get; set; }
     public int PartitionSize { get; set; }
     public List<Producer> AllProducers { get; set; }
+    public bool IsKafkaMonitor { get; set; }
+    public string? KafkaPrefix { get; set; }
 }

@@ -19,8 +19,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers()
-            .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
         services.AddEndpointsApiExplorer();
         services.AddHttpContextAccessor();
         services.AddSwaggerGen(options =>
@@ -41,25 +40,19 @@ public class Startup
         services.AddServices();
         services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         services.AddAuthorization();
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidAudience = AppConfig.JwtSetting.ValidAudience,
-                    ValidIssuer = AppConfig.JwtSetting.ValidIssuer
-                };
-            });
-        services.AddCors(options => options.AddPolicy("NgOrigins", policy =>
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
         {
-            policy.WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        }));
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidAudience = AppConfig.JwtSetting.ValidAudience,
+                ValidIssuer = AppConfig.JwtSetting.ValidIssuer
+            };
+        });
+        services.AddCors(options => options.AddPolicy("NgOrigins", policy => { policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader(); }));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

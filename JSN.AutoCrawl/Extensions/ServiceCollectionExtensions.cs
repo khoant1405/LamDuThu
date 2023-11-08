@@ -17,13 +17,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         // Configure DbContext with Scoped lifetime
-        services.AddDbContext<CoreDbContext>(options =>
-        {
-            options.UseSqlServer(AppConfig.DefaultSqlSetting?.ConnectString);
-        });
+        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlSetting?.ConnectString); });
 
-        services.AddScoped(
-            (Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
+        services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
         services.AddScoped<DbFactory>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -47,8 +43,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRedis(this IServiceCollection services)
     {
-        services.AddSingleton<IConnectionMultiplexer>(_ =>
-            RedisHelper.GetConnectionMultiplexer()!);
+        services.AddSingleton<IConnectionMultiplexer>(_ => RedisHelper.GetConnectionMultiplexer()!);
         services.AddTransient<IArticleCacheService, ArticleCacheService>();
         services.AddTransient<IArticlePaginationCacheService, ArticlePaginationCacheService>();
 

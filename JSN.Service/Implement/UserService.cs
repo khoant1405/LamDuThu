@@ -15,8 +15,7 @@ public class UserService : IUserService
 
     public User? GetUserByUserName(string? userName)
     {
-        var user = _userRepository.Where(x => x.UserName == userName)
-            .SingleOrDefault();
+        var user = _userRepository.Where(x => x.UserName == userName).SingleOrDefault();
         return user;
     }
 }

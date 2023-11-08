@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using JSN.Shared.Setting;
+using JSN.Shared.Utilities;
 using Newtonsoft.Json;
 
 namespace JSN.Kafka.Helper;
@@ -27,7 +28,7 @@ public sealed class KafkaHelper
             // Latest should be the best for Tracking
             AutoOffsetReset = AutoOffsetReset.Latest,
             FetchMaxBytes = 104857600,
-            MaxPollIntervalMs = KvStatic.DefaultMaxPollIntervalMs
+            MaxPollIntervalMs = JsnStatic.DefaultMaxPollIntervalMs
         };
         // using for debug only
         if (KvAppConfig.IsKafkaMonitor)
@@ -88,8 +89,7 @@ public sealed class KafkaHelper
         }
 
         // init metadata
-        using (var adminClient =
-               new AdminClientBuilder(new AdminClientConfig { BootstrapServers = kafka.KafkaIp }).Build())
+        using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = kafka.KafkaIp }).Build())
         {
             try
             {
@@ -97,8 +97,7 @@ public sealed class KafkaHelper
             }
             catch (Exception ex)
             {
-                KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetKafkaConfig)}"),
-                    ex);
+                KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetKafkaConfig)}"), ex);
             }
         }
     }
@@ -109,8 +108,7 @@ public sealed class KafkaHelper
 
     public async Task SetTopic(string topic, int size)
     {
-        using (var adminClient =
-               new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _kafka.KafkaIp }).Build())
+        using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _kafka.KafkaIp }).Build())
         {
             try
             {
@@ -141,64 +139,57 @@ public sealed class KafkaHelper
     public void SetOnHandle(ConsumerBuilder<Ignore, string> consumer, int indexConsumer = -1)
     {
         consumer.SetErrorHandler((_, e) =>
+        {
+            // method apply for Kafka only
+            KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"), new KafkaException(e), null,
+                $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
+        }).SetLogHandler((_, e) =>
+        {
+            if (KvAppConfig.ServiceMode.Equals("console"))
             {
-                // method apply for Kafka only
-                KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"),
-                    new KafkaException(e), null, $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
-            })
-            .SetLogHandler((_, e) =>
-            {
-                if (KvAppConfig.ServiceMode.Equals("console"))
-                {
-                    Console.WriteLine(
-                        $"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}");
-                }
+                Console.WriteLine($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}");
+            }
 
-                if (KvAppConfig.IsKafkaMonitor)
-                {
-                    KvException.WriteInfo(
-                        $"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}",
-                        KvLogType.Kafka);
-                }
-            })
-            .SetStatisticsHandler((_, json) =>
+            if (KvAppConfig.IsKafkaMonitor)
             {
-                if (KvAppConfig.IsKafkaMonitor)
-                {
-                    KvException.WriteInfo($"Kafka statistics: {json}", KvLogType.Kafka);
-                }
-            }).SetPartitionsAssignedHandler((c, partitions) =>
+                KvException.WriteInfo($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}", KvLogType.Kafka);
+            }
+        }).SetStatisticsHandler((_, json) =>
+        {
+            if (KvAppConfig.IsKafkaMonitor)
             {
-                if (KvAppConfig.ServiceMode.Equals("console"))
-                {
-                    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
-                }
-
-                if (KvAppConfig.IsKafkaMonitor)
-                {
-                    KvException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
-                }
-
-                if ((KvAppConfig.IsMonitorThreadImprove || KvAppConfig.IsMonitorRecoveryFromMongodb) &&
-                    indexConsumer > -1)
-                {
-                    KvException.WriteInfo(
-                        $"Assigned partitions: IndexConsumer: {indexConsumer} | Topic: {partitions.FirstOrDefault()?.Topic} | Partitions: [{string.Join(", ", partitions.Select(p => p.Partition.Value).ToList())}]",
-                        KvLogType.Kafka);
-                }
-            })
-            .SetPartitionsRevokedHandler((c, partitions) =>
+                KvException.WriteInfo($"Kafka statistics: {json}", KvLogType.Kafka);
+            }
+        }).SetPartitionsAssignedHandler((c, partitions) =>
+        {
+            if (KvAppConfig.ServiceMode.Equals("console"))
             {
-                if (KvAppConfig.ServiceMode.Equals("console"))
-                {
-                    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
-                }
+                Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+            }
 
-                if (KvAppConfig.IsKafkaMonitor)
-                {
-                    KvException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
-                }
-            });
+            if (KvAppConfig.IsKafkaMonitor)
+            {
+                KvException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
+            }
+
+            if ((KvAppConfig.IsMonitorThreadImprove || KvAppConfig.IsMonitorRecoveryFromMongodb) && indexConsumer > -1)
+            {
+                KvException.WriteInfo(
+                    $"Assigned partitions: IndexConsumer: {indexConsumer} | Topic: {partitions.FirstOrDefault()?.Topic} | Partitions: [{string.Join(", ", partitions.Select(p => p.Partition.Value).ToList())}]",
+                    KvLogType.Kafka);
+            }
+        }).SetPartitionsRevokedHandler((c, partitions) =>
+        {
+            if (KvAppConfig.ServiceMode.Equals("console"))
+            {
+                Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
+            }
+
+            if (KvAppConfig.IsKafkaMonitor)
+            {
+                KvException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
+            }
+        });
     }
 
     #endregion
@@ -257,16 +248,13 @@ public sealed class KafkaHelper
         // set error handle
         producerBuilder.SetErrorHandler((_, e) =>
         {
-            KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(InitProducer)}"),
-                new KafkaException(e), null, $"Kafka Producer Error: {JsonConvert.SerializeObject(e)}");
+            KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(InitProducer)}"), new KafkaException(e), null,
+                $"Kafka Producer Error: {JsonConvert.SerializeObject(e)}");
         });
         // set log handle
         if (KvAppConfig.IsKafkaMonitor)
         {
-            producerBuilder.SetLogHandler((_, logMessage) =>
-            {
-                KvException.WriteInfo($"Kafka log: {logMessage.ToJson()}", KvLogType.Kafka);
-            });
+            producerBuilder.SetLogHandler((_, logMessage) => { KvException.WriteInfo($"Kafka log: {logMessage.ToJson()}", KvLogType.Kafka); });
         }
 
         // build producer
@@ -279,8 +267,7 @@ public sealed class KafkaHelper
         {
             if (KvAppConfig.KafkaIsUseProduceAsync)
             {
-                var deliveryResult =
-                    _producer.ProduceAsync(topic, new Message<string, string> { Key = key, Value = jsonData });
+                var deliveryResult = _producer.ProduceAsync(topic, new Message<string, string> { Key = key, Value = jsonData });
                 deliveryResult.ContinueWith(task =>
                 {
                     if (!isLog)
@@ -290,10 +277,8 @@ public sealed class KafkaHelper
 
                     if (task.IsFaulted)
                     {
-                        KvException.WriteException(
-                            new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
-                            new KvLogException(
-                                $"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {jsonData} | Exception: {task.Exception.ToJson()}"));
+                        KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
+                            new KvLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {jsonData} | Exception: {task.Exception.ToJson()}"));
                     }
                 });
             }
@@ -310,10 +295,8 @@ public sealed class KafkaHelper
                     }
 
                     var msg = dr.Message.Value;
-                    KvException.WriteException(
-                        new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
-                        new KvLogException(
-                            $"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {msg} | Exception: {dr.Error.ToJson()}"));
+                    KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
+                        new KvLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {msg} | Exception: {dr.Error.ToJson()}"));
                 }
 
                 _producer.Produce(topic, new Message<string, string> { Key = key, Value = jsonData }, Handler);

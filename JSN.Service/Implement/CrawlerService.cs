@@ -34,26 +34,22 @@ public class CrawlerService : ICrawlerService
 
         for (var i = startPage; i < endPage + 1; i++)
         {
-            var url = $"{Constants.Page}{i}";
+            var url = $"{JsnStatic.Page}{i}";
             var html = await httpClient.GetStringAsync(url);
             var document = new HtmlDocument();
             document.LoadHtml(html);
-            List<HtmlNode> articles = document.DocumentNode.QuerySelectorAll("div.porta-article-item")
-                .ToList();
+            List<HtmlNode> articles = document.DocumentNode.QuerySelectorAll("div.porta-article-item").ToList();
 
             foreach (var item in articles)
             {
-                var articleName = CleanHtmlEntities(item.QuerySelector("div > h2 > a")
-                    ?.InnerText);
+                var articleName = CleanHtmlEntities(item.QuerySelector("div > h2 > a")?.InnerText);
                 if (articleName.IsNullOrEmpty())
                 {
                     continue;
                 }
 
-                var imageThumb = CleanHtmlEntities(item.QuerySelector("div.message-body > div > div > img")
-                    ?.Attributes["k-data-src"].Value);
-                var description = CleanHtmlEntities(item.QuerySelector("div.message-body > div")
-                    ?.InnerText, true);
+                var imageThumb = CleanHtmlEntities(item.QuerySelector("div.message-body > div > div > img")?.Attributes["k-data-src"].Value);
+                var description = CleanHtmlEntities(item.QuerySelector("div.message-body > div")?.InnerText, true);
                 var content = "CONTENT: " + description;
 
                 var daysToAdd = random.Next(1, 101);
@@ -68,14 +64,14 @@ public class CrawlerService : ICrawlerService
                     ImageThumb = imageThumb,
                     Description = description,
                     CreatedOn = time,
-                    CreatedBy = Constants.AdminId,
-                    UserId = Constants.AdminId,
-                    UserName = Constants.AdminName,
+                    CreatedBy = JsnStatic.AdminId,
+                    UserId = JsnStatic.AdminId,
+                    UserName = JsnStatic.AdminName,
                     ArticleContent = new ArticleContent
                     {
                         Content = content,
                         CreatedOn = time,
-                        CreatedBy = Constants.AdminId
+                        CreatedBy = JsnStatic.AdminId
                     }
                 };
                 listArticle.Add(newArticle);
@@ -100,14 +96,7 @@ public class CrawlerService : ICrawlerService
         }
 
         // Remove specific HTML entities
-        var cleanedText = inputText
-            .Replace("\n", "")
-            .Replace("\t", "")
-            .Replace("&#8203;", "")
-            .Replace("&lt;", "")
-            .Replace("&gt;", "")
-            .Replace("&amp;", "")
-            .Replace("&quot;", "")
+        var cleanedText = inputText.Replace("\n", "").Replace("\t", "").Replace("&#8203;", "").Replace("&lt;", "").Replace("&gt;", "").Replace("&amp;", "").Replace("&quot;", "")
             .Replace("&apos;", "");
 
         if (!isDescription)

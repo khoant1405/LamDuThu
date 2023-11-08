@@ -69,8 +69,7 @@ public static class AppConfig
             sqlSettings.Add(new SqlConfig
             {
                 Name = sqlName,
-                ConnectString =
-                    ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
+                ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
             });
 
             index++;
@@ -102,9 +101,10 @@ public static class AppConfig
             GroupId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:GroupId"]),
             ClientId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:ClientId"]),
             CommitPeriod = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:CommitPeriod"]),
-            ConsumerIsClosedWhenConsumeException =
-                ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:ConsumerIsClosedWhenConsumeException"]),
-            PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"])
+            ConsumerIsClosedWhenConsumeException = ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:ConsumerIsClosedWhenConsumeException"]),
+            PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"]),
+            IsKafkaMonitor = ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:IsKafkaMonitor"]),
+            KafkaPrefix = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaPrefix"])
         };
 
         var producerSettings = new List<Producer>();
@@ -112,8 +112,7 @@ public static class AppConfig
 
         while (true)
         {
-            var producerName =
-                ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name").Value);
+            var producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name").Value);
 
             if (string.IsNullOrEmpty(producerName))
             {
@@ -123,8 +122,7 @@ public static class AppConfig
             producerSettings.Add(new Producer
             {
                 Name = producerName,
-                QueueName = ConvertHelper.ToString(ConfigurationBuilder
-                    .GetSection($"Kafka:AllProducers:{index}:QueueName").Value),
+                QueueName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:QueueName").Value),
                 Size = ConvertHelper.ToInt32(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Size").Value)
             });
 

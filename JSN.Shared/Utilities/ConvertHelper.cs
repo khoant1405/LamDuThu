@@ -74,23 +74,17 @@ public static class ConvertHelper
 
     public static float ToSingle(object? value, float defaultValue = 0)
     {
-        return float.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
-            ? result
-            : defaultValue;
+        return float.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : defaultValue;
     }
 
     public static double ToDouble(object? value, double defaultValue = 0)
     {
-        return double.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
-            ? result
-            : defaultValue;
+        return double.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : defaultValue;
     }
 
     public static decimal ToDecimal(object? value, decimal defaultValue = 0)
     {
-        return decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
-            ? result
-            : defaultValue;
+        return decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : defaultValue;
     }
 
     public static decimal CurrencyToDecimal(object value)
@@ -121,9 +115,7 @@ public static class ConvertHelper
 
     public static string ToJson(object obj, bool ignoreNull = false)
     {
-        var settings = ignoreNull
-            ? new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
-            : null;
+        var settings = ignoreNull ? new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } : null;
 
         return JsonConvert.SerializeObject(obj, settings);
     }

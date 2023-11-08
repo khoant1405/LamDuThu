@@ -64,8 +64,7 @@ public class Redis<T> where T : class
             return database.StringSetAsync(key, serializedEntity);
         });
 
-        Task.WhenAll(tasks)
-            .Wait();
+        Task.WhenAll(tasks).Wait();
     }
 
     public async Task AddRangeAsync(IEnumerable<T> entities, IDatabase database)
@@ -83,8 +82,7 @@ public class Redis<T> where T : class
     public void DeleteRange(IEnumerable<string> keys, IDatabase database)
     {
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
-        Task.WhenAll(tasks)
-            .Wait();
+        Task.WhenAll(tasks).Wait();
     }
 
     public async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase database)
@@ -125,8 +123,6 @@ public class Redis<T> where T : class
 
     protected IDatabase GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
     {
-        return !AppConfig.RedisSetting.IsUseRedisLazy
-            ? connectionMultiplexer.GetDatabase()
-            : new RedisLazy().GetLazyDatabase();
+        return !AppConfig.RedisSetting.IsUseRedisLazy ? connectionMultiplexer.GetDatabase() : new RedisLazy().GetLazyDatabase();
     }
 }

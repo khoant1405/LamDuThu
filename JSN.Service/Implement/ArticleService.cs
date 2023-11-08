@@ -16,8 +16,7 @@ public class ArticleService : IArticleService
     private readonly IRepository<Article> _articleRepository;
     private readonly IMapper _mapper;
 
-    public ArticleService(IRepository<Article> articleRepository, IMapper mapper,
-        IArticlePaginationCacheService articlePaginationCacheService)
+    public ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService)
     {
         _articleRepository = articleRepository;
         _mapper = mapper;
@@ -34,16 +33,11 @@ public class ArticleService : IArticleService
                 return cacheData;
             }
 
-            var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish)
-                .OrderByDescending(x => x.Id)
-                .AsNoTracking();
+            var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
 
             var count = await query.CountAsync();
 
-            var items = await query.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(x => _mapper.Map<ArticleView>(x))
-                .ToListAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(x => _mapper.Map<ArticleView>(x)).ToListAsync();
 
             var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
 
