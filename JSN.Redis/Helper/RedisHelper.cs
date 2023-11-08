@@ -9,15 +9,9 @@ public class RedisHelper
     {
         var config = AppConfig.RedisConfig;
 
-        if (config.IsUseRedisLazy)
-        {
-            return null;
-        }
+        if (config.IsUseRedisLazy) return null;
 
-        if (config.IsSentinel != true)
-        {
-            return ConnectionMultiplexer.Connect(GetConfigRedis());
-        }
+        if (config.IsSentinel != true) return ConnectionMultiplexer.Connect(GetConfigRedis());
 
         var sentinelOptions = new ConfigurationOptions
         {
@@ -39,10 +33,8 @@ public class RedisHelper
         var servers = config.Servers?.Split(",");
         var endPointCollection = new EndPointCollection();
         if (servers != null)
-        {
             foreach (var server in servers)
                 endPointCollection.Add(server);
-        }
 
         var configurationOptions = new ConfigurationOptions
         {
@@ -50,25 +42,13 @@ public class RedisHelper
             DefaultDatabase = config.DbNumber
         };
 
-        if (config.IsSentinel == true)
-        {
-            configurationOptions.ServiceName = config.SentinelMasterName;
-        }
+        if (config.IsSentinel == true) configurationOptions.ServiceName = config.SentinelMasterName;
 
-        if (config.ConnectTimeout > 0)
-        {
-            configurationOptions.ConnectTimeout = config.ConnectTimeout;
-        }
+        if (config.ConnectTimeout > 0) configurationOptions.ConnectTimeout = config.ConnectTimeout;
 
-        if (config.ConnectRetry > 0)
-        {
-            configurationOptions.ConnectRetry = config.ConnectRetry;
-        }
+        if (config.ConnectRetry > 0) configurationOptions.ConnectRetry = config.ConnectRetry;
 
-        if (!string.IsNullOrEmpty(config.AuthPass))
-        {
-            configurationOptions.Password = config.AuthPass;
-        }
+        if (!string.IsNullOrEmpty(config.AuthPass)) configurationOptions.Password = config.AuthPass;
 
         return configurationOptions;
     }

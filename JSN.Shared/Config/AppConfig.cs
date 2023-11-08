@@ -66,10 +66,7 @@ public static class AppConfig
         {
             var sqlName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:Name").Value);
 
-            if (string.IsNullOrEmpty(sqlName))
-            {
-                break;
-            }
+            if (string.IsNullOrEmpty(sqlName)) break;
 
             sqlConfigs.Add(new SqlConfig
             {
@@ -121,10 +118,7 @@ public static class AppConfig
         {
             var producerName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:Name").Value);
 
-            if (string.IsNullOrEmpty(producerName))
-            {
-                break;
-            }
+            if (string.IsNullOrEmpty(producerName)) break;
 
             producerConfigs.Add(new Producer
             {
@@ -155,10 +149,7 @@ public static class AppConfig
 
     private static List<string>? GetListStringBySplitChar(string? configValue, List<string>? defaultValue = null)
     {
-        if (configValue == null)
-        {
-            return defaultValue ?? new List<string>();
-        }
+        if (configValue == null) return defaultValue ?? new List<string>();
 
         return ConvertHelper.ToString(configValue)?.Trim().Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
     }

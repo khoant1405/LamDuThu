@@ -52,10 +52,7 @@ public class Startup
                 ValidIssuer = AppConfig.JwtConfig.ValidIssuer
             };
         });
-        services.AddCors(options => options.AddPolicy("NgOrigins", policy =>
-        {
-            policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
-        }));
+        services.AddCors(options => options.AddPolicy("NgOrigins", policy => { policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader(); }));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -73,9 +70,6 @@ public class Startup
 
         //app.UseAuthorization();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

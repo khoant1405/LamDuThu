@@ -17,10 +17,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         // Configure DbContext with Scoped lifetime
-        services.AddDbContext<CoreDbContext>(options =>
-        {
-            options.UseSqlServer(AppConfig.DefaultSqlConfig.ConnectString);
-        });
+        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlConfig.ConnectString); });
 
         services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
         services.AddScoped<DbFactory>();

@@ -23,10 +23,7 @@ public class Worker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             var delay = nextRunTime - DateTimeOffset.Now;
-            if (delay > TimeSpan.Zero)
-            {
-                await Task.Delay(delay, stoppingToken);
-            }
+            if (delay > TimeSpan.Zero) await Task.Delay(delay, stoppingToken);
 
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 

@@ -1,7 +1,10 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using JSN.Shared.Config;
+using JSN.Shared.Enum;
+using JSN.Shared.Logging;
 using JSN.Shared.Utilities;
+using Newtonsoft.Json;
 
 namespace JSN.Kafka.Helper;
 
@@ -47,13 +50,11 @@ public sealed class KafkaHelper
         // Using for debug only
         // Theo dõi và ghi lại các sự kiện quan trọng liên quan đến hoạt động của Consumer và giao tiếp với Kafka broker.
         if (_kafka.IsKafkaMonitor)
-        {
             // consumer: Ghi lại các sự kiện liên quan đến hoạt động của Consumer.
             // cgrp: Ghi lại các sự kiện liên quan đến quản lý của Consumer Group.
             // topic: Ghi lại các sự kiện liên quan đến các chủ đề (topics) mà Consumer đang theo dõi.
             // fetch: Ghi lại các sự kiện liên quan đến việc lấy dữ liệu từ Kafka broker.
             _consumerConfig.Debug = "consumer,cgrp,topic,fetch";
-        }
 
         // producer config
         _producerConfig = new ProducerConfig
@@ -70,48 +71,36 @@ public sealed class KafkaHelper
         };
 
         if (_kafkaProducer.BatchNumMessages > 0)
-        {
             // Số lượng message tối đa được gửi trong 1 batch
             _producerConfig.BatchNumMessages = _kafkaProducer.BatchNumMessages;
-        }
 
         if (_kafkaProducer.LingerMs > 0)
-        {
             // Thời gian chờ giữa các lần gửi batch đi. Càng cao số message trong 1 batch càng nhiều
             _producerConfig.LingerMs = _kafkaProducer.LingerMs;
-        }
 
         if (_kafkaProducer.MessageSendMaxRetries > 0)
-        {
             // Số lần cố gắng gửi lại một message nếu nó không thể được gửi thành công lần đầu tiên
             _producerConfig.MessageSendMaxRetries = _kafkaProducer.MessageSendMaxRetries;
-        }
 
         if (_kafkaProducer.MessageTimeoutMs > 0)
-        {
             // Xác định thời gian mà một message cố gắng chờ để được gửi thành công.
             // Nếu trong khoảng thời gian này message không thể được gửi thành công, nó có thể bị coi là gửi không thành công và có thể gây ra lỗi
             // Nếu được đặt thành 0, thì thời gian chờ là vô hạn, nghĩa là message sẽ chờ mãi cho đến khi nó được gửi thành công hoặc xảy ra lỗi.
             // Nếu bạn đã cấu hình transactional.id, thì thời gian chờ của message (MessageTimeoutMs) có thể được tự động điều chỉnh để phù hợp với transaction.timeout.ms.
             _producerConfig.MessageTimeoutMs = _kafkaProducer.MessageTimeoutMs;
-        }
 
         if (_kafkaProducer.RequestTimeoutMs > 0)
-        {
             // Nếu được đặt thành 10000 (10 giây), thì Kafka Producer sẽ gửi message đến broker và chờ đợi tối đa 10 giây để message này được xử lý và có kết quả trả về từ broker.
             // Nếu trong thời gian 10 giây đó, message không được xử lý và trả về kết quả, Kafka Producer có thể xem xét message này là thất bại do vượt quá thời gian chờ.
             // Chỉ áp dụng khi request.required.acks != 0.
             _producerConfig.RequestTimeoutMs = _kafkaProducer.RequestTimeoutMs;
-        }
 
         // Using for debug only
         if (_kafka.IsKafkaMonitor)
-        {
             // broker: Bật ghi log liên quan đến thông tin về các kết nối và giao tiếp với các broker Kafka.
             // topic: Bật ghi log liên quan đến thông tin về các sự kiện liên quan đến các chủ đề (topics).
             // msg: Bật ghi log liên quan đến thông tin về các tin nhắn (messages) được gửi và nhận.
             _producerConfig.Debug = "broker,topic,msg";
-        }
 
         // Lấy thông tin của broker, topic...
         using var adminClient = new AdminClientBuilder(new AdminClientConfig
@@ -124,7 +113,7 @@ public sealed class KafkaHelper
         }
         catch (Exception ex)
         {
-            //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetKafkaConfig)}"), ex);
+            JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetKafkaConfig)}"), ex);
         }
     }
 
@@ -142,7 +131,6 @@ public sealed class KafkaHelper
             try
             {
                 if (!_kafkaMetadata.Topics.Exists(x => x.Topic == topic))
-                {
                     await adminClient.CreateTopicsAsync(new[]
                     {
                         new TopicSpecification
@@ -152,12 +140,11 @@ public sealed class KafkaHelper
                             NumPartitions = size * _kafka.PartitionSize
                         }
                     });
-                }
             }
             catch (CreateTopicsException e)
             {
-                //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetTopic)}"), e);
-                Console.WriteLine($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
+                JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetTopic)}"), e);
+                Console.WriteLine($"An error occurred creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
             }
         }
     }
@@ -171,8 +158,7 @@ public sealed class KafkaHelper
         consumer.SetErrorHandler((_, e) =>
         {
             // method apply for Kafka only
-            //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"), new KafkaException(e), null,
-            //    $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
+            JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"), new KafkaException(e), null, $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
         }).SetLogHandler((_, e) =>
         {
             //if (KvAppConfig.ServiceMode.Equals("console"))
@@ -180,16 +166,10 @@ public sealed class KafkaHelper
             //    Console.WriteLine($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}");
             //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                //KvException.WriteInfo($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}", KvLogType.Kafka);
-            }
+            if (_kafka.IsKafkaMonitor) JsnException.WriteInfo($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}", LogType.Kafka);
         }).SetStatisticsHandler((_, json) =>
         {
-            if (_kafka.IsKafkaMonitor)
-            {
-                //KvException.WriteInfo($"Kafka statistics: {json}", KvLogType.Kafka);
-            }
+            if (_kafka.IsKafkaMonitor) JsnException.WriteInfo($"Kafka statistics: {json}", LogType.Kafka);
         }).SetPartitionsAssignedHandler((c, partitions) =>
         {
             //if (KvAppConfig.ServiceMode.Equals("console"))
@@ -197,16 +177,13 @@ public sealed class KafkaHelper
             //    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
             //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                //KvException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
-            }
+            if (_kafka.IsKafkaMonitor) JsnException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", LogType.Kafka);
 
             //if ((KvAppConfig.IsMonitorThreadImprove || KvAppConfig.IsMonitorRecoveryFromMongodb) && indexConsumer > -1)
             //{
-            //    KvException.WriteInfo(
+            //    JsnException.WriteInfo(
             //        $"Assigned partitions: IndexConsumer: {indexConsumer} | Topic: {partitions.FirstOrDefault()?.Topic} | Partitions: [{string.Join(", ", partitions.Select(p => p.Partition.Value).ToList())}]",
-            //        KvLogType.Kafka);
+            //        LogType.Kafka);
             //}
         }).SetPartitionsRevokedHandler((c, partitions) =>
         {
@@ -215,10 +192,7 @@ public sealed class KafkaHelper
             //    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
             //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                //KvException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", KvLogType.Kafka);
-            }
+            if (_kafka.IsKafkaMonitor) JsnException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", LogType.Kafka);
         });
     }
 
@@ -279,17 +253,12 @@ public sealed class KafkaHelper
         // set error handle
         producerBuilder.SetErrorHandler((_, e) =>
         {
-            //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(InitProducer)}"), new KafkaException(e), null,
-            //    $"Kafka Producer Error: {JsonConvert.SerializeObject(e)}");
+            JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(InitProducer)}"), new KafkaException(e), null,
+                $"Kafka Producer Error: {JsonConvert.SerializeObject(e)}");
         });
         // set log handle
         if (_kafka.IsKafkaMonitor)
-        {
-            producerBuilder.SetLogHandler((_, logMessage) =>
-            {
-                //KvException.WriteInfo($"Kafka log: {logMessage.ToJson()}", KvLogType.Kafka);
-            });
-        }
+            producerBuilder.SetLogHandler((_, logMessage) => { JsnException.WriteInfo($"Kafka log: {JsonConvert.SerializeObject(logMessage)}", LogType.Kafka); });
 
         // build producer
         _producer = new ProducerBuilder<string, string>(_producerConfig).Build();
@@ -308,16 +277,11 @@ public sealed class KafkaHelper
                 });
                 deliveryResult.ContinueWith(task =>
                 {
-                    if (!isLog)
-                    {
-                        return;
-                    }
+                    if (!isLog) return;
 
                     if (task.IsFaulted)
-                    {
-                        //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
-                        //    new KvLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {jsonData} | Exception: {task.Exception.ToJson()}"));
-                    }
+                        JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
+                            new JsnLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {jsonData} | Exception: {JsonConvert.SerializeObject(task.Exception)}"));
                 });
             }
             else
@@ -327,14 +291,11 @@ public sealed class KafkaHelper
                 // using result callback instead of sync to wait result
                 void Handler(DeliveryReport<string, string> dr)
                 {
-                    if (!isLog || dr.Error.Code == ErrorCode.NoError)
-                    {
-                        return;
-                    }
+                    if (!isLog || dr.Error.Code == ErrorCode.NoError) return;
 
                     var msg = dr.Message.Value;
-                    //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
-                    //    new KvLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {msg} | Exception: {dr.Error.ToJson()}"));
+                    JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"),
+                        new JsnLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {msg} | Exception: {JsonConvert.SerializeObject(dr.Error)}"));
                 }
 
                 _producer.Produce(topic, new Message<string, string>
@@ -346,7 +307,7 @@ public sealed class KafkaHelper
         }
         catch (Exception ex)
         {
-            //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"), ex);
+            JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"), ex);
         }
     }
 

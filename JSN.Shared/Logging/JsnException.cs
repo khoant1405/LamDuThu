@@ -23,18 +23,13 @@ public class JsnException : Exception
             logObject.ObjJson = objJson;
         }
 
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         #endregion
 
@@ -101,18 +96,13 @@ public class JsnException : Exception
             logObject.ObjJson = objJson;
         }
 
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         #endregion ignore ObjJson
 
@@ -146,18 +136,13 @@ public class JsnException : Exception
     public static void WriteInfo(LogObject? logObject, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
     {
         logObject ??= new LogObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteInfo)}");
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         #endregion ignore ObjJson
 
@@ -180,18 +165,13 @@ public class JsnException : Exception
             logObject.ObjJson = objJson;
         }
 
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         #endregion ignore ObjJson
 
@@ -229,18 +209,13 @@ public class JsnException : Exception
             logObject.ObjJson = objJson;
         }
 
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         #endregion ignore ObjJson
 
@@ -274,18 +249,13 @@ public class JsnException : Exception
     public static void WriteWarning(LogObject? logObject, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
     {
         logObject ??= new LogObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteWarning)}");
-        if (!string.IsNullOrEmpty(optional))
-        {
-            logObject.DescriptionOptional = optional;
-        }
+        if (!string.IsNullOrEmpty(optional)) logObject.DescriptionOptional = optional;
 
         #region ignore ObjJson
 
         if (!string.IsNullOrEmpty(logObject.ServiceType) && AppConfig.LogExceptionIgnoreObjJsonByServiceType != null && AppConfig.LogExceptionIgnoreObjJsonByServiceType.Any() &&
             AppConfig.LogExceptionIgnoreObjJsonByServiceType.Contains(logObject.ServiceType))
-        {
             logObject.ObjJson = null;
-        }
 
         var trace = $"{filePath}:{lineNumber} {memberName}";
 

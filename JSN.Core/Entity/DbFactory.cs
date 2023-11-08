@@ -15,10 +15,7 @@ public class DbFactory : IDisposable
     {
         get
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException("DbFactory");
-            }
+            if (_disposed) throw new ObjectDisposedException("DbFactory");
 
             return _dbContext ??= _dbContextFactory.Invoke();
         }
@@ -26,10 +23,7 @@ public class DbFactory : IDisposable
 
     public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
+        if (_disposed) return;
 
         _disposed = true;
         _dbContext?.Dispose();
