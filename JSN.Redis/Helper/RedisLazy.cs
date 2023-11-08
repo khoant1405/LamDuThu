@@ -1,4 +1,4 @@
-﻿using JSN.Shared.Setting;
+﻿using JSN.Shared.Config;
 using StackExchange.Redis;
 
 namespace JSN.Redis.Helper;
@@ -14,7 +14,7 @@ public class RedisLazy
 
     private static ConnectionMultiplexer CreateConnection()
     {
-        var config = AppConfig.RedisSetting;
+        var config = AppConfig.RedisConfig;
         if (config.IsSentinel != true)
         {
             return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());

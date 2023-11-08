@@ -6,9 +6,9 @@ using JSN.Core.Entity;
 using JSN.Core.Model;
 using JSN.Core.ViewModel;
 using JSN.Service.Interface;
+using JSN.Shared.Config;
 using JSN.Shared.Enum;
 using JSN.Shared.Model;
-using JSN.Shared.Setting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement;
@@ -164,8 +164,8 @@ public class AuthService : IAuthService
             new(ClaimTypes.Role, user.Role.ToString() ?? "")
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!));
-        var tokenValidityInMinutes = AppConfig.JwtSetting.TokenValidityInMinutes;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!));
+        var tokenValidityInMinutes = AppConfig.JwtConfig.TokenValidityInMinutes;
 
         var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -195,7 +195,7 @@ public class AuthService : IAuthService
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!)),
             ValidateIssuer = false,
             ValidateAudience = false
         };

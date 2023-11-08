@@ -1,5 +1,5 @@
 ﻿using JSN.Redis.Helper;
-using JSN.Shared.Setting;
+using JSN.Shared.Config;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -123,6 +123,6 @@ public class Redis<T> where T : class
 
     protected IDatabase GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
     {
-        return !AppConfig.RedisSetting.IsUseRedisLazy ? connectionMultiplexer.GetDatabase() : new RedisLazy().GetLazyDatabase();
+        return !AppConfig.RedisConfig.IsUseRedisLazy ? connectionMultiplexer.GetDatabase() : new RedisLazy().GetLazyDatabase();
     }
 }

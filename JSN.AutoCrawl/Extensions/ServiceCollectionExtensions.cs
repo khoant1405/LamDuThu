@@ -6,7 +6,7 @@ using JSN.Redis.Impl;
 using JSN.Redis.Interface;
 using JSN.Service.Implement;
 using JSN.Service.Interface;
-using JSN.Shared.Setting;
+using JSN.Shared.Config;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         // Configure DbContext with Scoped lifetime
-        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlSetting?.ConnectString); });
+        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlConfig?.ConnectString); });
 
         services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
         services.AddScoped<DbFactory>();

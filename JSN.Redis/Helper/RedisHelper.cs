@@ -1,4 +1,4 @@
-﻿using JSN.Shared.Setting;
+﻿using JSN.Shared.Config;
 using StackExchange.Redis;
 
 namespace JSN.Redis.Helper;
@@ -7,7 +7,7 @@ public class RedisHelper
 {
     public static ConnectionMultiplexer? GetConnectionMultiplexer()
     {
-        var config = AppConfig.RedisSetting;
+        var config = AppConfig.RedisConfig;
 
         if (config.IsUseRedisLazy)
         {
@@ -34,7 +34,7 @@ public class RedisHelper
 
     public static ConfigurationOptions GetConfigRedis()
     {
-        var config = AppConfig.RedisSetting;
+        var config = AppConfig.RedisConfig;
 
         var servers = config.Servers?.Split(",");
         var endPointCollection = new EndPointCollection();

@@ -1,7 +1,7 @@
 using JSN.Core.ViewModel;
 using JSN.Service.Interface;
+using JSN.Shared.Config;
 using JSN.Shared.Model;
-using JSN.Shared.Setting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JSN.Api.Controllers;

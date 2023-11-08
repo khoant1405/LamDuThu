@@ -2,7 +2,7 @@
 using JSN.Shared.Utilities;
 using Microsoft.Extensions.Configuration;
 
-namespace JSN.Shared.Setting;
+namespace JSN.Shared.Config;
 
 public static class AppConfig
 {
@@ -22,25 +22,26 @@ public static class AppConfig
     public static int PublishAfterMinutes { get; set; } = 1;
     public static int NumberPublish { get; set; } = 1;
     public static int ArticlePageSize { get; set; } = 20;
-    public static JwtConfig JwtSetting { get; set; }
-    public static List<SqlConfig> SqlSettings { get; set; }
-    public static SqlConfig? DefaultSqlSetting { get; set; }
-    public static RedisConfig RedisSetting { get; set; }
-    public static KafkaConfig KafkaSetting { get; set; }
+    public static JwtConfig JwtConfig { get; set; }
+    public static List<SqlConfig> SqlConfigs { get; set; }
+    public static SqlConfig? DefaultSqlConfig { get; set; }
+    public static RedisConfig RedisConfig { get; set; }
+    public static KafkaConfig KafkaConfig { get; set; }
+    public static KafkaProducerConfig KafkaProducerConfig { get; set; }
 
     public static void LoadConfig()
     {
-        JwtSetting = LoadJwtSetting();
-        SqlSettings = LoadSqlSettings();
-        DefaultSqlSetting = SqlSettings.FirstOrDefault();
-        RedisSetting = LoadRedisSetting();
+        JwtConfig = LoadJwtConfig();
+        SqlConfigs = LoadSqlConfigs();
+        DefaultSqlConfig = SqlConfigs.FirstOrDefault();
+        RedisConfig = LoadRedisConfig();
         ArticlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"], 20);
         PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
         NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
-        KafkaSetting = LoadKafkaSetting();
+        KafkaConfig = LoadKafkaConfig();
     }
 
-    private static JwtConfig LoadJwtSetting()
+    private static JwtConfig LoadJwtConfig()
     {
         return new JwtConfig
         {
@@ -52,9 +53,9 @@ public static class AppConfig
         };
     }
 
-    private static List<SqlConfig> LoadSqlSettings()
+    private static List<SqlConfig> LoadSqlConfigs()
     {
-        var sqlSettings = new List<SqlConfig>();
+        var sqlConfigs = new List<SqlConfig>();
         var index = 0;
 
         while (true)
@@ -66,7 +67,7 @@ public static class AppConfig
                 break;
             }
 
-            sqlSettings.Add(new SqlConfig
+            sqlConfigs.Add(new SqlConfig
             {
                 Name = sqlName,
                 ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
@@ -75,10 +76,10 @@ public static class AppConfig
             index++;
         }
 
-        return sqlSettings;
+        return sqlConfigs;
     }
 
-    private static RedisConfig LoadRedisSetting()
+    private static RedisConfig LoadRedisConfig()
     {
         return new RedisConfig
         {
@@ -93,9 +94,9 @@ public static class AppConfig
         };
     }
 
-    private static KafkaConfig LoadKafkaSetting()
+    private static KafkaConfig LoadKafkaConfig()
     {
-        var kafkaSetting = new KafkaConfig
+        var kafkaConfig = new KafkaConfig
         {
             KafkaIp = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaIp"]),
             GroupId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:GroupId"]),
@@ -107,7 +108,7 @@ public static class AppConfig
             KafkaPrefix = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaPrefix"])
         };
 
-        var producerSettings = new List<Producer>();
+        var producerConfigs = new List<Producer>();
         var index = 0;
 
         while (true)
@@ -119,7 +120,7 @@ public static class AppConfig
                 break;
             }
 
-            producerSettings.Add(new Producer
+            producerConfigs.Add(new Producer
             {
                 Name = producerName,
                 QueueName = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"Kafka:AllProducers:{index}:QueueName").Value),
@@ -129,7 +130,7 @@ public static class AppConfig
             index++;
         }
 
-        kafkaSetting.AllProducers = producerSettings;
-        return kafkaSetting;
+        kafkaConfig.AllProducers = producerConfigs;
+        return kafkaConfig;
     }
 }

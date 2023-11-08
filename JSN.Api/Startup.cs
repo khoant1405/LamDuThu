@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using JSN.Api.Extensions;
 using JSN.Core.AutoMapper;
-using JSN.Shared.Setting;
+using JSN.Shared.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -45,11 +45,11 @@ public class Startup
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!)),
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidAudience = AppConfig.JwtSetting.ValidAudience,
-                ValidIssuer = AppConfig.JwtSetting.ValidIssuer
+                ValidAudience = AppConfig.JwtConfig.ValidAudience,
+                ValidIssuer = AppConfig.JwtConfig.ValidIssuer
             };
         });
         services.AddCors(options => options.AddPolicy("NgOrigins", policy => { policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader(); }));

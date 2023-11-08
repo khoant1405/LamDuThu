@@ -1,6 +1,6 @@
 ﻿using JSN.Shared.Model;
 
-namespace JSN.Shared.Setting;
+namespace JSN.Shared.Config;
 
 public class KafkaConfig
 {

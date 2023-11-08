@@ -1,6 +1,6 @@
 using JSN.AutoPublishArticle;
 using JSN.AutoPublishArticle.Extensions;
-using JSN.Shared.Setting;
+using JSN.Shared.Config;
 
 var host = Host.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) =>
 {
@@ -15,7 +15,7 @@ var host = Host.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingCon
     services.AddHostedService<Worker>();
 }).Build();
 
-// Now, set AppSettings.ConfigurationBuilder
+// Now, set AppConfigs.ConfigurationBuilder
 AppConfig.ConfigurationBuilder = host.Services.GetRequiredService<IConfiguration>();
 
 await host.RunAsync();

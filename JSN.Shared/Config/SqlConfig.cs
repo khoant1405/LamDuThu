@@ -1,4 +1,4 @@
-﻿namespace JSN.Shared.Setting;
+﻿namespace JSN.Shared.Config;
 
 public class SqlConfig
 {

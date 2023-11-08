@@ -1,4 +1,4 @@
-using JSN.Shared.Setting;
+using JSN.Shared.Config;
 
 namespace JSN.AutoPublishArticle;
 
