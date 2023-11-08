@@ -17,22 +17,42 @@ public sealed class KafkaHelper
         {
             BootstrapServers = _kafka.KafkaIp,
             GroupId = _kafka.GroupId,
+
+            //ID duy nhất cho Consumer. Điều này giúp dõi các Consumer. 
             ClientId = _kafka.ClientId,
+
+            //Nếu = false, Consumer sẽ không tự động xác nhận việc đọc thông điệp từ Kafka broker. Bạn sẽ phải tự quản lý xác nhận (commit) khi bạn đã xử lý thành công các thông điệp.
             EnableAutoCommit = false,
+
+            //Khoảng thời gian giữa các lần gửi thông tin thống kê từ Consumer đến Kafka broker, để theo dõi hiệu suất và hoạt động của Consumer.
             StatisticsIntervalMs = 5000,
+
+            //Thời gian chờ cho phiên làm việc của Consumer. Nếu Consumer không gửi tin hiệu hoạt động đến Kafka broker trong khoảng thời gian này, nó có thể bị coi là đã ngừng hoạt động.
+            //Kafka broker sẽ gán lại các partition mà Consumer đang đọc cho một Consumer khác trong cùng nhóm.
             SessionTimeoutMs = 6000,
-            // The auto.offset.reset config kicks in ONLY if your consumer group does not have a valid offset committed somewhere
-            // earliest: automatically reset the offset to the earliest offset
-            // latest: automatically reset the offset to the latest offset
-            // Latest should be the best for Tracking
+
+            //Xác định hành vi của Consumer khi không có offset lưu trữ cho các partition mà nó muốn đọc.
+            //Giá trị "Latest" sẽ làm Consumer đọc thông điệp mới nhất, trong khi "Earliest" sẽ đọc từ đầu (các thông điệp cũ).
             AutoOffsetReset = AutoOffsetReset.Latest,
+
+            //Kích thước tối đa mà Consumer có thể yêu cầu từ một lần fetch.
+            //Điều này ảnh hưởng đến kích thước của các gói dữ liệu mà Consumer yêu cầu từ Kafka broker mỗi khi nó lấy dữ liệu mới.
             FetchMaxBytes = 104857600,
+
+            //Thời gian tối đa giữa các lần poll. Polling là hoạt động mà Consumer sử dụng để lấy dữ liệu từ Kafka broker.
+            //Poll là một hoạt động quan trọng trong việc lấy và xử lý dữ liệu từ Kafka broker. Nó cho phép Consumer lấy dữ liệu từ các partition và thực hiện các xử lý cần thiết.
+            //Thời gian giữa các lần poll quyết định tốc độ mà Consumer đọc dữ liệu từ Kafka và cũng quan trọng để Kafka broker có thể theo dõi trạng thái hoạt động của Consumer.
             MaxPollIntervalMs = JsnStatic.DefaultMaxPollIntervalMs
         };
 
-        // using for debug only
+        // Using for debug only
+        // Theo dõi và ghi lại các sự kiện quan trọng liên quan đến hoạt động của Consumer và giao tiếp với Kafka broker.
         if (_kafka.IsKafkaMonitor)
         {
+            //consumer: Ghi lại các sự kiện liên quan đến hoạt động của Consumer.
+            //cgrp: Ghi lại các sự kiện liên quan đến quản lý của Consumer Group.
+            //topic: Ghi lại các sự kiện liên quan đến các chủ đề (topics) mà Consumer đang theo dõi.
+            //fetch: Ghi lại các sự kiện liên quan đến việc lấy dữ liệu từ Kafka broker.
             _consumerConfig.Debug = "consumer,cgrp,topic,fetch";
         }
 
@@ -40,31 +60,31 @@ public sealed class KafkaHelper
         _producerConfig = new ProducerConfig
         {
             BootstrapServers = _kafka.KafkaIp,
-            // Maximum Kafka protocol request message size.
-            // Due to differing framing overhead between protocol versions the producer is unable to reliably enforce a strict max message limit at produce time and may exceed the maximum size by one message in protocol ProduceRequests, the broker will enforce the the topic's `max.message.bytes` limit.
+
+            //Thuộc tính này xác định kích thước tối đa của một thông điệp Kafka mà Producer có thể gửi. Kích thước này thường được đo bằng byte.
+            //Ví dụ: 104857600 byte tương đương với khoảng 100 MB.
             MessageMaxBytes = 104857600,
-            // Maximum size (in bytes) of all messages batched in one MessageSet, including protocol framing overhead.
-            // This limit is applied after the first message has been added to the batch, regardless of the first message's size, this is to ensure that messages that exceed batch.size are produced.
-            // The total MessageSet size is also limited by batch.num.messages and message.max.bytes.
+
+            //Đây là kích thước tối đa cho một batch (gói) của các thông điệp Kafka mà Producer sẽ gửi trong một lần gửi dữ liệu đến Kafka broker.
+            //Batch là một tập hợp của các thông điệp được gửi cùng nhau để giảm độ trễ và tối ưu hóa hiệu suất gửi. 
             BatchSize = 104857600
         };
 
         if (_kafkaProducer.BatchNumMessages > 0)
         {
-            // Maximum number of messages batched in one MessageSet. The total MessageSet size is also limited by batch.size and message.max.bytes.
+            //Số lượng message tối đa được gửi trong 1 batch
             _producerConfig.BatchNumMessages = _kafkaProducer.BatchNumMessages;
         }
 
         if (_kafkaProducer.LingerMs > 0)
         {
-            // Delay in milliseconds to wait for messages in the producer queue to accumulate before constructing message batches (MessageSets) to transmit to brokers.
-            // A higher value allows larger and more effective (less overhead, improved compression) batches of messages to accumulate at the expense of increased message delivery latency.
+            //Thời gian chờ giữa các lần gửi batch đi. Càng cao số message trong 1 batch càng nhiều
             _producerConfig.LingerMs = _kafkaProducer.LingerMs;
         }
 
         if (_kafkaProducer.MessageSendMaxRetries > 0)
         {
-            // How many times to retry sending a failing Message. **Note:** retrying may cause reordering unless `enable.idempotence` is set to true.
+            //Số lần cố gắng gửi lại một tin nhắn nếu nó không thể được gửi thành công lần đầu tiên
             _producerConfig.MessageSendMaxRetries = _kafkaProducer.MessageSendMaxRetries;
         }
 
