@@ -13,4 +13,5 @@ public class KafkaConfig
     public List<Producer> AllProducers { get; set; }
     public bool IsKafkaMonitor { get; set; }
     public string? KafkaPrefix { get; set; }
+    public short Replica { get; set; }
 }

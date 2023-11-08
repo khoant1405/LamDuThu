@@ -140,17 +140,13 @@ public sealed class KafkaHelper
                 {
                     await adminClient.CreateTopicsAsync(new[]
                     {
-                        new TopicSpecification
-                        {
-                            Name = topic, ReplicationFactor = _kafka.Replica,
-                            NumPartitions = size * _kafka.PartitionSize
-                        }
+                        new TopicSpecification { Name = topic, ReplicationFactor = _kafka.Replica, NumPartitions = size * _kafka.PartitionSize }
                     });
                 }
             }
             catch (CreateTopicsException e)
             {
-                KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetTopic)}"), e);
+                //KvException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetTopic)}"), e);
                 Console.WriteLine($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
             }
         }

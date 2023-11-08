@@ -19,12 +19,7 @@ public class RedisHelper
             return ConnectionMultiplexer.Connect(GetConfigRedis());
         }
 
-        var sentinelOptions = new ConfigurationOptions
-        {
-            TieBreaker = "",
-            CommandMap = CommandMap.Sentinel,
-            AbortOnConnectFail = false
-        };
+        var sentinelOptions = new ConfigurationOptions { TieBreaker = "", CommandMap = CommandMap.Sentinel, AbortOnConnectFail = false };
         var configRedis = GetConfigRedis();
         foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
         configRedis.EndPoints.Clear();
@@ -43,11 +38,7 @@ public class RedisHelper
             foreach (var server in servers) endPointCollection.Add(server);
         }
 
-        var configurationOptions = new ConfigurationOptions
-        {
-            EndPoints = endPointCollection,
-            DefaultDatabase = config.DbNumber
-        };
+        var configurationOptions = new ConfigurationOptions { EndPoints = endPointCollection, DefaultDatabase = config.DbNumber };
 
         if (config.IsSentinel == true)
         {

@@ -20,12 +20,7 @@ public class RedisLazy
             return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());
         }
 
-        var sentinelOptions = new ConfigurationOptions
-        {
-            TieBreaker = "",
-            CommandMap = CommandMap.Sentinel,
-            AbortOnConnectFail = false
-        };
+        var sentinelOptions = new ConfigurationOptions { TieBreaker = "", CommandMap = CommandMap.Sentinel, AbortOnConnectFail = false };
         var configRedis = RedisHelper.GetConfigRedis();
         foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
         configRedis.EndPoints.Clear();

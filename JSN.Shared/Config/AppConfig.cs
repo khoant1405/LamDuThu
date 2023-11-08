@@ -68,11 +68,7 @@ public static class AppConfig
                 break;
             }
 
-            sqlConfigs.Add(new SqlConfig
-            {
-                Name = sqlName,
-                ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
-            });
+            sqlConfigs.Add(new SqlConfig { Name = sqlName, ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value) });
 
             index++;
         }
@@ -106,8 +102,10 @@ public static class AppConfig
             ConsumerIsClosedWhenConsumeException = ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:ConsumerIsClosedWhenConsumeException"]),
             PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"]),
             IsKafkaMonitor = ConvertHelper.ToBoolean(ConfigurationBuilder["Kafka:IsKafkaMonitor"]),
-            KafkaPrefix = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaPrefix"])
+            KafkaPrefix = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaPrefix"]),
+            Replica = (short)ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:NumberReplica"])
         };
+        kafkaConfig.Replica = kafkaConfig.Replica == 0 ? (short)1 : kafkaConfig.Replica;
 
         var producerConfigs = new List<Producer>();
         var index = 0;
