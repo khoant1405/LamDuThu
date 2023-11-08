@@ -10,6 +10,25 @@ namespace JSN.Kafka.Helper;
 
 public sealed class KafkaHelper
 {
+    private static readonly Lazy<KafkaHelper> LazyInstance = new(() => new KafkaHelper());
+
+    // config _kafka from app.json
+    private readonly KafkaConfig _kafka = AppConfig.KafkaConfig;
+    private readonly KafkaProducerConfig _kafkaProducer = AppConfig.KafkaProducerConfig;
+
+    // build config
+    private ConsumerConfig _consumerConfig;
+    private Metadata _kafkaMetadata;
+    private IProducer<string, string> _producer;
+
+    private ProducerConfig _producerConfig;
+
+    private KafkaHelper()
+    {
+    }
+
+    public static KafkaHelper Instance => LazyInstance.Value;
+
     #region Set Kakfa config
 
     public void SetKafkaConfig()
@@ -223,39 +242,6 @@ public sealed class KafkaHelper
             }
         });
     }
-
-    #endregion
-
-    #region Constructor
-
-    public static KafkaHelper Instance => Nested.instance;
-
-    private static class Nested
-    {
-        // ReSharper disable once InconsistentNaming
-        internal static readonly KafkaHelper instance = new();
-
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static Nested()
-        {
-        }
-    }
-
-    private KafkaHelper()
-    {
-    }
-
-    // build config
-    private ConsumerConfig _consumerConfig;
-
-    private ProducerConfig _producerConfig;
-
-    // config _kafka from app.json
-    private readonly KafkaConfig _kafka = AppConfig.KafkaConfig;
-    private readonly KafkaProducerConfig _kafkaProducer = AppConfig.KafkaProducerConfig;
-    private Metadata _kafkaMetadata;
-    private IProducer<string, string> _producer;
 
     #endregion
 
