@@ -1,6 +1,6 @@
-﻿namespace JSN.Shared.Setting;
+﻿namespace JSN.Shared.Model;
 
-public class ProducerSetting
+public class Producer
 {
     public string? Name { get; set; }
     public string? QueueName { get; set; }

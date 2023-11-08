@@ -13,7 +13,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await DoSomethingAfterMinutesAsync(stoppingToken, AppSettings.PublishAfterMinutes);
+        await DoSomethingAfterMinutesAsync(stoppingToken, AppConfig.PublishAfterMinutes);
     }
 
     private async Task DoSomethingAfterMinutesAsync(CancellationToken stoppingToken, int minutes)

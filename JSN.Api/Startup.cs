@@ -14,7 +14,7 @@ public class Startup
 {
     public Startup(IConfiguration configuration)
     {
-        AppSettings.ConfigurationBuilder = configuration;
+        AppConfig.ConfigurationBuilder = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -47,11 +47,11 @@ public class Startup
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JwtSetting.Token!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtSetting.Token!)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ValidAudience = AppSettings.JwtSetting.ValidAudience,
-                    ValidIssuer = AppSettings.JwtSetting.ValidIssuer
+                    ValidAudience = AppConfig.JwtSetting.ValidAudience,
+                    ValidIssuer = AppConfig.JwtSetting.ValidIssuer
                 };
             });
         services.AddCors(options => options.AddPolicy("NgOrigins", policy =>

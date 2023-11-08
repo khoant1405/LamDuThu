@@ -1,6 +1,8 @@
-﻿namespace JSN.Shared.Setting;
+﻿using JSN.Shared.Model;
 
-public class KafkaSetting
+namespace JSN.Shared.Setting;
+
+public class KafkaConfig
 {
     public string? KafkaIp { get; set; }
     public string? GroupId { get; set; }
@@ -8,5 +10,5 @@ public class KafkaSetting
     public int CommitPeriod { get; set; }
     public bool ConsumerIsClosedWhenConsumeException { get; set; }
     public int PartitionSize { get; set; }
-    public List<ProducerSetting> AllProducers { get; set; }
+    public List<Producer> AllProducers { get; set; }
 }

@@ -7,7 +7,7 @@ public class RedisHelper
 {
     public static ConnectionMultiplexer? GetConnectionMultiplexer()
     {
-        var config = AppSettings.RedisSetting;
+        var config = AppConfig.RedisSetting;
 
         if (config.IsUseRedisLazy)
         {
@@ -34,7 +34,7 @@ public class RedisHelper
 
     public static ConfigurationOptions GetConfigRedis()
     {
-        var config = AppSettings.RedisSetting;
+        var config = AppConfig.RedisSetting;
 
         var servers = config.Servers?.Split(",");
         var endPointCollection = new EndPointCollection();

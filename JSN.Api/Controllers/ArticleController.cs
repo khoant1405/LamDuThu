@@ -20,12 +20,12 @@ public class ArticleController : ControllerBase
     [HttpGet("[action]")]
     public async Task<ActionResult<PaginatedList<ArticleView>>> GetArticleFromPage(int page)
     {
-        if (double.IsNaN(page) || double.IsNaN(AppSettings.ArticlePageSize))
+        if (double.IsNaN(page) || double.IsNaN(AppConfig.ArticlePageSize))
         {
             return BadRequest("Invalid Page");
         }
 
-        var articles = await _articleService.GetArticleFromPageAsync(page, AppSettings.ArticlePageSize);
+        var articles = await _articleService.GetArticleFromPageAsync(page, AppConfig.ArticlePageSize);
 
         return Ok(articles);
     }

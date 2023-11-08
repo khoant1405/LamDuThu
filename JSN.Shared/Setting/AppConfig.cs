@@ -1,9 +1,10 @@
-﻿using JSN.Shared.Utilities;
+﻿using JSN.Shared.Model;
+using JSN.Shared.Utilities;
 using Microsoft.Extensions.Configuration;
 
 namespace JSN.Shared.Setting;
 
-public static class AppSettings
+public static class AppConfig
 {
     private static IConfiguration _configurationBuilder;
 
@@ -21,11 +22,11 @@ public static class AppSettings
     public static int PublishAfterMinutes { get; set; } = 1;
     public static int NumberPublish { get; set; } = 1;
     public static int ArticlePageSize { get; set; } = 20;
-    public static JwtSetting JwtSetting { get; set; }
-    public static List<SqlSetting> SqlSettings { get; set; }
-    public static SqlSetting? DefaultSqlSetting { get; set; }
-    public static RedisSetting RedisSetting { get; set; }
-    public static KafkaSetting KafkaSetting { get; set; }
+    public static JwtConfig JwtSetting { get; set; }
+    public static List<SqlConfig> SqlSettings { get; set; }
+    public static SqlConfig? DefaultSqlSetting { get; set; }
+    public static RedisConfig RedisSetting { get; set; }
+    public static KafkaConfig KafkaSetting { get; set; }
 
     public static void LoadConfig()
     {
@@ -39,9 +40,9 @@ public static class AppSettings
         KafkaSetting = LoadKafkaSetting();
     }
 
-    private static JwtSetting LoadJwtSetting()
+    private static JwtConfig LoadJwtSetting()
     {
-        return new JwtSetting
+        return new JwtConfig
         {
             ValidAudience = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidAudience"]),
             ValidIssuer = ConvertHelper.ToString(ConfigurationBuilder["JWT:ValidIssuer"]),
@@ -51,9 +52,9 @@ public static class AppSettings
         };
     }
 
-    private static List<SqlSetting> LoadSqlSettings()
+    private static List<SqlConfig> LoadSqlSettings()
     {
-        var sqlSettings = new List<SqlSetting>();
+        var sqlSettings = new List<SqlConfig>();
         var index = 0;
 
         while (true)
@@ -65,7 +66,7 @@ public static class AppSettings
                 break;
             }
 
-            sqlSettings.Add(new SqlSetting
+            sqlSettings.Add(new SqlConfig
             {
                 Name = sqlName,
                 ConnectString =
@@ -78,9 +79,9 @@ public static class AppSettings
         return sqlSettings;
     }
 
-    private static RedisSetting LoadRedisSetting()
+    private static RedisConfig LoadRedisSetting()
     {
-        return new RedisSetting
+        return new RedisConfig
         {
             Servers = ConvertHelper.ToString(ConfigurationBuilder["Redis:Servers"]),
             SentinelMasterName = ConvertHelper.ToString(ConfigurationBuilder["Redis:SentinelMasterName"]),
@@ -93,9 +94,9 @@ public static class AppSettings
         };
     }
 
-    private static KafkaSetting LoadKafkaSetting()
+    private static KafkaConfig LoadKafkaSetting()
     {
-        var kafkaSetting = new KafkaSetting
+        var kafkaSetting = new KafkaConfig
         {
             KafkaIp = ConvertHelper.ToString(ConfigurationBuilder["Kafka:KafkaIp"]),
             GroupId = ConvertHelper.ToString(ConfigurationBuilder["Kafka:GroupId"]),
@@ -106,7 +107,7 @@ public static class AppSettings
             PartitionSize = ConvertHelper.ToInt32(ConfigurationBuilder["Kafka:PartitionSize"])
         };
 
-        var producerSettings = new List<ProducerSetting>();
+        var producerSettings = new List<Producer>();
         var index = 0;
 
         while (true)
@@ -119,7 +120,7 @@ public static class AppSettings
                 break;
             }
 
-            producerSettings.Add(new ProducerSetting
+            producerSettings.Add(new Producer
             {
                 Name = producerName,
                 QueueName = ConvertHelper.ToString(ConfigurationBuilder

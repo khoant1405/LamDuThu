@@ -19,6 +19,6 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 // Now, set AppSettings.ConfigurationBuilder
-AppSettings.ConfigurationBuilder = host.Services.GetRequiredService<IConfiguration>();
+AppConfig.ConfigurationBuilder = host.Services.GetRequiredService<IConfiguration>();
 
 await host.RunAsync();

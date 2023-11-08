@@ -125,7 +125,7 @@ public class Redis<T> where T : class
 
     protected IDatabase GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
     {
-        return !AppSettings.RedisSetting.IsUseRedisLazy
+        return !AppConfig.RedisSetting.IsUseRedisLazy
             ? connectionMultiplexer.GetDatabase()
             : new RedisLazy().GetLazyDatabase();
     }

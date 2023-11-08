@@ -1,6 +1,6 @@
 ﻿namespace JSN.Shared.Setting;
 
-public class RedisSetting
+public class RedisConfig
 {
     public string? Servers { get; set; }
 
