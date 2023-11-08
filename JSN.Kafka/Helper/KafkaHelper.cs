@@ -188,60 +188,60 @@ public sealed class KafkaHelper
 
     #region Consumer
 
-    public void SetOnHandle(ConsumerBuilder<Ignore, string> consumer, int indexConsumer = -1)
-    {
-        consumer.SetErrorHandler((_, e) =>
-        {
-            // method apply for Kafka only
-            JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"), new KafkaException(e), null, $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
-        }).SetLogHandler((_, e) =>
-        {
-            //if (KvAppConfig.ServiceMode.Equals("console"))
-            //{
-            //    Console.WriteLine($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}");
-            //}
+    //public void SetOnHandle(ConsumerBuilder<Ignore, string> consumer, int indexConsumer = -1)
+    //{
+    //    consumer.SetErrorHandler((_, e) =>
+    //    {
+    //        // method apply for Kafka only
+    //        JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.SetErrorHandler"), new KafkaException(e), null, $"Kafka Consumer Error: {JsonConvert.SerializeObject(e)}");
+    //    }).SetLogHandler((_, e) =>
+    //    {
+    //        //if (KvAppConfig.ServiceMode.Equals("console"))
+    //        //{
+    //        //    Console.WriteLine($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}");
+    //        //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                JsnException.WriteInfo($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}", LogType.Kafka);
-            }
-        }).SetStatisticsHandler((_, json) =>
-        {
-            if (_kafka.IsKafkaMonitor)
-            {
-                JsnException.WriteInfo($"Kafka statistics: {json}", LogType.Kafka);
-            }
-        }).SetPartitionsAssignedHandler((c, partitions) =>
-        {
-            //if (KvAppConfig.ServiceMode.Equals("console"))
-            //{
-            //    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
-            //}
+    //        if (_kafka.IsKafkaMonitor)
+    //        {
+    //            JsnException.WriteInfo($"Kafka consumer Log Handler, name: {e.Name}, {e.Facility}, {e.Level}, message: {e.Message}", LogType.Kafka);
+    //        }
+    //    }).SetStatisticsHandler((_, json) =>
+    //    {
+    //        if (_kafka.IsKafkaMonitor)
+    //        {
+    //            JsnException.WriteInfo($"Kafka statistics: {json}", LogType.Kafka);
+    //        }
+    //    }).SetPartitionsAssignedHandler((c, partitions) =>
+    //    {
+    //        //if (KvAppConfig.ServiceMode.Equals("console"))
+    //        //{
+    //        //    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+    //        //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                JsnException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", LogType.Kafka);
-            }
+    //        if (_kafka.IsKafkaMonitor)
+    //        {
+    //            JsnException.WriteInfo($"Assigned partitions: [{string.Join(", ", partitions)}]", LogType.Kafka);
+    //        }
 
-            //if ((KvAppConfig.IsMonitorThreadImprove || KvAppConfig.IsMonitorRecoveryFromMongodb) && indexConsumer > -1)
-            //{
-            //    JsnException.WriteInfo(
-            //        $"Assigned partitions: IndexConsumer: {indexConsumer} | Topic: {partitions.FirstOrDefault()?.Topic} | Partitions: [{string.Join(", ", partitions.Select(p => p.Partition.Value).ToList())}]",
-            //        LogType.Kafka);
-            //}
-        }).SetPartitionsRevokedHandler((c, partitions) =>
-        {
-            //if (KvAppConfig.ServiceMode.Equals("console"))
-            //{
-            //    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
-            //}
+    //        //if ((KvAppConfig.IsMonitorThreadImprove || KvAppConfig.IsMonitorRecoveryFromMongodb) && indexConsumer > -1)
+    //        //{
+    //        //    JsnException.WriteInfo(
+    //        //        $"Assigned partitions: IndexConsumer: {indexConsumer} | Topic: {partitions.FirstOrDefault()?.Topic} | Partitions: [{string.Join(", ", partitions.Select(p => p.Partition.Value).ToList())}]",
+    //        //        LogType.Kafka);
+    //        //}
+    //    }).SetPartitionsRevokedHandler((c, partitions) =>
+    //    {
+    //        //if (KvAppConfig.ServiceMode.Equals("console"))
+    //        //{
+    //        //    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
+    //        //}
 
-            if (_kafka.IsKafkaMonitor)
-            {
-                JsnException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", LogType.Kafka);
-            }
-        });
-    }
+    //        if (_kafka.IsKafkaMonitor)
+    //        {
+    //            JsnException.WriteInfo($"Revoking assignment: [{string.Join(", ", partitions)}]", LogType.Kafka);
+    //        }
+    //    });
+    //}
 
     #endregion
 

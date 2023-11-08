@@ -33,7 +33,16 @@ public class Worker : BackgroundService
 
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-            await _articleService.PublishArticleAsync();
+            var result = await _articleService.PublishArticleAsync();
+
+            if (result)
+            {
+                _logger.LogInformation("Publish success at: {time}", DateTimeOffset.Now);
+            }
+            else
+            {
+                _logger.LogInformation("Publish fail at: {time}", DateTimeOffset.Now);
+            }
 
             nextRunTime = DateTimeOffset.Now.AddMinutes(minutes);
         }

@@ -17,26 +17,26 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         // Configure DbContext with Scoped lifetime
-        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlConfig.ConnectString); });
+        services.AddDbContext<CoreDbContext>(options => { options.UseSqlServer(AppConfig.DefaultSqlConfig.ConnectString); }, ServiceLifetime.Singleton);
 
-        services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
-        services.AddScoped<DbFactory>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddSingleton((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));
+        services.AddSingleton<DbFactory>();
+        services.AddSingleton<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<IArticleRepository, ArticleRepository>();
+        services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
+        services.AddSingleton<IArticleRepository, ArticleRepository>();
 
         return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IArticleService, ArticleService>();
+        services.AddSingleton<IArticleService, ArticleService>();
 
         return services;
     }
