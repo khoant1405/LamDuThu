@@ -2,11 +2,13 @@
 using JSN.Core.Entity;
 using JSN.Core.Model;
 using JSN.Core.ViewModel;
+using JSN.Kafka.Helper;
 using JSN.Redis.Interface;
 using JSN.Service.Interface;
 using JSN.Shared.Config;
 using JSN.Shared.Enum;
 using JSN.Shared.Model;
+using JSN.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace JSN.Service.Implement;
@@ -50,15 +52,31 @@ public class ArticleService : IArticleService
         return data;
     }
 
-    public async Task PublishArticleAsync()
+    public async Task<bool> PublishArticleAsync()
     {
-        var listArticle = await _articleRepository.Where(x => x.Status == (int)ArticleStatus.Editing).OrderBy(x => x.Id).Take(AppConfig.NumberPublish).ToListAsync();
-
-        if (listArticle.Any())
+        try
         {
-            listArticle.ForEach(x => x.Status = (int)ArticleStatus.Publish);
-            _articleRepository.UpdateRange(listArticle);
-            await _unitOfWork.CommitAsync();
+            var listArticle = await _articleRepository.Where(x => x.Status == (int)ArticleStatus.Editing).OrderBy(x => x.Id).Take(AppConfig.NumberPublish).ToListAsync();
+
+            if (listArticle.Any())
+            {
+                listArticle.ForEach(x => x.Status = (int)ArticleStatus.Publish);
+                _articleRepository.UpdateRange(listArticle);
+                await _unitOfWork.CommitAsync();
+
+                foreach (var jsonData in listArticle.Select(item => ConvertHelper.ToJson(item, true)))
+                {
+                    KafkaHelper.Instance.PublishMessage("PublishArticle" + "-" + AppConfig.KafkaConfig.KafkaPrefix, "", jsonData);
+                }
+
+                return true;
+            }
         }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        return false;
     }
 }

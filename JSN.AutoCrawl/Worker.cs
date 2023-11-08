@@ -1,14 +1,17 @@
+using JSN.Service.Interface;
 using JSN.Shared.Config;
 
 namespace JSN.AutoPublishArticle;
 
 public class Worker : BackgroundService
 {
+    private readonly IArticleService _articleService;
     private readonly ILogger<Worker> _logger;
 
-    public Worker(ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger, IArticleService articleService)
     {
         _logger = logger;
+        _articleService = articleService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,7 +33,7 @@ public class Worker : BackgroundService
 
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-            //await _crawlerService.CrawlAsync();
+            await _articleService.PublishArticleAsync();
 
             nextRunTime = DateTimeOffset.Now.AddMinutes(minutes);
         }

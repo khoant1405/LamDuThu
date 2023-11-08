@@ -27,7 +27,11 @@ public class RedisLazy
             AbortOnConnectFail = false
         };
         var configRedis = RedisHelper.GetConfigRedis();
-        foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
+        foreach (var item in configRedis.EndPoints)
+        {
+            sentinelOptions.EndPoints.Add(item);
+        }
+
         configRedis.EndPoints.Clear();
         var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
         return sentinelConnection.GetSentinelMasterConnection(configRedis);

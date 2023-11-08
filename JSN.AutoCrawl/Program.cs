@@ -1,5 +1,6 @@
 using JSN.AutoPublishArticle;
 using JSN.AutoPublishArticle.Extensions;
+using JSN.Core.AutoMapper;
 using JSN.Kafka.Helper;
 using JSN.Shared.Config;
 
@@ -12,6 +13,7 @@ var host = Host.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingCon
     services.AddRedis();
     services.AddDatabase();
     services.AddRepositories();
+    services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
     services.AddServices();
     services.AddHostedService<Worker>();
 }).Build();

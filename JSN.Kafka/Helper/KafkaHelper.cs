@@ -169,7 +169,7 @@ public sealed class KafkaHelper
                     {
                         new TopicSpecification
                         {
-                            Name = topic,
+                            Name = topic + "-" + _kafka.KafkaPrefix,
                             ReplicationFactor = _kafka.Replica,
                             NumPartitions = size * _kafka.PartitionSize
                         }

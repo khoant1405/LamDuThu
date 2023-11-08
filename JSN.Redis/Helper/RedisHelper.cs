@@ -26,7 +26,11 @@ public class RedisHelper
             AbortOnConnectFail = false
         };
         var configRedis = GetConfigRedis();
-        foreach (var item in configRedis.EndPoints) sentinelOptions.EndPoints.Add(item);
+        foreach (var item in configRedis.EndPoints)
+        {
+            sentinelOptions.EndPoints.Add(item);
+        }
+
         configRedis.EndPoints.Clear();
         var sentinelConnection = ConnectionMultiplexer.Connect(sentinelOptions);
         return sentinelConnection.GetSentinelMasterConnection(configRedis);
@@ -41,7 +45,9 @@ public class RedisHelper
         if (servers != null)
         {
             foreach (var server in servers)
+            {
                 endPointCollection.Add(server);
+            }
         }
 
         var configurationOptions = new ConfigurationOptions
