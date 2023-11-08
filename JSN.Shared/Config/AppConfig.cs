@@ -28,7 +28,7 @@ public static class AppConfig
     public static RedisConfig RedisConfig { get; set; }
     public static KafkaConfig KafkaConfig { get; set; }
     public static KafkaProducerConfig KafkaProducerConfig { get; set; }
-    public static List<string> LogExceptionIgnoreObjJsonByServiceType { get; set; }
+    public static List<string>? LogExceptionIgnoreObjJsonByServiceType { get; set; }
 
     public static void LoadConfig()
     {
@@ -153,13 +153,13 @@ public static class AppConfig
         };
     }
 
-    private static List<string> GetListStringBySplitChar(string configValue, List<string> defaultValue = null)
+    private static List<string>? GetListStringBySplitChar(string? configValue, List<string>? defaultValue = null)
     {
         if (configValue == null)
         {
             return defaultValue ?? new List<string>();
         }
 
-        return ConvertHelper.ToString(configValue).Trim().Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+        return ConvertHelper.ToString(configValue)?.Trim().Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
     }
 }

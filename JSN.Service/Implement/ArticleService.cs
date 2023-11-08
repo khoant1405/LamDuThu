@@ -25,32 +25,25 @@ public class ArticleService : IArticleService
 
     public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
     {
-        try
+        var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
+        if (cacheData != null)
         {
-            var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
-            if (cacheData != null)
-            {
-                return cacheData;
-            }
-
-            var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
-
-            var count = await query.CountAsync();
-
-            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(x => _mapper.Map<ArticleView>(x)).ToListAsync();
-
-            var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
-
-            if (count > 0)
-            {
-                await _articlePaginationCacheService.AddPageAsync(data);
-            }
-
-            return data;
+            return cacheData;
         }
-        catch (Exception exception)
+
+        var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
+
+        var count = await query.CountAsync();
+
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(x => _mapper.Map<ArticleView>(x)).ToListAsync();
+
+        var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
+
+        if (count > 0)
         {
-            throw exception;
+            await _articlePaginationCacheService.AddPageAsync(data);
         }
+
+        return data;
     }
 }

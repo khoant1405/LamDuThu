@@ -28,7 +28,7 @@ public class LogObject
     [JsonIgnore] public string ServiceType { get; set; }
 
     public string Action { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public string DescriptionOptional { get; set; }
     public object? ObjJson { get; set; }
 

@@ -13,7 +13,7 @@ public class JsnException : Exception
 {
     #region Overload WriteException
 
-    public static void WriteException(LogObject? logObject, Exception ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
+    public static void WriteException(LogObject? logObject, Exception? ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
         [CallerLineNumber] int lineNumber = 0)
     {
         logObject ??= new LogObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteException)}");
@@ -44,8 +44,6 @@ public class JsnException : Exception
         {
             logObject.Description = GetInnerExceptionMessage(ex);
 
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("ExceptionType", ex.GetType().Name))
@@ -59,8 +57,6 @@ public class JsnException : Exception
         }
         else
         {
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("StackTrace", trace))
@@ -95,7 +91,7 @@ public class JsnException : Exception
         Log.Logger.Information($"{type}: {msg}");
     }
 
-    public static void WriteInfo(LogObject? logObject, Exception ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
+    public static void WriteInfo(LogObject? logObject, Exception? ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
         [CallerLineNumber] int lineNumber = 0)
     {
         logObject ??= new LogObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteInfo)}");
@@ -126,8 +122,6 @@ public class JsnException : Exception
         {
             logObject.Description = GetInnerExceptionMessage(ex);
 
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("ExceptionType", ex.GetType().Name))
@@ -140,8 +134,6 @@ public class JsnException : Exception
         }
         else
         {
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("StackTrace", trace))
@@ -171,8 +163,6 @@ public class JsnException : Exception
 
         var trace = $"{filePath}:{lineNumber} {memberName}";
 
-        using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-        using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
         using (LogContext.PushProperty("ClientName", logObject.ClientName))
         using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
         using (LogContext.PushProperty("StackTrace", trace))
@@ -181,7 +171,7 @@ public class JsnException : Exception
         }
     }
 
-    public static void WriteLogTime(LogImpactObject logObject, object? obj = null, string optional = "")
+    public static void WriteLogTime(LogImpactObject? logObject, object? obj = null, string optional = "")
     {
         logObject ??= new LogImpactObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteInfo)}");
         if (obj != null)
@@ -205,8 +195,6 @@ public class JsnException : Exception
 
         #endregion ignore ObjJson
 
-        using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-        using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
         using (LogContext.PushProperty("ClientName", logObject.ClientName))
         using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
         using (LogContext.PushProperty("Action", logObject.Action))
@@ -231,7 +219,7 @@ public class JsnException : Exception
 
     #region Overload WriteWarning
 
-    public static void WriteWarning(LogObject? logObject, Exception ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
+    public static void WriteWarning(LogObject? logObject, Exception? ex, object? obj = null, string optional = "", [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "",
         [CallerLineNumber] int lineNumber = 0)
     {
         logObject ??= new LogObject(nameof(JsnException), $"{nameof(JsnException)}.{nameof(WriteWarning)}");
@@ -262,8 +250,6 @@ public class JsnException : Exception
         {
             logObject.Description = GetInnerExceptionMessage(ex);
 
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("ExceptionType", ex.GetType().Name))
@@ -276,8 +262,6 @@ public class JsnException : Exception
         }
         else
         {
-            using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-            using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
             using (LogContext.PushProperty("ClientName", logObject.ClientName))
             using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
             using (LogContext.PushProperty("StackTrace", trace))
@@ -307,8 +291,6 @@ public class JsnException : Exception
 
         #endregion
 
-        using (LogContext.PushProperty("Jsn.GroupId", logObject.GroupId))
-        using (LogContext.PushProperty("Jsn.RetailerId", logObject.RetailerId))
         using (LogContext.PushProperty("ClientName", logObject.ClientName))
         using (LogContext.PushProperty("ServiceType", logObject.ServiceType))
         using (LogContext.PushProperty("StackTrace", trace))
@@ -321,12 +303,12 @@ public class JsnException : Exception
 
     #region Helpers
 
-    public static string GetInnerExceptionMessage(Exception ex)
+    public static string? GetInnerExceptionMessage(Exception? ex)
     {
-        return !string.IsNullOrEmpty(ex.InnerException?.Message) ? GetInnerExceptionMessage(ex.InnerException) : ex.Message;
+        return !string.IsNullOrEmpty(ex?.InnerException?.Message) ? GetInnerExceptionMessage(ex.InnerException) : ex?.Message;
     }
 
-    private static bool IsJsnException(Exception ex)
+    private static bool IsJsnException(Exception? ex)
     {
         return ex is JsnException;
     }
