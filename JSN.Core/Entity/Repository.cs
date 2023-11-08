@@ -60,6 +60,11 @@ public class Repository<T> : IRepository<T>, IDisposable where T : class
         DbSet.Update(entity);
     }
 
+    public void UpdateRange(IEnumerable<T> entities)
+    {
+        DbSet.UpdateRange(entities);
+    }
+
     public async Task<int> SaveChangesAsync()
     {
         return await _dbFactory.DbContext.SaveChangesAsync();

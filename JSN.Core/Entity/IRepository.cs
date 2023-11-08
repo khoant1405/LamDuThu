@@ -11,6 +11,7 @@ public interface IRepository<T> where T : class
     void Delete(T entity);
     void DeleteRange(IEnumerable<T> entities);
     void Update(T entity);
+    void UpdateRange(IEnumerable<T> entities);
     Task<int> SaveChangesAsync();
     IQueryable<T> Where(Expression<Func<T, bool>>? filter = null);
 }

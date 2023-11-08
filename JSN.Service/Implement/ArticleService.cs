@@ -4,6 +4,7 @@ using JSN.Core.Model;
 using JSN.Core.ViewModel;
 using JSN.Redis.Interface;
 using JSN.Service.Interface;
+using JSN.Shared.Config;
 using JSN.Shared.Enum;
 using JSN.Shared.Model;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,14 @@ public class ArticleService : IArticleService
     private readonly IArticlePaginationCacheService _articlePaginationCacheService;
     private readonly IRepository<Article> _articleRepository;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService)
+    public ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService, IUnitOfWork unitOfWork)
     {
         _articleRepository = articleRepository;
         _mapper = mapper;
         _articlePaginationCacheService = articlePaginationCacheService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
@@ -45,5 +48,17 @@ public class ArticleService : IArticleService
         }
 
         return data;
+    }
+
+    public async Task PublishArticleAsync()
+    {
+        var listArticle = await _articleRepository.Where(x => x.Status == (int)ArticleStatus.Editing).OrderBy(x => x.Id).Take(AppConfig.NumberPublish).ToListAsync();
+
+        if (listArticle.Any())
+        {
+            listArticle.ForEach(x => x.Status = (int)ArticleStatus.Publish);
+            _articleRepository.UpdateRange(listArticle);
+            await _unitOfWork.CommitAsync();
+        }
     }
 }
