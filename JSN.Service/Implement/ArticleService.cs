@@ -26,7 +26,10 @@ public class ArticleService : IArticleService
     public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
     {
         var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
-        if (cacheData != null) return cacheData;
+        if (cacheData != null)
+        {
+            return cacheData;
+        }
 
         var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
 
@@ -36,7 +39,10 @@ public class ArticleService : IArticleService
 
         var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
 
-        if (count > 0) await _articlePaginationCacheService.AddPageAsync(data);
+        if (count > 0)
+        {
+            await _articlePaginationCacheService.AddPageAsync(data);
+        }
 
         return data;
     }

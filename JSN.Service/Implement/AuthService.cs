@@ -87,7 +87,10 @@ public class AuthService : IAuthService
     public string CheckLogin(UserView request)
     {
         var user = _userService.GetUserByUserName(request.UserName);
-        if (user == null) return "User not found.";
+        if (user == null)
+        {
+            return "User not found.";
+        }
 
         return !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) ? "Wrong password." : "";
     }
@@ -95,26 +98,41 @@ public class AuthService : IAuthService
     public string CheckUserExists(UserView request)
     {
         var user = _userService.GetUserByUserName(request.UserName);
-        if (user != null) return "User Exists.";
+        if (user != null)
+        {
+            return "User Exists.";
+        }
 
         return "";
     }
 
     public string CheckRefreshToken(TokenModel? tokenModel)
     {
-        if (tokenModel is null) return "Invalid client request";
+        if (tokenModel is null)
+        {
+            return "Invalid client request";
+        }
 
         var accessToken = tokenModel.AccessToken;
         var refreshToken = tokenModel.RefreshToken;
 
         var principal = GetPrincipalFromExpiredToken(accessToken);
-        if (principal == null) return "Invalid access token";
+        if (principal == null)
+        {
+            return "Invalid access token";
+        }
 
         var userName = principal.Identity?.Name;
         var user = _userService.GetUserByUserName(userName);
-        if (user == null) return "Invalid access token";
+        if (user == null)
+        {
+            return "Invalid access token";
+        }
 
-        if (user.RefreshToken != refreshToken) return "Invalid refresh token";
+        if (user.RefreshToken != refreshToken)
+        {
+            return "Invalid refresh token";
+        }
 
         return user.TokenExpired <= DateTime.Now ? "Token expired" : "";
     }
@@ -184,8 +202,10 @@ public class AuthService : IAuthService
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase)) return null;
+        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512Signature, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return null;
+        }
 
         return principal;
     }

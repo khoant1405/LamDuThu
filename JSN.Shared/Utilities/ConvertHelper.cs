@@ -35,7 +35,10 @@ public static class ConvertHelper
 
     public static string? ToString(object? value, string? defaultValue = "")
     {
-        if (value == null) return defaultValue;
+        if (value == null)
+        {
+            return defaultValue;
+        }
 
         try
         {
@@ -51,9 +54,15 @@ public static class ConvertHelper
     {
         var result = DateTime.TryParse(value?.ToString(), out var parsedValue) ? parsedValue : defaultValue;
 
-        if (result >= (DateTime)SqlDateTime.MaxValue) return (DateTime)SqlDateTime.MaxValue;
+        if (result >= (DateTime)SqlDateTime.MaxValue)
+        {
+            return (DateTime)SqlDateTime.MaxValue;
+        }
 
-        if (result <= (DateTime)SqlDateTime.MinValue) return ((DateTime)SqlDateTime.MinValue).AddYears(5);
+        if (result <= (DateTime)SqlDateTime.MinValue)
+        {
+            return ((DateTime)SqlDateTime.MinValue).AddYears(5);
+        }
 
         return result;
     }
@@ -121,7 +130,10 @@ public static class ConvertHelper
     {
         long hashCode = 0;
 
-        if (string.IsNullOrEmpty(text)) return hashCode;
+        if (string.IsNullOrEmpty(text))
+        {
+            return hashCode;
+        }
 
         var byteContents = Encoding.Unicode.GetBytes(text);
 

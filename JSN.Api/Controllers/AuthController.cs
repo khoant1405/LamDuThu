@@ -23,7 +23,10 @@ public class AuthController : ControllerBase
     {
         var error = _authService.CheckUserExists(request);
 
-        if (!error.IsNullOrEmpty()) return BadRequest(error);
+        if (!error.IsNullOrEmpty())
+        {
+            return BadRequest(error);
+        }
 
         var newUser = await _authService.RegisterAsync(request);
 
@@ -35,7 +38,10 @@ public class AuthController : ControllerBase
     {
         var error = _authService.CheckLogin(request);
 
-        if (!error.IsNullOrEmpty()) return BadRequest(error);
+        if (!error.IsNullOrEmpty())
+        {
+            return BadRequest(error);
+        }
 
         var newToken = await _authService.LoginAsync(request);
 
@@ -47,7 +53,10 @@ public class AuthController : ControllerBase
     {
         var error = _authService.CheckRefreshToken(tokenModel);
 
-        if (!error.IsNullOrEmpty()) return BadRequest(error);
+        if (!error.IsNullOrEmpty())
+        {
+            return BadRequest(error);
+        }
 
         var newToken = await _authService.RefreshTokenAsync(tokenModel);
 

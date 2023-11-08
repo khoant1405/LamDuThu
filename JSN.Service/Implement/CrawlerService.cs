@@ -43,7 +43,10 @@ public class CrawlerService : ICrawlerService
             foreach (var item in articles)
             {
                 var articleName = CleanHtmlEntities(item.QuerySelector("div > h2 > a")?.InnerText);
-                if (articleName.IsNullOrEmpty()) continue;
+                if (articleName.IsNullOrEmpty())
+                {
+                    continue;
+                }
 
                 var imageThumb = CleanHtmlEntities(item.QuerySelector("div.message-body > div > div > img")?.Attributes["k-data-src"].Value);
                 var description = CleanHtmlEntities(item.QuerySelector("div.message-body > div")?.InnerText, true);
@@ -87,12 +90,18 @@ public class CrawlerService : ICrawlerService
 
     private static string CleanHtmlEntities(string? inputText, bool isDescription = false)
     {
-        if (string.IsNullOrEmpty(inputText)) return string.Empty;
+        if (string.IsNullOrEmpty(inputText))
+        {
+            return string.Empty;
+        }
 
         // Remove specific HTML entities
         var cleanedText = inputText.Replace("\n", "").Replace("\t", "").Replace("&#8203;", "").Replace("&lt;", "").Replace("&gt;", "").Replace("&amp;", "").Replace("&quot;", "").Replace("&apos;", "");
 
-        if (!isDescription) return cleanedText.Trim();
+        if (!isDescription)
+        {
+            return cleanedText.Trim();
+        }
 
         // Remove HTML comments
         const string commentPattern = @"<!--.*?-->";

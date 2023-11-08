@@ -15,7 +15,10 @@ public class RedisLazy
     private static ConnectionMultiplexer CreateConnection()
     {
         var config = AppConfig.RedisConfig;
-        if (config.IsSentinel != true) return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());
+        if (config.IsSentinel != true)
+        {
+            return ConnectionMultiplexer.Connect(RedisHelper.GetConfigRedis());
+        }
 
         var sentinelOptions = new ConfigurationOptions
         {

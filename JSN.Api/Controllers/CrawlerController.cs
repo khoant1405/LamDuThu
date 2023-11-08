@@ -18,7 +18,10 @@ public class CrawlerController : ControllerBase
     //[Authorize]
     public async Task<ActionResult> StartCrawler(int startPage, int endPage)
     {
-        if (double.IsNaN(startPage) || double.IsNaN(endPage)) return BadRequest("Invalid Page");
+        if (double.IsNaN(startPage) || double.IsNaN(endPage))
+        {
+            return BadRequest("Invalid Page");
+        }
 
         await _crawlerService.StartCrawlerAsync(startPage, endPage);
 
