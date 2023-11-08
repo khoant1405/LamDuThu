@@ -24,22 +24,25 @@ public static class AppConfig
     public static int ArticlePageSize { get; set; } = 20;
     public static JwtConfig JwtConfig { get; set; }
     public static List<SqlConfig> SqlConfigs { get; set; }
-    public static SqlConfig? DefaultSqlConfig { get; set; }
+    public static SqlConfig DefaultSqlConfig { get; set; }
     public static RedisConfig RedisConfig { get; set; }
     public static KafkaConfig KafkaConfig { get; set; }
     public static KafkaProducerConfig KafkaProducerConfig { get; set; }
+    public static List<string> LogExceptionIgnoreObjJsonByServiceType { get; set; }
 
     public static void LoadConfig()
     {
         JwtConfig = LoadJwtConfig();
         SqlConfigs = LoadSqlConfigs();
         DefaultSqlConfig = SqlConfigs.FirstOrDefault();
+
         RedisConfig = LoadRedisConfig();
         ArticlePageSize = ConvertHelper.ToInt32(ConfigurationBuilder["ArticlePageSize"], 20);
         PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
         NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
         KafkaConfig = LoadKafkaConfig();
         KafkaProducerConfig = LoadKafkaProducerConfig();
+        LogExceptionIgnoreObjJsonByServiceType = GetListStringBySplitChar(ConfigurationBuilder["LogExceptionIgnoreObjJsonByServiceType"]);
     }
 
     private static JwtConfig LoadJwtConfig()
@@ -148,5 +151,15 @@ public static class AppConfig
             RequestTimeoutMs = ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:RequestTimeoutMs"]),
             IsUseProduceAsync = ConvertHelper.ToBoolean(ConfigurationBuilder["KafkaProducer:IsUseProduceAsync"])
         };
+    }
+
+    private static List<string> GetListStringBySplitChar(string configValue, List<string> defaultValue = null)
+    {
+        if (configValue == null)
+        {
+            return defaultValue ?? new List<string>();
+        }
+
+        return ConvertHelper.ToString(configValue).Trim().Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
     }
 }

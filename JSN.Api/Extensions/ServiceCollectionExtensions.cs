@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
         // Configure DbContext with Scoped lifetime
         services.AddDbContext<CoreDbContext>(options =>
         {
-            options.UseSqlServer(AppConfig.DefaultSqlConfig?.ConnectString);
+            options.UseSqlServer(AppConfig.DefaultSqlConfig.ConnectString);
         });
 
         services.AddScoped((Func<IServiceProvider, Func<CoreDbContext>>)(provider => () => provider.GetService<CoreDbContext>()!));

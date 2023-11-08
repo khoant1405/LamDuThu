@@ -113,7 +113,7 @@ public static class ConvertHelper
         return DateTime.ParseExact(stringDate, format, CultureInfo.InvariantCulture);
     }
 
-    public static string ToJson(object obj, bool ignoreNull = false)
+    public static string ToJson(object? obj, bool ignoreNull = false)
     {
         var settings = ignoreNull
             ? new JsonSerializerSettings

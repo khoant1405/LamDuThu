@@ -10,7 +10,7 @@ public class KafkaConfig
     public int CommitPeriod { get; set; }
     public bool ConsumerIsClosedWhenConsumeException { get; set; }
     public int PartitionSize { get; set; }
-    public List<Producer> AllProducers { get; set; }
+    public List<Producer>? AllProducers { get; set; }
     public bool IsKafkaMonitor { get; set; }
     public string? KafkaPrefix { get; set; }
     public short Replica { get; set; }
