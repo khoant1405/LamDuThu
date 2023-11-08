@@ -136,10 +136,7 @@ public sealed class KafkaHelper
         }
 
         // Lấy thông tin của broker, topic...
-        using var adminClient = new AdminClientBuilder(new AdminClientConfig
-        {
-            BootstrapServers = _kafka.KafkaIp
-        }).Build();
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _kafka.KafkaIp }).Build();
         try
         {
             _kafkaMetadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
@@ -156,10 +153,7 @@ public sealed class KafkaHelper
 
     public async Task SetTopic(string topic, int size)
     {
-        using (var adminClient = new AdminClientBuilder(new AdminClientConfig
-               {
-                   BootstrapServers = _kafka.KafkaIp
-               }).Build())
+        using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _kafka.KafkaIp }).Build())
         {
             try
             {
@@ -167,12 +161,7 @@ public sealed class KafkaHelper
                 {
                     await adminClient.CreateTopicsAsync(new[]
                     {
-                        new TopicSpecification
-                        {
-                            Name = topic + "-" + _kafka.KafkaPrefix,
-                            ReplicationFactor = _kafka.Replica,
-                            NumPartitions = size * _kafka.PartitionSize
-                        }
+                        new TopicSpecification { Name = topic + "-" + _kafka.KafkaPrefix, ReplicationFactor = _kafka.Replica, NumPartitions = size * _kafka.PartitionSize }
                     });
                 }
             }
@@ -286,11 +275,7 @@ public sealed class KafkaHelper
         {
             if (_kafkaProducer.IsUseProduceAsync)
             {
-                var deliveryResult = _producer.ProduceAsync(topic, new Message<string, string>
-                {
-                    Key = key,
-                    Value = jsonData
-                });
+                var deliveryResult = _producer.ProduceAsync(topic, new Message<string, string> { Key = key, Value = jsonData });
                 deliveryResult.ContinueWith(task =>
                 {
                     if (!isLog)
@@ -322,11 +307,7 @@ public sealed class KafkaHelper
                         new JsnLogException($"Kafka producer sent msg failed: Topic: {topic} | Key: {key} | Data: {msg} | Exception: {JsonConvert.SerializeObject(dr.Error)}"));
                 }
 
-                _producer.Produce(topic, new Message<string, string>
-                {
-                    Key = key,
-                    Value = jsonData
-                }, Handler);
+                _producer.Produce(topic, new Message<string, string> { Key = key, Value = jsonData }, Handler);
             }
         }
         catch (Exception ex)

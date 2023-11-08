@@ -56,11 +56,7 @@ public class AuthService : IAuthService
         _userRepository.Update(user!);
         await _unitOfWork.CommitAsync();
 
-        return new TokenModel
-        {
-            AccessToken = token,
-            RefreshToken = refreshToken.Token
-        };
+        return new TokenModel { AccessToken = token, RefreshToken = refreshToken.Token };
     }
 
     public async Task<TokenModel> RefreshTokenAsync(TokenModel? tokenModel)
@@ -77,11 +73,7 @@ public class AuthService : IAuthService
         _userRepository.Update(user!);
         await _unitOfWork.CommitAsync();
 
-        return new TokenModel
-        {
-            AccessToken = newAccessToken,
-            RefreshToken = newRefreshToken.Token
-        };
+        return new TokenModel { AccessToken = newAccessToken, RefreshToken = newRefreshToken.Token };
     }
 
     public string CheckLogin(UserView request)
@@ -139,12 +131,7 @@ public class AuthService : IAuthService
 
     private static RefreshToken GenerateRefreshToken()
     {
-        var refreshToken = new RefreshToken
-        {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expired = DateTime.Now.AddDays(7),
-            Created = DateTime.Now
-        };
+        var refreshToken = new RefreshToken { Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)), Expired = DateTime.Now.AddDays(7), Created = DateTime.Now };
 
         return refreshToken;
     }
@@ -158,11 +145,7 @@ public class AuthService : IAuthService
 
     private string CreateToken(User user)
     {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Role, user.Role.ToString() ?? "")
-        };
+        var claims = new List<Claim> { new(ClaimTypes.Name, user.UserName), new(ClaimTypes.Role, user.Role.ToString() ?? "") };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!));
         var tokenValidityInMinutes = AppConfig.JwtConfig.TokenValidityInMinutes;
@@ -194,10 +177,7 @@ public class AuthService : IAuthService
     {
         var tokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!)),
-            ValidateIssuer = false,
-            ValidateAudience = false
+            ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtConfig.Token!)), ValidateIssuer = false, ValidateAudience = false
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

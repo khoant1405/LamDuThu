@@ -24,10 +24,7 @@ public class CrawlerService : ICrawlerService
 
     public async Task StartCrawlerAsync(int startPage, int endPage)
     {
-        using var httpClient = new HttpClient(new HttpClientHandler
-        {
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-        });
+        using var httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
 
         var random = new Random();
         var listArticle = new List<Article>();
@@ -67,12 +64,7 @@ public class CrawlerService : ICrawlerService
                     CreatedBy = JsnStatic.AdminId,
                     UserId = JsnStatic.AdminId,
                     UserName = JsnStatic.AdminName,
-                    ArticleContent = new ArticleContent
-                    {
-                        Content = content,
-                        CreatedOn = time,
-                        CreatedBy = JsnStatic.AdminId
-                    }
+                    ArticleContent = new ArticleContent { Content = content, CreatedOn = time, CreatedBy = JsnStatic.AdminId }
                 };
                 listArticle.Add(newArticle);
             }

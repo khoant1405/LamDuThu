@@ -115,12 +115,7 @@ public static class ConvertHelper
 
     public static string ToJson(object? obj, bool ignoreNull = false)
     {
-        var settings = ignoreNull
-            ? new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            }
-            : null;
+        var settings = ignoreNull ? new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } : null;
 
         return JsonConvert.SerializeObject(obj, settings);
     }
