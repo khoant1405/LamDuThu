@@ -21,7 +21,7 @@ public sealed class KafkaHelper
             //ID duy nhất cho Consumer. Điều này giúp dõi các Consumer. 
             ClientId = _kafka.ClientId,
 
-            //Nếu = false, Consumer sẽ không tự động xác nhận việc đọc thông điệp từ Kafka broker. Bạn sẽ phải tự quản lý xác nhận (commit) khi bạn đã xử lý thành công các thông điệp.
+            //Nếu = false, Consumer sẽ không tự động xác nhận việc đọc message từ Kafka broker. Bạn sẽ phải tự quản lý xác nhận (commit) khi bạn đã xử lý thành công các message.
             EnableAutoCommit = false,
 
             //Khoảng thời gian giữa các lần gửi thông tin thống kê từ Consumer đến Kafka broker, để theo dõi hiệu suất và hoạt động của Consumer.
@@ -32,7 +32,7 @@ public sealed class KafkaHelper
             SessionTimeoutMs = 6000,
 
             //Xác định hành vi của Consumer khi không có offset lưu trữ cho các partition mà nó muốn đọc.
-            //Giá trị "Latest" sẽ làm Consumer đọc thông điệp mới nhất, trong khi "Earliest" sẽ đọc từ đầu (các thông điệp cũ).
+            //Giá trị "Latest" sẽ làm Consumer đọc message mới nhất, trong khi "Earliest" sẽ đọc từ đầu (các message cũ).
             AutoOffsetReset = AutoOffsetReset.Latest,
 
             //Kích thước tối đa mà Consumer có thể yêu cầu từ một lần fetch.
@@ -61,12 +61,12 @@ public sealed class KafkaHelper
         {
             BootstrapServers = _kafka.KafkaIp,
 
-            //Thuộc tính này xác định kích thước tối đa của một thông điệp Kafka mà Producer có thể gửi. Kích thước này thường được đo bằng byte.
+            //Thuộc tính này xác định kích thước tối đa của một message Kafka mà Producer có thể gửi. Kích thước này thường được đo bằng byte.
             //Ví dụ: 104857600 byte tương đương với khoảng 100 MB.
             MessageMaxBytes = 104857600,
 
-            //Đây là kích thước tối đa cho một batch (gói) của các thông điệp Kafka mà Producer sẽ gửi trong một lần gửi dữ liệu đến Kafka broker.
-            //Batch là một tập hợp của các thông điệp được gửi cùng nhau để giảm độ trễ và tối ưu hóa hiệu suất gửi. 
+            //Đây là kích thước tối đa cho một batch (gói) của các message Kafka mà Producer sẽ gửi trong một lần gửi dữ liệu đến Kafka broker.
+            //Batch là một tập hợp của các message được gửi cùng nhau để giảm độ trễ và tối ưu hóa hiệu suất gửi. 
             BatchSize = 104857600
         };
 
@@ -84,16 +84,16 @@ public sealed class KafkaHelper
 
         if (_kafkaProducer.MessageSendMaxRetries > 0)
         {
-            //Số lần cố gắng gửi lại một tin nhắn nếu nó không thể được gửi thành công lần đầu tiên
+            //Số lần cố gắng gửi lại một message nếu nó không thể được gửi thành công lần đầu tiên
             _producerConfig.MessageSendMaxRetries = _kafkaProducer.MessageSendMaxRetries;
         }
 
         if (_kafkaProducer.MessageTimeoutMs > 0)
         {
-            // Local message timeout. This value is only enforced locally and limits the time a produced message waits for successful delivery.
-            // A time of 0 is infinite. This is the maximum time librdkafka may use to deliver a message (including retries).
-            // Delivery error occurs when either the retry count or the message timeout are exceeded.
-            // The message timeout is automatically adjusted to `transaction.timeout.ms` if `transactional.id` is configured.
+            //Xác định thời gian mà một message cố gắng chờ để được gửi thành công.
+            //Nếu trong khoảng thời gian này message không thể được gửi thành công, nó có thể bị coi là gửi không thành công và có thể gây ra lỗi
+            //Nếu được đặt thành 0, thì thời gian chờ là vô hạn, nghĩa là message sẽ chờ mãi cho đến khi nó được gửi thành công hoặc xảy ra lỗi.
+            //Nếu bạn đã cấu hình transactional.id, thì thời gian chờ của message (MessageTimeoutMs) có thể được tự động điều chỉnh để phù hợp với transaction.timeout.ms.
             _producerConfig.MessageTimeoutMs = _kafkaProducer.MessageTimeoutMs;
         }
 
