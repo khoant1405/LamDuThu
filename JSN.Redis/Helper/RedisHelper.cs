@@ -40,7 +40,8 @@ public class RedisHelper
         var endPointCollection = new EndPointCollection();
         if (servers != null)
         {
-            foreach (var server in servers) endPointCollection.Add(server);
+            foreach (var server in servers)
+                endPointCollection.Add(server);
         }
 
         var configurationOptions = new ConfigurationOptions

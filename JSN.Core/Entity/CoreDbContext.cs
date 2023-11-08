@@ -40,7 +40,10 @@ public partial class CoreDbContext : DbContext
             entity.HasOne(d => d.Article).WithOne(p => p.ArticleContent).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("Fk_ArticleContent_ArticleId");
         });
 
-        modelBuilder.Entity<User>(entity => { entity.HasKey(e => e.Id).HasName("PK__User__3214EC07BCDECF13"); });
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__User__3214EC07BCDECF13");
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }

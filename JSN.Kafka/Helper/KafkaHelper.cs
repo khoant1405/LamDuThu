@@ -2,7 +2,6 @@
 using Confluent.Kafka.Admin;
 using JSN.Shared.Config;
 using JSN.Shared.Utilities;
-using Newtonsoft.Json;
 
 namespace JSN.Kafka.Helper;
 

@@ -96,8 +96,7 @@ public class CrawlerService : ICrawlerService
         }
 
         // Remove specific HTML entities
-        var cleanedText = inputText.Replace("\n", "").Replace("\t", "").Replace("&#8203;", "").Replace("&lt;", "").Replace("&gt;", "").Replace("&amp;", "").Replace("&quot;", "")
-            .Replace("&apos;", "");
+        var cleanedText = inputText.Replace("\n", "").Replace("\t", "").Replace("&#8203;", "").Replace("&lt;", "").Replace("&gt;", "").Replace("&amp;", "").Replace("&quot;", "").Replace("&apos;", "");
 
         if (!isDescription)
         {

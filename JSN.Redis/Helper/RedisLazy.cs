@@ -5,7 +5,7 @@ namespace JSN.Redis.Helper;
 
 public class RedisLazy
 {
-    private static Lazy<ConnectionMultiplexer> _lazyConnection = new(CreateConnection);
+    private static readonly Lazy<ConnectionMultiplexer> _lazyConnection = new(CreateConnection);
 
     public IDatabase GetLazyDatabase()
     {
