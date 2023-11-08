@@ -7,5 +7,5 @@ public class KafkaProducerConfig
     public int MessageSendMaxRetries { get; set; }
     public int MessageTimeoutMs { get; set; }
     public int RequestTimeoutMs { get; set; }
-    public bool IsUseProduceAsync { get; }
+    public bool IsUseProduceAsync { get; set; }
 }

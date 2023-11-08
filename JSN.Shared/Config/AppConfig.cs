@@ -39,6 +39,7 @@ public static class AppConfig
         PublishAfterMinutes = ConvertHelper.ToInt32(ConfigurationBuilder["PublishAfterMinutes"], 1);
         NumberPublish = ConvertHelper.ToInt32(ConfigurationBuilder["NumberPublish"], 1);
         KafkaConfig = LoadKafkaConfig();
+        KafkaProducerConfig = LoadKafkaProducerConfig();
     }
 
     private static JwtConfig LoadJwtConfig()
@@ -132,5 +133,18 @@ public static class AppConfig
 
         kafkaConfig.AllProducers = producerConfigs;
         return kafkaConfig;
+    }
+
+    private static KafkaProducerConfig LoadKafkaProducerConfig()
+    {
+        return new KafkaProducerConfig
+        {
+            BatchNumMessages = ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:BatchNumMessages"]),
+            LingerMs = ConvertHelper.ToDouble(ConfigurationBuilder["KafkaProducer:LingerMs"]),
+            MessageSendMaxRetries = ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:MessageSendMaxRetries"]),
+            MessageTimeoutMs = ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:MessageTimeoutMs"]),
+            RequestTimeoutMs = ConvertHelper.ToInt32(ConfigurationBuilder["KafkaProducer:RequestTimeoutMs"]),
+            IsUseProduceAsync = ConvertHelper.ToBoolean(ConfigurationBuilder["KafkaProducer:IsUseProduceAsync"])
+        };
     }
 }
