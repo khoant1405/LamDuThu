@@ -68,7 +68,11 @@ public static class AppConfig
                 break;
             }
 
-            sqlConfigs.Add(new SqlConfig { Name = sqlName, ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value) });
+            sqlConfigs.Add(new SqlConfig
+            {
+                Name = sqlName,
+                ConnectString = ConvertHelper.ToString(ConfigurationBuilder.GetSection($"SQL:{index}:ConnectString").Value)
+            });
 
             index++;
         }
