@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JSN.Core\JSN.Core.csproj" />
+    <ProjectReference Include="..\JSN.Kafka\JSN.Kafka.csproj" />
     <ProjectReference Include="..\JSN.Redis\JSN.Redis.csproj" />
     <ProjectReference Include="..\JSN.Service\JSN.Service.csproj" />
     <ProjectReference Include="..\JSN.Shared\JSN.Shared.csproj" />
