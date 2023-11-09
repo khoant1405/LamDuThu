@@ -64,6 +64,8 @@ public class ArticleService : IArticleService
                 _articleRepository.UpdateRange(listArticle);
                 await _unitOfWork.CommitAsync();
 
+                await _articlePaginationCacheService.DeleteAllPageAsync();
+
                 foreach (var jsonData in listArticle.Select(item => ConvertHelper.ToJson(item, true)))
                 {
                     KafkaHelper.Instance.PublishMessage("PublishArticle" + "-" + AppConfig.KafkaConfig.KafkaPrefix, "", jsonData);

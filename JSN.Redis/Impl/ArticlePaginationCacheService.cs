@@ -47,7 +47,7 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
     public async Task DeleteAllPageAsync()
     {
         const string pattern = "PaginatedList:ArticleView:*";
-        var server = _connectionMultiplexer.GetServers().FirstOrDefault(x => x.Role().Value == "master");
+        var server = _connectionMultiplexer.GetServers().FirstOrDefault(x => x is { IsConnected: true, IsReplica: false });
         var keys = server?.Keys(pattern: pattern).Select(x => x.ToString());
         if (keys != null)
         {

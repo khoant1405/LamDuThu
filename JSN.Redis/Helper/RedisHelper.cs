@@ -53,7 +53,8 @@ public class RedisHelper
         var configurationOptions = new ConfigurationOptions
         {
             EndPoints = endPointCollection,
-            DefaultDatabase = config.DbNumber
+            DefaultDatabase = config.DbNumber,
+            AbortOnConnectFail = false
         };
 
         if (config.IsSentinel == true)
