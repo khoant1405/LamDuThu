@@ -12,6 +12,11 @@ public class RedisLazy
         return LazyConnection.Value.GetDatabase();
     }
 
+    public IConnectionMultiplexer GetConnectionMultiplexer()
+    {
+        return LazyConnection.Value;
+    }
+
     private static ConnectionMultiplexer CreateConnection()
     {
         var config = AppConfig.RedisConfig;

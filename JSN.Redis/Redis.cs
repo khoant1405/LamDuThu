@@ -7,55 +7,55 @@ namespace JSN.Redis;
 
 public class Redis<T> where T : class
 {
-    public void AddOrUpdate(T entity, IDatabase database)
+    protected void AddOrUpdate(T entity, IDatabase database)
     {
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
     }
 
-    public async Task AddOrUpdateAsync(T entity, IDatabase database)
+    protected async Task AddOrUpdateAsync(T entity, IDatabase database)
     {
         var key = GetKeyByEntity(entity);
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
     }
 
-    public void AddOrUpdate(string key, T entity, IDatabase database)
+    protected void AddOrUpdate(string key, T entity, IDatabase database)
     {
         var serializedEntity = SerializeEntity(entity);
         database.StringSet(key, serializedEntity);
     }
 
-    public async Task AddOrUpdateAsync(string key, T entity, IDatabase database)
+    protected async Task AddOrUpdateAsync(string key, T entity, IDatabase database)
     {
         var serializedEntity = SerializeEntity(entity);
         await database.StringSetAsync(key, serializedEntity);
     }
 
-    public T? Get(string key, IDatabase database)
+    protected T? Get(string key, IDatabase database)
     {
         string? serializedEntity = database.StringGet(key);
         return DeserializeEntity(serializedEntity);
     }
 
-    public async Task<T?> GetAsync(string key, IDatabase database)
+    protected async Task<T?> GetAsync(string key, IDatabase database)
     {
         string? serializedEntity = await database.StringGetAsync(key);
         return DeserializeEntity(serializedEntity);
     }
 
-    public void Delete(string key, IDatabase database)
+    protected void Delete(string key, IDatabase database)
     {
         database.KeyDelete(key);
     }
 
-    public async Task DeleteAsync(string key, IDatabase database)
+    protected async Task DeleteAsync(string key, IDatabase database)
     {
         await database.KeyDeleteAsync(key);
     }
 
-    public void AddRange(IEnumerable<T> entities, IDatabase database)
+    protected void AddRange(IEnumerable<T> entities, IDatabase database)
     {
         var tasks = entities.Select(entity =>
         {
@@ -67,7 +67,7 @@ public class Redis<T> where T : class
         Task.WhenAll(tasks).Wait();
     }
 
-    public async Task AddRangeAsync(IEnumerable<T> entities, IDatabase database)
+    protected async Task AddRangeAsync(IEnumerable<T> entities, IDatabase database)
     {
         var tasks = entities.Select(async entity =>
         {
@@ -79,19 +79,19 @@ public class Redis<T> where T : class
         await Task.WhenAll(tasks);
     }
 
-    public void DeleteRange(IEnumerable<string> keys, IDatabase database)
+    protected void DeleteRange(IEnumerable<string> keys, IDatabase database)
     {
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         Task.WhenAll(tasks).Wait();
     }
 
-    public async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase database)
+    protected async Task DeleteRangeAsync(IEnumerable<string> keys, IDatabase database)
     {
         var tasks = keys.Select(key => database.KeyDeleteAsync(key));
         await Task.WhenAll(tasks);
     }
 
-    protected string GetKeyByEntity(T entity)
+    private static string GetKeyByEntity(T entity)
     {
         var typeName = typeof(T).Name;
         var idProperty = typeof(T).GetProperty("Id");
@@ -121,8 +121,14 @@ public class Redis<T> where T : class
         return string.IsNullOrEmpty(serializedEntity) ? null : JsonConvert.DeserializeObject<T>(serializedEntity);
     }
 
-    protected IDatabase GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
+    protected (IConnectionMultiplexer, IDatabase) GetDatabaseOptions(IConnectionMultiplexer connectionMultiplexer)
     {
-        return !AppConfig.RedisConfig.IsUseRedisLazy ? connectionMultiplexer.GetDatabase() : new RedisLazy().GetLazyDatabase();
+        if (!AppConfig.RedisConfig.IsUseRedisLazy)
+        {
+            return (connectionMultiplexer, connectionMultiplexer.GetDatabase());
+        }
+
+        var redisLazy = new RedisLazy();
+        return (redisLazy.GetConnectionMultiplexer(), redisLazy.GetLazyDatabase());
     }
 }

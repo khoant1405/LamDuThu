@@ -6,11 +6,12 @@ namespace JSN.Redis.Impl;
 
 public class ArticleCacheService : Redis<Article>, IArticleCacheService
 {
+    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly IDatabase _redisDatabase;
 
     public ArticleCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
-        _redisDatabase = GetDatabaseOptions(connectionMultiplexer);
+        (_connectionMultiplexer, _redisDatabase) = GetDatabaseOptions(connectionMultiplexer);
     }
 
     public void AddOrUpdate(Article entity)

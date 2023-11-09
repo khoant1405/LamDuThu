@@ -13,7 +13,7 @@ public interface IArticlePaginationCacheService
     //void DeleteAllPage();
     Task DeletePageAsync(int page);
 
-    //Task DeleteAllPageAsync();
+    Task DeleteAllPageAsync();
     PaginatedList<ArticleView>? GetPage(int page);
     Task<PaginatedList<ArticleView>?> GetPageAsync(int page);
 }

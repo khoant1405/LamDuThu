@@ -7,11 +7,12 @@ namespace JSN.Redis.Impl;
 
 public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, IArticlePaginationCacheService
 {
+    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly IDatabase _redisDatabase;
 
     public ArticlePaginationCacheService(IConnectionMultiplexer connectionMultiplexer)
     {
-        _redisDatabase = GetDatabaseOptions(connectionMultiplexer);
+        (_connectionMultiplexer, _redisDatabase) = GetDatabaseOptions(connectionMultiplexer);
     }
 
     public void AddPage(PaginatedList<ArticleView> entity)
@@ -43,13 +44,16 @@ public class ArticlePaginationCacheService : Redis<PaginatedList<ArticleView>>, 
         await DeleteAsync(key, _redisDatabase);
     }
 
-    //public async Task DeleteAllPageAsync()
-    //{
-    //    // Simulate an asynchronous operation (e.g., deleting all entries from a database or external cache).
-    //    await Task.Delay(1);
-
-    //    DeleteAllPage();
-    //}
+    public async Task DeleteAllPageAsync()
+    {
+        const string pattern = "PaginatedList:ArticleView:*";
+        var server = _connectionMultiplexer.GetServers().FirstOrDefault(x => x.Role().Value == "master");
+        var keys = server?.Keys(pattern: pattern).Select(x => x.ToString());
+        if (keys != null)
+        {
+            await DeleteRangeAsync(keys, _redisDatabase);
+        }
+    }
 
     public PaginatedList<ArticleView>? GetPage(int page)
     {
