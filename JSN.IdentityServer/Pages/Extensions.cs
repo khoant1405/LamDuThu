@@ -26,8 +26,7 @@ public static class Extensions
     /// </summary>
     public static bool IsNativeClient(this AuthorizationRequest context)
     {
-        return !context.RedirectUri.StartsWith("https", StringComparison.Ordinal)
-               && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
+        return !context.RedirectUri.StartsWith("https", StringComparison.Ordinal) && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -38,6 +37,9 @@ public static class Extensions
         page.HttpContext.Response.StatusCode = 200;
         page.HttpContext.Response.Headers["Location"] = "";
 
-        return page.RedirectToPage("/Redirect/Index", new { RedirectUri = redirectUri });
+        return page.RedirectToPage("/Redirect/Index", new
+        {
+            RedirectUri = redirectUri
+        });
     }
 }

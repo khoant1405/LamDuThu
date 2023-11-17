@@ -23,13 +23,8 @@ public class Index : PageModel
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public Index(
-        IIdentityServerInteractionService interaction,
-        IAuthenticationSchemeProvider schemeProvider,
-        IIdentityProviderStore identityProviderStore,
-        IEventService events,
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+    public Index(IIdentityServerInteractionService interaction, IAuthenticationSchemeProvider schemeProvider, IIdentityProviderStore identityProviderStore, IEventService events,
+        UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -50,7 +45,11 @@ public class Index : PageModel
         if (View.IsExternalLoginOnly)
         {
             // we only have one option for logging in and it's an external provider
-            return RedirectToPage("/ExternalLogin/Challenge", new { scheme = View.ExternalLoginScheme, returnUrl });
+            return RedirectToPage("/ExternalLogin/Challenge", new
+            {
+                scheme = View.ExternalLoginScheme,
+                returnUrl
+            });
         }
 
         return Page();
@@ -88,13 +87,11 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
-            var result =
-                await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberLogin, true);
+            var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberLogin, true);
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(Input.Username);
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName,
-                    clientId: context?.Client.ClientId));
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
                 if (context != null)
                 {
@@ -124,8 +121,7 @@ public class Index : PageModel
                 throw new Exception("invalid return URL");
             }
 
-            await _events.RaiseAsync(new UserLoginFailureEvent(Input.Username, "invalid credentials",
-                clientId: context?.Client.ClientId));
+            await _events.RaiseAsync(new UserLoginFailureEvent(Input.Username, "invalid credentials", clientId: context?.Client.ClientId));
             ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
         }
 
@@ -157,7 +153,12 @@ public class Index : PageModel
             if (!local)
             {
                 View.ExternalProviders = new[]
-                    { new ViewModel.ExternalProvider { AuthenticationScheme = context.IdP } };
+                {
+                    new ViewModel.ExternalProvider
+                    {
+                        AuthenticationScheme = context.IdP
+                    }
+                };
             }
 
             return;
@@ -165,21 +166,17 @@ public class Index : PageModel
 
         var schemes = await _schemeProvider.GetAllSchemesAsync();
 
-        var providers = schemes
-            .Where(x => x.DisplayName != null)
-            .Select(x => new ViewModel.ExternalProvider
-            {
-                DisplayName = x.DisplayName ?? x.Name,
-                AuthenticationScheme = x.Name
-            }).ToList();
+        var providers = schemes.Where(x => x.DisplayName != null).Select(x => new ViewModel.ExternalProvider
+        {
+            DisplayName = x.DisplayName ?? x.Name,
+            AuthenticationScheme = x.Name
+        }).ToList();
 
-        var dyanmicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync())
-            .Where(x => x.Enabled)
-            .Select(x => new ViewModel.ExternalProvider
-            {
-                AuthenticationScheme = x.Scheme,
-                DisplayName = x.DisplayName
-            });
+        var dyanmicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync()).Where(x => x.Enabled).Select(x => new ViewModel.ExternalProvider
+        {
+            AuthenticationScheme = x.Scheme,
+            DisplayName = x.DisplayName
+        });
         providers.AddRange(dyanmicSchemes);
 
 
@@ -190,8 +187,7 @@ public class Index : PageModel
             allowLocal = client.EnableLocalLogin;
             if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
             {
-                providers = providers.Where(provider =>
-                    client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
+                providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
             }
         }
 

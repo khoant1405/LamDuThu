@@ -35,10 +35,7 @@ public class SeedData
 
                 result = userMgr.AddClaimsAsync(alice, new Claim[]
                 {
-                    new(JwtClaimTypes.Name, "Alice Smith"),
-                    new(JwtClaimTypes.GivenName, "Alice"),
-                    new(JwtClaimTypes.FamilyName, "Smith"),
-                    new(JwtClaimTypes.WebSite, "http://alice.com")
+                    new(JwtClaimTypes.Name, "Alice Smith"), new(JwtClaimTypes.GivenName, "Alice"), new(JwtClaimTypes.FamilyName, "Smith"), new(JwtClaimTypes.WebSite, "http://alice.com")
                 }).Result;
                 if (!result.Succeeded)
                 {
@@ -69,10 +66,7 @@ public class SeedData
 
                 result = userMgr.AddClaimsAsync(bob, new Claim[]
                 {
-                    new(JwtClaimTypes.Name, "Bob Smith"),
-                    new(JwtClaimTypes.GivenName, "Bob"),
-                    new(JwtClaimTypes.FamilyName, "Smith"),
-                    new(JwtClaimTypes.WebSite, "http://bob.com"),
+                    new(JwtClaimTypes.Name, "Bob Smith"), new(JwtClaimTypes.GivenName, "Bob"), new(JwtClaimTypes.FamilyName, "Smith"), new(JwtClaimTypes.WebSite, "http://bob.com"),
                     new("location", "somewhere")
                 }).Result;
                 if (!result.Succeeded)

@@ -20,8 +20,7 @@ public class Index : PageModel
     private readonly IIdentityServerInteractionService _interaction;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public Index(SignInManager<ApplicationUser> signInManager, IIdentityServerInteractionService interaction,
-        IEventService events)
+    public Index(SignInManager<ApplicationUser> signInManager, IIdentityServerInteractionService interaction, IEventService events)
     {
         _signInManager = signInManager;
         _interaction = interaction;
@@ -88,14 +87,23 @@ public class Index : PageModel
                     // build a return URL so the upstream provider will redirect back
                     // to us after the user has logged out. this allows us to then
                     // complete our single sign-out processing.
-                    var url = Url.Page("/Account/Logout/Loggedout", new { logoutId = LogoutId });
+                    var url = Url.Page("/Account/Logout/Loggedout", new
+                    {
+                        logoutId = LogoutId
+                    });
 
                     // this triggers a redirect to the external provider for sign-out
-                    return SignOut(new AuthenticationProperties { RedirectUri = url }, idp);
+                    return SignOut(new AuthenticationProperties
+                    {
+                        RedirectUri = url
+                    }, idp);
                 }
             }
         }
 
-        return RedirectToPage("/Account/Logout/LoggedOut", new { logoutId = LogoutId });
+        return RedirectToPage("/Account/Logout/LoggedOut", new
+        {
+            logoutId = LogoutId
+        });
     }
 }

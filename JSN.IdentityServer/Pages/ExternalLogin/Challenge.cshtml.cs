@@ -38,8 +38,12 @@ public class Challenge : PageModel
 
             Items =
             {
-                { "returnUrl", returnUrl },
-                { "scheme", scheme }
+                {
+                    "returnUrl", returnUrl
+                },
+                {
+                    "scheme", scheme
+                }
             }
         };
 

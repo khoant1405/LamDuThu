@@ -18,10 +18,7 @@ public class Index : PageModel
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IResourceStore _resources;
 
-    public Index(IIdentityServerInteractionService interaction,
-        IClientStore clients,
-        IResourceStore resources,
-        IEventService events)
+    public Index(IIdentityServerInteractionService interaction, IClientStore clients, IResourceStore resources, IEventService events)
     {
         _interaction = interaction;
         _clients = clients;
