@@ -61,7 +61,7 @@ public class ArticleService(IRepository<Article> articleRepository, IMapper mapp
                 return true;
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return false;
         }

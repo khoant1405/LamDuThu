@@ -139,7 +139,7 @@ public sealed class KafkaHelper
         {
             _kafkaMetadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             //JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(SetKafkaConfig)}"), ex);
         }
@@ -324,7 +324,7 @@ public sealed class KafkaHelper
                 }, Handler);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             //JsnException.WriteException(new LogObject(GetType().Name, $"{GetType().Name}.{nameof(PublishMessage)}"), ex);
         }
