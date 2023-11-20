@@ -53,9 +53,17 @@ public class ArticleService(IRepository<Article> articleRepository, IMapper mapp
 
                 await articlePaginationCacheService.DeleteAllPageAsync();
 
-                foreach (var jsonData in listArticle.Select(item => ConvertHelper.ToJson(item, true)))
+                foreach (var item in listArticle)
                 {
-                    KafkaHelper.Instance.PublishMessage("PublishArticle" + "-" + AppConfig.KafkaConfig.KafkaPrefix, "", jsonData);
+                    var jsonData = ConvertHelper.ToJson(item, true);
+                    if (item.Id % 2 == 0)
+                    {
+                        KafkaHelper.Instance.PublishMessage("PublishArticleX" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Article_{item.Id}", jsonData);
+                    }
+                    else
+                    {
+                        KafkaHelper.Instance.PublishMessage("PublishArticleY" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Article_{item.Id}", jsonData);
+                    }
                 }
 
                 return true;

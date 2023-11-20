@@ -12,7 +12,7 @@ public class Article
 
     public int Status { get; set; }
 
-    [Column("RefURL")] [StringLength(500)] public string RefUrl { get; set; } = null!;
+    [Column("RefURL")][StringLength(500)] public string RefUrl { get; set; } = null!;
 
     [StringLength(500)] public string? ImageThumb { get; set; }
 

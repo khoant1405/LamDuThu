@@ -23,6 +23,7 @@ AppConfig.ConfigurationBuilder = host.Services.GetRequiredService<IConfiguration
 
 KafkaHelper.Instance.SetKafkaConfig();
 KafkaHelper.Instance.InitProducer();
-await KafkaHelper.Instance.SetTopic("PublishArticle", 1);
+await KafkaHelper.Instance.SetTopic("PublishArticleX", 1);
+await KafkaHelper.Instance.SetTopic("PublishArticleY", 1);
 
 await host.RunAsync();
