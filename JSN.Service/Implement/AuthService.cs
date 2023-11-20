@@ -13,19 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement;
 
-public class AuthService : IAuthService
+public class AuthService(IUnitOfWork unitOfWork, IUserService userService, IRepository<User> userRepository) : IAuthService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepository<User> _userRepository;
-    private readonly IUserService _userService;
-
-    public AuthService(IUnitOfWork unitOfWork, IUserService userService, IRepository<User> userRepository)
-    {
-        _userService = userService;
-        _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<User> RegisterAsync(UserView request)
     {
         CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
@@ -39,22 +28,22 @@ public class AuthService : IAuthService
             Role = request.UserName == "superadmin" ? (int)Role.Admin : (int)Role.User
         };
 
-        await _userRepository.AddAsync(newUser);
-        await _unitOfWork.CommitAsync();
+        await userRepository.AddAsync(newUser);
+        await unitOfWork.CommitAsync();
 
         return newUser;
     }
 
     public async Task<TokenModel> LoginAsync(UserView request)
     {
-        var user = _userService.GetUserByUserName(request.UserName);
+        var user = userService.GetUserByUserName(request.UserName);
 
         var token = CreateToken(user!);
         var refreshToken = GenerateRefreshToken();
         SetRefreshToken(user!, refreshToken);
 
-        _userRepository.Update(user!);
-        await _unitOfWork.CommitAsync();
+        userRepository.Update(user!);
+        await unitOfWork.CommitAsync();
 
         return new TokenModel
         {
@@ -68,14 +57,14 @@ public class AuthService : IAuthService
         var accessToken = tokenModel!.AccessToken;
         var principal = GetPrincipalFromExpiredToken(accessToken);
         var userName = principal!.Identity?.Name;
-        var user = _userService.GetUserByUserName(userName);
+        var user = userService.GetUserByUserName(userName);
 
         var newAccessToken = CreateToken(user!);
         var newRefreshToken = GenerateRefreshToken();
         SetRefreshToken(user!, newRefreshToken);
 
-        _userRepository.Update(user!);
-        await _unitOfWork.CommitAsync();
+        userRepository.Update(user!);
+        await unitOfWork.CommitAsync();
 
         return new TokenModel
         {
@@ -86,7 +75,7 @@ public class AuthService : IAuthService
 
     public string CheckLogin(UserView request)
     {
-        var user = _userService.GetUserByUserName(request.UserName);
+        var user = userService.GetUserByUserName(request.UserName);
         if (user == null)
         {
             return "User not found.";
@@ -97,7 +86,7 @@ public class AuthService : IAuthService
 
     public string CheckUserExists(UserView request)
     {
-        var user = _userService.GetUserByUserName(request.UserName);
+        var user = userService.GetUserByUserName(request.UserName);
         if (user != null)
         {
             return "User Exists.";
@@ -123,7 +112,7 @@ public class AuthService : IAuthService
         }
 
         var userName = principal.Identity?.Name;
-        var user = _userService.GetUserByUserName(userName);
+        var user = userService.GetUserByUserName(userName);
         if (user == null)
         {
             return "Invalid access token";

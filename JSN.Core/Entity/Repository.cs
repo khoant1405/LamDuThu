@@ -3,15 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JSN.Core.Entity;
 
-public class Repository<T> : IRepository<T>, IDisposable where T : class
+public class Repository<T>(DbFactory dbFactory) : IRepository<T>, IDisposable where T : class
 {
-    private readonly DbFactory _dbFactory;
+    private readonly DbFactory _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
     private DbSet<T>? _dbSet;
-
-    public Repository(DbFactory dbFactory)
-    {
-        _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-    }
 
     protected DbSet<T> DbSet => _dbSet ??= _dbFactory.DbContext.Set<T>();
 

@@ -11,17 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JSN.Service.Implement;
 
-public class CrawlerService : ICrawlerService
+public class CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> articleRepository) : ICrawlerService
 {
-    private readonly IRepository<Article> _articleRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> articleRepository)
-    {
-        _unitOfWork = unitOfWork;
-        _articleRepository = articleRepository;
-    }
-
     public async Task StartCrawlerAsync(int startPage, int endPage)
     {
         using var httpClient = new HttpClient(new HttpClientHandler
@@ -83,8 +74,8 @@ public class CrawlerService : ICrawlerService
         if (listArticle.Any())
         {
             listArticle = listArticle.OrderBy(x => x.CreatedOn).ToList();
-            await _articleRepository.AddRangeAsync(listArticle);
-            await _unitOfWork.CommitAsync();
+            await articleRepository.AddRangeAsync(listArticle);
+            await unitOfWork.CommitAsync();
         }
     }
 

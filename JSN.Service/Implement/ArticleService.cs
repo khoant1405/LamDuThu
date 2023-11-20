@@ -13,40 +13,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JSN.Service.Implement;
 
-public class ArticleService : IArticleService
+public class ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService, IUnitOfWork unitOfWork) : IArticleService
 {
-    private readonly IArticlePaginationCacheService _articlePaginationCacheService;
-    private readonly IRepository<Article> _articleRepository;
-    private readonly IMapper _mapper;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public ArticleService(IRepository<Article> articleRepository, IMapper mapper, IArticlePaginationCacheService articlePaginationCacheService, IUnitOfWork unitOfWork)
-    {
-        _articleRepository = articleRepository;
-        _mapper = mapper;
-        _articlePaginationCacheService = articlePaginationCacheService;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<PaginatedList<ArticleView>> GetArticleFromPageAsync(int page, int pageSize)
     {
-        var cacheData = await _articlePaginationCacheService.GetPageAsync(page);
+        var cacheData = await articlePaginationCacheService.GetPageAsync(page);
         if (cacheData != null)
         {
             return cacheData;
         }
 
-        var query = _articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
+        var query = articleRepository.Where(x => x.Status == (int)ArticleStatus.Publish).OrderByDescending(x => x.Id).AsNoTracking();
 
         var count = await query.CountAsync();
 
-        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(x => _mapper.Map<ArticleView>(x)).ToListAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(x => mapper.Map<ArticleView>(x)).ToListAsync();
 
         var data = new PaginatedList<ArticleView>(items, count, page, pageSize);
 
         if (count > 0)
         {
-            await _articlePaginationCacheService.AddPageAsync(data);
+            await articlePaginationCacheService.AddPageAsync(data);
         }
 
         return data;
@@ -56,15 +43,15 @@ public class ArticleService : IArticleService
     {
         try
         {
-            var listArticle = await _articleRepository.Where(x => x.Status == (int)ArticleStatus.Editing).OrderBy(x => x.Id).Take(AppConfig.NumberPublish).ToListAsync();
+            var listArticle = await articleRepository.Where(x => x.Status == (int)ArticleStatus.Editing).OrderBy(x => x.Id).Take(AppConfig.NumberPublish).ToListAsync();
 
             if (listArticle.Any())
             {
                 listArticle.ForEach(x => x.Status = (int)ArticleStatus.Publish);
-                _articleRepository.UpdateRange(listArticle);
-                await _unitOfWork.CommitAsync();
+                articleRepository.UpdateRange(listArticle);
+                await unitOfWork.CommitAsync();
 
-                await _articlePaginationCacheService.DeleteAllPageAsync();
+                await articlePaginationCacheService.DeleteAllPageAsync();
 
                 foreach (var jsonData in listArticle.Select(item => ConvertHelper.ToJson(item, true)))
                 {

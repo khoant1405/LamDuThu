@@ -1,15 +1,10 @@
 ﻿namespace JSN.Core.Entity;
 
-public class DbFactory : IDisposable
+public class DbFactory(Func<CoreDbContext> dbContextFactory) : IDisposable
 {
-    private readonly Func<CoreDbContext> _dbContextFactory;
+    private readonly Func<CoreDbContext> _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     private CoreDbContext? _dbContext;
     private bool _disposed;
-
-    public DbFactory(Func<CoreDbContext> dbContextFactory)
-    {
-        _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
-    }
 
     public CoreDbContext DbContext
     {

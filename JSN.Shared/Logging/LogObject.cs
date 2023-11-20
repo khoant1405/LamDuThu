@@ -2,13 +2,8 @@
 
 namespace JSN.Shared.Logging;
 
-public class LogObject
+public class LogObject()
 {
-    public LogObject()
-    {
-        StartTime = DateTime.Now;
-    }
-
     public LogObject(string serviceType) : this()
     {
         ServiceType = serviceType;
@@ -34,7 +29,7 @@ public class LogObject
 
     #region Time
 
-    public DateTime StartTime { get; set; }
+    public DateTime StartTime { get; set; } = DateTime.Now;
     public double? TotalDuration { get; set; }
 
     #endregion

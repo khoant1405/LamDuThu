@@ -1,15 +1,8 @@
 ﻿namespace JSN.Shared.Model;
 
-public class PaginatedList<T>
+public class PaginatedList<T>(List<T>? items, int count, int pageIndex, int pageSize)
 {
-    public PaginatedList(List<T>? items, int count, int pageIndex, int pageSize)
-    {
-        TotalPage = (int)Math.Ceiling(count / (double)pageSize);
-        Data = items!;
-        PageIndex = pageIndex;
-    }
-
-    public int PageIndex { get; set; }
-    public int TotalPage { get; set; }
-    public List<T> Data { get; set; }
+    public int PageIndex { get; set; } = pageIndex;
+    public int TotalPage { get; set; } = (int)Math.Ceiling(count / (double)pageSize);
+    public List<T> Data { get; set; } = items!;
 }

@@ -4,12 +4,8 @@ using JSN.Core.Repository.Interface;
 
 namespace JSN.Core.Repository;
 
-public class ArticleRepository : Repository<Article>, IArticleRepository
+public class ArticleRepository(DbFactory dbFactory) : Repository<Article>(dbFactory), IArticleRepository
 {
-    public ArticleRepository(DbFactory dbFactory) : base(dbFactory)
-    {
-    }
-
     public Article CreateNewArticle(Article article)
     {
         Add(article);

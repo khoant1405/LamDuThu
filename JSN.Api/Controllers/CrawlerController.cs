@@ -5,15 +5,8 @@ namespace JSN.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CrawlerController : ControllerBase
+public class CrawlerController(ICrawlerService crawlerService) : ControllerBase
 {
-    private readonly ICrawlerService _crawlerService;
-
-    public CrawlerController(ICrawlerService crawlerService)
-    {
-        _crawlerService = crawlerService;
-    }
-
     [HttpPost("[action]")]
     //[Authorize]
     public async Task<ActionResult> StartCrawler(int startPage, int endPage)
@@ -23,7 +16,7 @@ public class CrawlerController : ControllerBase
             return BadRequest("Invalid Page");
         }
 
-        await _crawlerService.StartCrawlerAsync(startPage, endPage);
+        await crawlerService.StartCrawlerAsync(startPage, endPage);
 
         return Ok();
     }

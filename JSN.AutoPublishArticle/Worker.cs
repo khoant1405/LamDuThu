@@ -3,17 +3,8 @@ using JSN.Shared.Config;
 
 namespace JSN.AutoPublishArticle;
 
-public class Worker : BackgroundService
+public class Worker(ILogger<Worker> logger, IArticleService articleService) : BackgroundService
 {
-    private readonly IArticleService _articleService;
-    private readonly ILogger<Worker> _logger;
-
-    public Worker(ILogger<Worker> logger, IArticleService articleService)
-    {
-        _logger = logger;
-        _articleService = articleService;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await DoSomethingAfterMinutesAsync(stoppingToken, AppConfig.PublishAfterMinutes);
@@ -31,17 +22,17 @@ public class Worker : BackgroundService
                 await Task.Delay(delay, stoppingToken);
             }
 
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-            var result = await _articleService.PublishArticleAsync();
+            var result = await articleService.PublishArticleAsync();
 
             if (result)
             {
-                _logger.LogInformation("Publish success at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Publish success at: {time}", DateTimeOffset.Now);
             }
             else
             {
-                _logger.LogInformation("Publish fail at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Publish fail at: {time}", DateTimeOffset.Now);
             }
 
             nextRunTime = DateTimeOffset.Now.AddMinutes(minutes);

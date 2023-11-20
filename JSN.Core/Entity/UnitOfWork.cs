@@ -1,14 +1,9 @@
 ﻿namespace JSN.Core.Entity;
 
-public class UnitOfWork : IUnitOfWork, IDisposable
+public class UnitOfWork(DbFactory dbFactory) : IUnitOfWork, IDisposable
 {
-    private readonly DbFactory _dbFactory;
+    private readonly DbFactory _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
     private CoreDbContext? _dbContext;
-
-    public UnitOfWork(DbFactory dbFactory)
-    {
-        _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-    }
 
     public CoreDbContext DbContext
     {
