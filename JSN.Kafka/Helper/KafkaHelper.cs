@@ -158,7 +158,7 @@ public sealed class KafkaHelper
         {
             try
             {
-                if (!_kafkaMetadata.Topics.Exists(x => x.Topic == topic))
+                if (!_kafkaMetadata.Topics.Exists(x => x.Topic == topic + "-" + _kafka.KafkaPrefix))
                 {
                     await adminClient.CreateTopicsAsync(new[]
                     {

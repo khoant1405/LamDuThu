@@ -74,6 +74,6 @@ public class ArticleService(IRepository<Article> articleRepository, IMapper mapp
             return false;
         }
 
-        return false;
+        return true;
     }
 }
