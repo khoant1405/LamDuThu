@@ -11,4 +11,6 @@ public class KafkaEvent
     public DateTime? CreatedOn { get; set; }
 
     public int? CreatedBy { get; set; }
+
+    public string? MessageKey { get; set; }
 }
