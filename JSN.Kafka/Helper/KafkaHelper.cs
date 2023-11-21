@@ -152,9 +152,9 @@ public sealed class KafkaHelper
     public async Task SetTopic(string topic, int size)
     {
         using (var adminClient = new AdminClientBuilder(new AdminClientConfig
-        {
-            BootstrapServers = _kafka.KafkaIp
-        }).Build())
+               {
+                   BootstrapServers = _kafka.KafkaIp
+               }).Build())
         {
             try
             {
