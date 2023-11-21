@@ -1,6 +1,6 @@
 ﻿namespace JSN.Core.Model;
 
-public class EventKafka
+public class KafkaEvent
 {
     public int Id { get; set; }
 

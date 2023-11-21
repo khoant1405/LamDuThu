@@ -47,6 +47,8 @@ public class CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> article
                 var currentDate = DateTime.Now;
                 var time = currentDate.AddDays(-daysToAdd);
 
+                var categoryId = random.Next(1, 6);
+
                 var newArticle = new Article
                 {
                     ArticleName = articleName,
@@ -58,6 +60,7 @@ public class CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> article
                     CreatedBy = JsnStatic.AdminId,
                     UserId = JsnStatic.AdminId,
                     UserName = JsnStatic.AdminName,
+                    CategoryId = categoryId,
                     ArticleContent = new ArticleContent
                     {
                         Content = content,
@@ -68,7 +71,7 @@ public class CrawlerService(IUnitOfWork unitOfWork, IRepository<Article> article
                 listArticle.Add(newArticle);
             }
 
-            await Task.Delay(10000);
+            await Task.Delay(5000);
         }
 
         if (listArticle.Any())

@@ -17,7 +17,7 @@ public partial class CoreDbContext : DbContext
 
     public virtual DbSet<ArticleContent> ArticleContents { get; set; }
 
-    public virtual DbSet<EventKafka> EventKafkas { get; set; }
+    public virtual DbSet<KafkaEvent> KafkaEvents { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -58,11 +58,11 @@ public partial class CoreDbContext : DbContext
                 .HasConstraintName("Fk_ArticleContent_ArticleId");
         });
 
-        modelBuilder.Entity<EventKafka>(entity =>
+        modelBuilder.Entity<KafkaEvent>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__EventKaf__3214EC070761C1B3");
 
-            entity.ToTable("EventKafka");
+            entity.ToTable("KafkaEvent");
 
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
         });
