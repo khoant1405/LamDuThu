@@ -25,4 +25,6 @@ public class ArticleView
     public int UserId { get; set; }
 
     public string? UserName { get; set; }
+
+    public int? CategoryId { get; set; }
 }
