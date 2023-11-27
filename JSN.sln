@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.Redis", "JSN.Redis\JSN.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.Kafka", "JSN.Kafka\JSN.Kafka.csproj", "{E2FED46C-1644-40B7-8AD8-AF0F3855A8A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.KafkaConsumer", "JSN.KafkaConsumer\JSN.KafkaConsumer.csproj", "{4808A7AD-52C1-459E-9F5D-777CBB542477}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSN.SendToES", "JSN.SendToES\JSN.SendToES.csproj", "{4808A7AD-52C1-459E-9F5D-777CBB542477}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
