@@ -16,7 +16,7 @@ public class Program
         var topics = new List<string>
         {
             "PublishArticleX-develop",
-            "PublishArticleY-develop"
+            //"PublishArticleY-develop"
         };
 
         using var consumer = new KafkaMessageConsumer();

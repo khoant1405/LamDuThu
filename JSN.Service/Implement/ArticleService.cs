@@ -56,14 +56,15 @@ public class ArticleService(IRepository<Article> articleRepository, IMapper mapp
                 foreach (var item in listArticle)
                 {
                     var jsonData = ConvertHelper.ToJson(item, true);
-                    if (item.Id % 2 == 0)
-                    {
-                        KafkaHelper.Instance.PublishMessage("PublishArticleX" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Category_{item.CategoryId}", jsonData);
-                    }
-                    else
-                    {
-                        KafkaHelper.Instance.PublishMessage("PublishArticleY" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Category_{item.CategoryId}", jsonData);
-                    }
+                    KafkaHelper.Instance.PublishMessage("PublishArticleX" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Category_{item.CategoryId}", jsonData);
+                    //if (item.Id % 2 == 0)
+                    //{
+                    //    KafkaHelper.Instance.PublishMessage("PublishArticleX" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Category_{item.CategoryId}", jsonData);
+                    //}
+                    //else
+                    //{
+                    //    KafkaHelper.Instance.PublishMessage("PublishArticleY" + "-" + AppConfig.KafkaConfig.KafkaPrefix, $"Category_{item.CategoryId}", jsonData);
+                    //}
                 }
 
                 return true;
