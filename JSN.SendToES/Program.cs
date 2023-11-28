@@ -1,7 +1,9 @@
 using JSN.Core.AutoMapper;
+using JSN.Core.Model;
 using JSN.Kafka.Helper;
 using JSN.SendToES.Extensions;
 using JSN.Shared.Config;
+using Newtonsoft.Json;
 
 namespace JSN.SendToES;
 
@@ -15,7 +17,7 @@ public class Program
 
         var topics = new List<string>
         {
-            "PublishArticleX-develop",
+            "PublishArticleX-develop"
             //"PublishArticleY-develop"
         };
 
@@ -24,7 +26,11 @@ public class Program
 
         consumer.StartConsuming(message =>
         {
-            Console.WriteLine($"Received message: {message.Value} on topic {message.Topic}, partition {message.Partition}, offset {message.Offset}");
+            var article = JsonConvert.DeserializeObject<Article>(message.Value);
+            if (article != null)
+            {
+                Console.WriteLine($"Received message {article.Id} on topic {message.Topic}, partition {message.Partition}, offset {message.Offset}");
+            }
             // Process the received message here
         });
 
