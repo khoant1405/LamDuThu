@@ -22,7 +22,7 @@ public class KafkaMessageConsumer : IDisposable
         _consumer.Subscribe(topics);
     }
 
-    public void StartConsuming(Action<ConsumeResult<Ignore, string>> processMessage)
+    public void StartConsuming(Action<ConsumeResult<Ignore, string>> processMessage, bool isAutoCommit = true)
     {
         try
         {
@@ -32,6 +32,10 @@ public class KafkaMessageConsumer : IDisposable
                 {
                     var message = _consumer.Consume();
                     processMessage.Invoke(message);
+                    if (!isAutoCommit)
+                    {
+                        _consumer.Commit();
+                    }
                 }
                 catch (ConsumeException e)
                 {
