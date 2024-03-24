@@ -66,9 +66,9 @@ public class Startup
 
         app.UseCors("NgOrigins");
 
-        //app.UseAuthentication();
+        app.UseAuthentication();
 
-        //app.UseAuthorization();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
